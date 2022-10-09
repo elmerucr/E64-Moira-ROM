@@ -5,9 +5,18 @@
 		dc.l	$0000e000	; initial SSP
 		dc.l	exc_reset	; initial PC
 
-rom_version::	dc.b	'E64-ROM v0.4 20221008',0
+rom_version::	dc.b	'E64-ROM v0.4 20221009',0
 
 exc_reset::	move.w	#$2700,sr
+		jsr	init_vector_table
+		jsr	blitter_init
+
+		move.b	#$01,BLITTER_CR
+
+		; set interrupt mask to 1, so all interrupts of 2 and more allowed
+		move.w	#$1,-(A7)
+		jsr	set_interrupt_mask
+		lea	($2,SP),SP
 
 		jsr	sound_reset
 		jsr	sound_welcome_sound
@@ -15,7 +24,7 @@ exc_reset::	move.w	#$2700,sr
 .1		bra	.1
 
 	JSR	init_relocate_sections
-	JSR	init_update_vector_table
+
 	JSR	init_heap_pointers
 
 	MOVE.B	#$03,$00000c80
@@ -26,7 +35,7 @@ exc_reset::	move.w	#$2700,sr
 	MOVE.L	D0,char_ram
 	JSR	init_create_character_ram
 
-	JSR	vicv_init
+	;JSR	vicv_init
 	JSR	blitter_init
 
 	MOVE.W	#$1,-(SP)
@@ -60,12 +69,12 @@ init_relocate_sections
 
 	RTS
 
-init_update_vector_table
-	PEA	vicv_vblank_exception_handler
-	MOVE.B	#26,-(SP)
-	JSR	update_exception_vector
-	LEA	($6,SP),SP
-	RTS
+init_vector_table
+	pea	blitter_screen_refresh_exception_handler
+	move.b	#28,-(SP)
+	jsr	update_exception_vector
+	lea	($6,SP),SP
+	rts
 
 init_heap_pointers
 	MOVE.L	#_BSS_END,heap_start

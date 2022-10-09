@@ -1,8 +1,8 @@
-	SECTION	BSS
+		section	BSS
 
-heap_start::	DS.L	1
-heap_end::	DS.L	1
-char_ram::	DS.L	1
+heap_start::	ds.l	1
+heap_end::	ds.l	1
+char_ram::	ds.l	1
 
 
 		section	TEXT
@@ -50,45 +50,44 @@ memset::	movea.l	($4,SP),A0	; destination
 * void set_interrupt_mask(word mask) *
 **************************************
 set_interrupt_mask::
-	MOVE.W	($4,SP),D0	; get word value from stack
-	ANDI.W	#$7,D0		; between 0 and 7
-	LSL.W	#$8,D0		; leftshift 8 bits
-	MOVE	SR,D1		; get current status
-	ANDI.W	#$f8ff,D1
-	OR.W	D0,D1		; apply new level
-	MOVE	D1,SR
-	RTS
-
+		move.w	($4,SP),D0	; get word value from stack
+		andi.w	#$7,D0		; between 0 and 7
+		lsl.w	#$8,D0		; leftshift 8 bits
+		move	SR,D1		; get current status register
+		andi.w	#$f8ff,D1	; clear IPL values
+		or.w	D0,D1		; apply new level
+		move	D1,SR		; move back to SR
+		rts
 
 *****************************
 * word get_interrupt_mask() *
 *****************************
 get_interrupt_mask::
-	MOVE	SR,D0
-	ANDI.W	#$0700,D0
-	LSR.W	#$8,D0		; current priority is in D0 = return value
-	RTS
+		move	SR,D0
+		andi.w	#$0700,D0
+		lsr.w	#$8,D0		; current priority is in D0 = return value
+		rts
 
 
 *****************************************************************
 * void update_exception_vector(byte vectornumber, long address) *
 *****************************************************************
 update_exception_vector::
-	LINK	A6,#-$2		; local storage for current imask
-	JSR	get_interrupt_mask
-	MOVE.W	D0,(-$2,A6)	; store it
-	MOVE.W	#$7,-(SP)	; mask all incoming irq's
-	JSR	set_interrupt_mask
-	LEA	($2,SP),SP
-	CLR.L	D0
-	MOVE.B	($8,A6),D0
-	ADD.L	D0,D0
-	ADD.L	D0,D0		; times 4 to get address
-	MOVEA.L	D0,A0
-	MOVE.L	($a,A6),D0
-	MOVE.L	D0,(A0)
-	MOVE.W	(-$2,A6),-(SP)	; load former value of imask
-	JSR	set_interrupt_mask
-	LEA	($2,SP),SP
-	UNLK	A6
-	RTS
+		LINK	A6,#-$2		; local storage for current imask
+		JSR	get_interrupt_mask
+		MOVE.W	D0,(-$2,A6)	; store it
+		MOVE.W	#$7,-(SP)	; mask all incoming irq's
+		jsr	set_interrupt_mask
+		lea	($2,SP),SP
+		clr.l	D0
+		move.b	($8,A6),D0
+		add.l	D0,D0
+		add.l	D0,D0		; times 4 to get address
+		movea.l	D0,A0
+		move.l	($a,A6),D0
+		move.l	D0,(A0)
+		move.w	(-$2,A6),-(SP)	; load former value of imask
+		jsr	set_interrupt_mask
+		lea	($2,SP),SP
+		unlk	A6
+		rts

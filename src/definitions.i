@@ -83,6 +83,44 @@ C64_LIGHTGREEN		equ	$fbfa
 C64_LIGHTBLUE		equ	$f67d
 C64_LIGHTGREY		equ	$faaa
 
-	INCLUDE	"blitter.i"
+BLIT_STRUCT_SIZE		equ	$20	; in bytes
+
+BLIT_FLAGS_0			equ	$0	; byte
+BLIT_FLAGS_1			equ	$1	; byte
+BLIT_SIZE_IN_TILES_LOG2		equ	$2	; byte
+BLIT_CURRENTLY_UNUSED		equ	$3	; byte
+BLIT_X				equ	$4	; word
+BLIT_Y				equ	$6	; word
+BLIT_FOREGROUND_COLOR		equ	$8	; word
+BLIT_BACKGROUND_COLOR		equ	$a	; word
+BLIT_PIXEL_DATA			equ	$c	; long (pointer to word)
+BLIT_TILES			equ	$10	; long (pointer to byte)
+BLIT_TILES_COLOR		equ	$14	; long (pointer to word)
+BLIT_TILES_BACKGROUND_COLOR	equ	$18	; long (pointer to word)
+BLIT_USER_DATA			equ	$1c	; long (pointer to void)
+
+; blitter registers
+BLITTER			equ	$00000800
+BLITTER_SR		equ	BLITTER
+BLITTER_CR		equ	BLITTER+$01
+BLITTER_TASK		equ	BLITTER+$02
+BLITTER_HBS		equ	BLITTER+$08
+BLITTER_VBS		equ	BLITTER+$09
+BLITTER_HBC		equ	BLITTER+$0a	; 16 bit
+BLITTER_VBC		equ	BLITTER+$0c	; 16 bit
+BLITTER_CLC		equ	BLITTER+$0e	; 16 bit
+BLITTER_CONTEXT_0	equ	BLITTER+$10
+BLITTER_CONTEXT_1	equ	BLITTER+$11
+BLITTER_CONTEXT_2	equ	BLITTER+$12
+BLITTER_CONTEXT_3	equ	BLITTER+$13
+BLITTER_CONTEXT_4	equ	BLITTER+$14
+BLITTER_CONTEXT_5	equ	BLITTER+$15
+BLITTER_CONTEXT_6	equ	BLITTER+$16
+
+; blitter commands
+BLITTER_CMD_CLEAR_FRAMEBUFFER	equ	%00000001
+BLITTER_CMD_DRAW_HOR_BORDER	equ	%00000010
+BLITTER_CMD_DRAW_VER_BORDER	equ	%00000100
+
 	INCLUDE	"sids.i"
 	INCLUDE "tty.i"

@@ -44,7 +44,7 @@ sound_welcome_sound::
 		rts
 
 
-	section	RODATA
+		section	RODATA
 
 ; The following table is based on a SID clock frequency
 ; of 985248Hz (PAL). Calculations were made according to

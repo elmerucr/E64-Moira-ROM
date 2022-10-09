@@ -18,10 +18,20 @@ blitter_tty::
 	DC.L	$0		; user data
 
 
-	SECTION	TEXT
+		section	TEXT
 
-blitter_init::
-	LEA	blitter_tty,A0
-	MOVE.L	char_ram,(BLIT_PIXEL_DATA,A0)
+blitter_init::	move.w	#C64_BLUE,BLITTER_CLC
+		move.w	#C64_LIGHTBLUE,BLITTER_HBC
+		move.w	#C64_LIGHTBLUE,BLITTER_VBC
+		rts
 
-	RTS
+blitter_screen_refresh_exception_handler::
+		movem.l	D0-D1/A0-A1,-(SP)	; save scratch registers
+
+		move.b	#$1,BLITTER_SR		; confirm pending irq
+		move.b	#BLITTER_CMD_CLEAR_FRAMEBUFFER,BLITTER_TASK
+		move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_TASK
+		move.b	#BLITTER_CMD_DRAW_VER_BORDER,BLITTER_TASK
+
+		movem.l	(SP)+,D0-D1/A0-A1	; restore scratch registers
+		rte
