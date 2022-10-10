@@ -2,19 +2,25 @@
 
 heap_start::	ds.l	1
 heap_end::	ds.l	1
-char_ram::	ds.l	1
-
 
 		section	TEXT
 
-; void *malloc(size_t chunk);
-malloc::	MOVE.L	($4,SP),D1	; load chunk size parameter from stack
-		BTST.L	#$0,D1		; test bit zero
-		BEQ	.1
-		ADDQ	#$1,D1		; add one for word alignment
-.1		MOVE.L	heap_end,D0	; return value in D0
-		ADD.L	D1,heap_end	; update heap pointer
-		RTS
+;void *malloc(size_t chunk)
+;{
+;	if (chunk & 0b1) {
+;		chunk++;	// make sure it's even
+;	}
+;	void *old_heap_end = heap_end;
+;	heap_end += chunk;
+;	return old_heap_end;
+;}
+malloc::	move.l	($4,SP),D1	; load chunk size parameter from stack
+		btst.l	#$0,D1		; test bit zero
+		beq	.1
+		addq	#$1,D1		; add one for word alignment
+.1		move.l	heap_end,D0	; return value in D0
+		add.l	D1,heap_end	; update heap pointer
+		rts
 
 ;u8 *memcpy(u8 *dest, const u8 *src, size_t count)
 ;{
@@ -59,9 +65,9 @@ set_interrupt_mask::
 		move	D1,SR		; move back to SR
 		rts
 
-*****************************
-* word get_interrupt_mask() *
-*****************************
+*********************************
+* uint16_t get_interrupt_mask() *
+*********************************
 get_interrupt_mask::
 		move	SR,D0
 		andi.w	#$0700,D0
@@ -73,10 +79,10 @@ get_interrupt_mask::
 * void update_exception_vector(byte vectornumber, long address) *
 *****************************************************************
 update_exception_vector::
-		LINK	A6,#-$2		; local storage for current imask
-		JSR	get_interrupt_mask
-		MOVE.W	D0,(-$2,A6)	; store it
-		MOVE.W	#$7,-(SP)	; mask all incoming irq's
+		link	A6,#-$2		; local storage for current imask
+		jsr	get_interrupt_mask
+		move.w	D0,(-$2,A6)	; store it
+		move.w	#$7,-(SP)	; mask all incoming irq's
 		jsr	set_interrupt_mask
 		lea	($2,SP),SP
 		clr.l	D0
@@ -86,7 +92,7 @@ update_exception_vector::
 		movea.l	D0,A0
 		move.l	($a,A6),D0
 		move.l	D0,(A0)
-		move.w	(-$2,A6),-(SP)	; load former value of imask
+		move.w	(-$2,A6),-(SP)	; push former value imask on stack
 		jsr	set_interrupt_mask
 		lea	($2,SP),SP
 		unlk	A6

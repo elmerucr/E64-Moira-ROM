@@ -1,21 +1,20 @@
-	INCLUDE	"definitions.i"
+		include	"definitions.i"
 
-	SECTION DATA
+		section	DATA
 
-blitter_tty::
-	DC.B	%00001010	; flags_0
-	DC.B	%00000000	; flags_1
-	DC.B	%01010110	; size
-	DC.B	%00000000	; unused
-	DC.W	$00		; x
-	DC.W	$10		; y
-	DC.W	C64_LIGHTBLUE	; foreground color
-	DC.W	$0		; background color
-	DC.L	$0		; pixel data
-	DC.L	$0		; tiles
-	DC.L	$0		; tiles color
-	DC.L	$0		; tiles backgr color
-	DC.L	$0		; user data
+blitter_tty::	dc.b	%00001010	; flags_0
+		dc.b	%00000000	; flags_1
+		dc.b	%01010110	; size
+		dc.b	%00000000	; unused
+		dc.w	$00		; x
+		dc.w	$10		; y
+		dc.w	C64_LIGHTBLUE	; foreground color
+		dc.w	$0		; background color
+		dc.l	$0		; pixel data
+		dc.l	$0		; tiles
+		dc.l	$0		; tiles color
+		dc.l	$0		; tiles backgr color
+		dc.l	$0		; user data
 
 
 		section	TEXT

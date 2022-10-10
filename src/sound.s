@@ -43,15 +43,14 @@ sound_welcome_sound::
 		move.b	#%01000001,($4,A0)	; pulse (bit 6) and open gate (bit 0)
 		rts
 
-
 		section	RODATA
 
-; The following table is based on a SID clock frequency
-; of 985248Hz (PAL). Calculations were made according to
-; Codebase64 article:
-; https://codebase64.org/doku.php?id=base:how_to_calculate_your_own_sid_frequency_table
-music_notes::
-		dc.w	$0116,$0127,$0139,$014b,$015f,$0174	; N_C0_ to N_B0_
+		; The following table is based on a SID clock frequency
+		; of 985248Hz (PAL). Calculations were made according to
+		; Codebase64 article:
+		; https://codebase64.org/doku.php?id=base:how_to_calculate_your_own_sid_frequency_table
+
+music_notes::	dc.w	$0116,$0127,$0139,$014b,$015f,$0174	; N_C0_ to N_B0_
 		dc.w	$018a,$01a1,$01ba,$01d4,$01f0,$020e
 
 		dc.w	$022d,$024e,$0271,$0296,$02be,$02e7	; N_C1_ to N_B1_ ($0342 = G1 = kick drum)
