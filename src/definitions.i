@@ -1,5 +1,3 @@
-IO_BASE			equ	$fb0000
-
 ; sound / sid / analog / mixer
 SND	equ	$0c00
 
@@ -52,11 +50,6 @@ MXAN2R	equ	SNDM+$0d
 MXAN3L	equ	SNDM+$0e
 MXAN3R	equ	SNDM+$0f
 
-BLITTER_BASE		equ	IO_BASE+$700
-BLITTER_CONTROL		equ	BLITTER_BASE
-BLITTER_DATA		equ	BLITTER_BASE+$2
-BLITTER_CLEAR_COLOR	equ	BLITTER_BASE+$6
-
 C64_BLACK		equ	$f000
 C64_WHITE		equ	$ffff
 C64_RED			equ	$f733
@@ -75,7 +68,7 @@ C64_LIGHTBLUE		equ	$f67d
 C64_LIGHTGREY		equ	$faaa
 
 ; blitter registers
-BLITTER			equ	$00000800
+BLITTER			equ	$0800
 BLITTER_SR		equ	BLITTER
 BLITTER_CR		equ	BLITTER+$01
 BLITTER_TASK		equ	BLITTER+$02

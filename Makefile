@@ -1,13 +1,17 @@
-AS = vasmm68k_mot
-LD = vlink
+AS =		vasmm68k_mot
+LD =		vlink
 
-VPATH = src
+VPATH =		src
 
 # The reset.o object must be first to ensure proper start of the executable code.
-OBJECTS = obj/reset.o
+OBJECTS =	obj/reset.o
 
 # Order of the rest of the objects doesn't matter.
-OBJECTS += obj/blitter.o obj/kernel.o obj/sound.o obj/timer.o
+OBJECTS +=	obj/blitter.o \
+		obj/kernel.o \
+		obj/sound.o \
+		obj/timer.o \
+		obj/tables.o
 
 # Sometimes there seems be strange behaviour related to the -align option. Now
 # it seems ok. Another way would be to use the -devpac option?

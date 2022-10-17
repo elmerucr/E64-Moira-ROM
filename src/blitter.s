@@ -20,8 +20,8 @@ blitter_tty::	dc.b	%00001010	; flags_0
 		section	TEXT
 
 blitter_init::	move.w	#C64_BLUE,BLITTER_CLC.w
-		move.w	#C64_LIGHTBLUE,BLITTER_HBC.w
-		move.w	#C64_LIGHTBLUE,BLITTER_VBC.w
+		move.w	e64_blue_01,BLITTER_HBC.w
+		move.w	e64_blue_01,BLITTER_VBC.w
 		rts
 
 blitter_screen_refresh_exception_handler::

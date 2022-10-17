@@ -5,7 +5,7 @@
 		dc.l	$0000e000	; initial SSP
 		dc.l	exc_reset	; initial PC
 
-rom_version::	dc.b	'E64-ROM v0.4 20221010',0
+rom_version::	dc.b	'E64-ROM v0.4 20221017',0
 
 exc_reset::	move.w	#$2700,sr
 
