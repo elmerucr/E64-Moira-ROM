@@ -1,13 +1,4 @@
 IO_BASE			equ	$fb0000
-CHAR_ROM		equ	$fb8000
-
-VICV_BASE		equ	IO_BASE+$400
-VICV_ISR		equ	VICV_BASE
-VICV_BUFFERSWAP		equ	VICV_BASE+$1
-VICV_HOR_BORDER_SIZE	equ	VICV_BASE+$2
-VICV_VER_BORDER_SIZE	equ	VICV_BASE+$3
-VICV_HOR_BORDER_COLOR	equ	VICV_BASE+$4
-VICV_VER_BORDER_COLOR	equ	VICV_BASE+$6
 
 ; sound / sid / analog / mixer
 SND	equ	$0c00
@@ -82,22 +73,6 @@ C64_GREY		equ	$f777
 C64_LIGHTGREEN		equ	$fbfa
 C64_LIGHTBLUE		equ	$f67d
 C64_LIGHTGREY		equ	$faaa
-
-BLIT_STRUCT_SIZE		equ	$20	; in bytes
-
-BLIT_FLAGS_0			equ	$0	; byte
-BLIT_FLAGS_1			equ	$1	; byte
-BLIT_SIZE_IN_TILES_LOG2		equ	$2	; byte
-BLIT_CURRENTLY_UNUSED		equ	$3	; byte
-BLIT_X				equ	$4	; word
-BLIT_Y				equ	$6	; word
-BLIT_FOREGROUND_COLOR		equ	$8	; word
-BLIT_BACKGROUND_COLOR		equ	$a	; word
-BLIT_PIXEL_DATA			equ	$c	; long (pointer to word)
-BLIT_TILES			equ	$10	; long (pointer to byte)
-BLIT_TILES_COLOR		equ	$14	; long (pointer to word)
-BLIT_TILES_BACKGROUND_COLOR	equ	$18	; long (pointer to word)
-BLIT_USER_DATA			equ	$1c	; long (pointer to void)
 
 ; blitter registers
 BLITTER			equ	$00000800

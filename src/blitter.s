@@ -19,18 +19,18 @@ blitter_tty::	dc.b	%00001010	; flags_0
 
 		section	TEXT
 
-blitter_init::	move.w	#C64_BLUE,BLITTER_CLC
-		move.w	#C64_LIGHTBLUE,BLITTER_HBC
-		move.w	#C64_LIGHTBLUE,BLITTER_VBC
+blitter_init::	move.w	#C64_BLUE,BLITTER_CLC.w
+		move.w	#C64_LIGHTBLUE,BLITTER_HBC.w
+		move.w	#C64_LIGHTBLUE,BLITTER_VBC.w
 		rts
 
 blitter_screen_refresh_exception_handler::
 		movem.l	D0-D1/A0-A1,-(SP)	; save scratch registers
 
-		move.b	#$1,BLITTER_SR		; confirm pending irq
-		move.b	#BLITTER_CMD_CLEAR_FRAMEBUFFER,BLITTER_TASK
-		move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_TASK
-		move.b	#BLITTER_CMD_DRAW_VER_BORDER,BLITTER_TASK
+		move.b	#$1,BLITTER_SR.w	; confirm pending irq
+		move.b	#BLITTER_CMD_CLEAR_FRAMEBUFFER,BLITTER_TASK.w
+		move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_TASK.w
+		move.b	#BLITTER_CMD_DRAW_VER_BORDER,BLITTER_TASK.w
 
 		movem.l	(SP)+,D0-D1/A0-A1	; restore scratch registers
 		rte

@@ -1,4 +1,5 @@
 _ROM_START	= 0x00010000;
+_VEC_START	= 0x0001ff00;
 _RAM_START	= 0x00000400;
 
 SECTIONS {
@@ -22,5 +23,9 @@ SECTIONS {
 		*(COMMON);
 		*(BSS);
 		_BSS_END = .;
+	}
+
+	VEC _VEC_START: AT(_VEC_START) {
+		*(VEC);
 	}
 }

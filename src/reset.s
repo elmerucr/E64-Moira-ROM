@@ -59,3 +59,7 @@ init_heap_pointers
 	MOVE.L	#_BSS_END,heap_start
 	MOVE.L	#_BSS_END,heap_end
 	RTS
+
+		section	VEC
+
+timer_0_vec::	dc.l	timer_0_handler

@@ -7,10 +7,10 @@ sound_reset::	move.l	#$80,-(SP)	; push number of bytes
 		pea	SND		; push starting address
 		jsr	memset		; call memset
 		lea	($a,SP),SP	; restore stack
-		move.b	#$f,SID0V
-		move.b	#$f,SID1V
-		move.b	#$f,SID2V
-		move.b	#$f,SID3V
+		move.b	#$f,SID0V.w
+		move.b	#$f,SID1V.w
+		move.b	#$f,SID2V.w
+		move.b	#$f,SID3V.w
 
 		; analogs?
 
