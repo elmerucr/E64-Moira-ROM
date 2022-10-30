@@ -15,10 +15,10 @@ int main(int argc, char *argv[]) {
 	fseek(f, 0L, SEEK_END);
 	long pos = ftell(f);
 
-	printf("[mk_rom] rom_unpatched.bin size: %lu bytes\n", pos);
+	printf("[mk_rom] Size of rom_unpatched.bin: %lu bytes\n", pos);
 	if( pos >= 65536L )
 	{
-		printf("[mk_rom] too large, exiting...\n");
+		printf("[mk_rom] Too large, exiting...\n");
 		fclose(f);
 		return 1;
 	}
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 	fclose(f);
 
 	// write 64k output to cpp file
-	printf("[mk_rom] writing 64k image 'rom.bin' and 'rom.cpp' for inclusion in E64\n");
+	printf("[mk_rom] Writing 64k (65536 bytes) image 'rom.bin' and 'rom.cpp' for inclusion in E64\n");
 	f = fopen("rom.cpp","w");
 
 	fprintf(f, "/*\n");

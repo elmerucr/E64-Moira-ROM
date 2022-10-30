@@ -1,67 +1,35 @@
-		global	c64_colors
-
-		global	c64_black
-		global	c64_white
-		global	c64_red
-		global	c64_cyan
-		global	c64_purple
-		global	c64_green
-		global	c64_blue
-		global	c64_yellow
-		global	c64_orange
-		global	c64_brown
-		global	c64_lightred
-		global	c64_darkgrey
-		global	c64_grey
-		global	c64_lightgreen
-		global	c64_lightblue
-		global	c64_lightgrey
-
-		global	e64_blue_00
-		global	e64_blue_01
-		global	e64_blue_02
-		global	e64_blue_03
-		global	e64_blue_04
-		global	e64_blue_05
-		global	e64_blue_06
-		global	e64_blue_07
-		global	e64_blue_08
-		global	e64_blue_09
-
-		global	music_notes
-
 		section	RODATA
 
 ; C64 colors (VirtualC64)
-c64_colors:
-c64_black       dw	$f000
-c64_white       dw	$ffff
-c64_red         dw	$f733
-c64_cyan        dw	$f8cc
-c64_purple      dw	$f849
-c64_green       dw	$f6a5
-c64_blue        dw	$f339
-c64_yellow      dw	$fee8
-c64_orange      dw	$f853
-c64_brown       dw	$f531
-c64_lightred    dw	$fb77
-c64_darkgrey    dw	$f444
-c64_grey        dw	$f777
-c64_lightgreen  dw	$fbfa
-c64_lightblue   dw	$f67d
-c64_lightgrey   dw	$faaa
+c64_colors::
+c64_black::		dw	$f000
+c64_white::		dw	$ffff
+c64_red::		dw	$f733
+c64_cyan::		dw	$f8cc
+c64_purple::		dw	$f849
+c64_green::		dw	$f6a5
+c64_blue::		dw	$f339
+c64_yellow::		dw	$fee8
+c64_orange::		dw	$f853
+c64_brown::		dw	$f531
+c64_lightred::		dw	$fb77
+c64_darkgrey::		dw	$f444
+c64_grey::		dw	$f777
+c64_lightgreen::	dw	$fbfa
+c64_lightblue::		dw	$f67d
+c64_lightgrey::		dw	$faaa
 
 ; E64 colors
-e64_blue_00	dw	$f001
-e64_blue_01	dw	$f113
-e64_blue_02	dw	$f226
-e64_blue_03	dw	$f339
-e64_blue_04	dw	$f44c
-e64_blue_05	dw	$f55f
-e64_blue_06	dw	$f77f
-e64_blue_07	dw	$f99f
-e64_blue_08	dw	$fbbf
-e64_blue_09	dw	$fddf
+e64_blue_00::	dw	$f001
+e64_blue_01::	dw	$f113
+e64_blue_02::	dw	$f226
+e64_blue_03::	dw	$f339
+e64_blue_04::	dw	$f44c
+e64_blue_05::	dw	$f55f
+e64_blue_06::	dw	$f77f
+e64_blue_07::	dw	$f99f
+e64_blue_08::	dw	$fbbf
+e64_blue_09::	dw	$fddf
 
 
 		; The following table is based on a SID clock frequency
