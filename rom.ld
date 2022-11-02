@@ -8,6 +8,7 @@ SECTIONS {
 	TEXT : {
 		_TEXT_START = .;
 		*(TEXT);
+		*(CODE);
 		*(RODATA);
 		_TEXT_END = .;
 	}

@@ -29,6 +29,12 @@ reset_exception::
 		jsr	sound_reset
 		jsr	sound_welcome_sound
 
+		jsr	_test
+
+		move.l	#$f0f0,-(A7)
+		jsr	_test2
+		lea	($4,A7),A7
+
 .1		bra	.1
 
 init_relocate_sections

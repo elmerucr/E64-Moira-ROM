@@ -1,7 +1,6 @@
 AS =		vasmm68k_mot
 LD =		vlink
-
-VPATH =		src
+VPATH =		src asm
 
 # The reset.o object must be first to ensure proper start of the executable code.
 OBJECTS =	obj/reset.o
@@ -10,8 +9,9 @@ OBJECTS =	obj/reset.o
 OBJECTS +=	obj/blitter.o \
 		obj/kernel.o \
 		obj/sound.o \
-		obj/timer.o \
-		obj/tables.o
+		obj/tables.o \
+		obj/test.o \
+		obj/timer.o
 
 # Sometimes there seems be strange behaviour related to the -align option. Now
 # it seems ok. Another way would be to use the -devpac option?
@@ -26,15 +26,18 @@ rom.bin: rom_unpatched.bin mk_rom
 	./mk_rom
 
 rom_unpatched.bin: $(OBJECTS) rom.ld
-	$(LD) $(LDFLAGS) $(OBJECTS) -o rom_unpatched.bin
+	$(LD) $(LDFLAGS) $(OBJECTS) $(COBJECTS) -o rom_unpatched.bin
+
+obj/%.s : %.c
+	vbccm68k -quiet -use-framepointer -cpu=68000 -o=$@ $<
 
 obj/%.o : %.s
 	$(AS) $(ASFLAGS) $< -o $@ -L $@.list
+
+mk_rom: tools/mk_rom.c
+	$(CCNATIVE) -o mk_rom tools/mk_rom.c
 
 .PHONY: clean
 clean:
 	rm mk_rom rom.bin rom_unpatched.bin rom.map rom.cpp $(OBJECTS)
 	cd obj && rm *.list && cd ..
-
-mk_rom: tools/mk_rom.c
-	$(CCNATIVE) -o mk_rom tools/mk_rom.c
