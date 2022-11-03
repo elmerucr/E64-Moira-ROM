@@ -1,6 +1,6 @@
 AS =		vasmm68k_mot
 LD =		vlink
-VPATH =		src asm
+VPATH =		src
 
 # The reset.o object must be first to ensure proper start of the executable code.
 OBJECTS =	obj/reset.o
@@ -26,10 +26,10 @@ rom.bin: rom_unpatched.bin mk_rom
 	./mk_rom
 
 rom_unpatched.bin: $(OBJECTS) rom.ld
-	$(LD) $(LDFLAGS) $(OBJECTS) $(COBJECTS) -o rom_unpatched.bin
+	$(LD) $(LDFLAGS) $(OBJECTS) -o rom_unpatched.bin
 
 obj/%.s : %.c
-	vbccm68k -quiet -use-framepointer -cpu=68000 -o=$@ $<
+	vc -S -quiet -use-framepointer -cpu=68000 -o=$@ $<
 
 obj/%.o : %.s
 	$(AS) $(ASFLAGS) $< -o $@ -L $@.list

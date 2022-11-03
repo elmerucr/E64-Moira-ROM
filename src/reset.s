@@ -31,9 +31,9 @@ reset_exception::
 
 		jsr	_test
 
-		move.l	#$f0f0,-(A7)
+		move.w	#$f0f0,-(A7)
 		jsr	_test2
-		lea	($4,A7),A7
+		lea	($2,A7),A7
 
 .1		bra	.1
 
