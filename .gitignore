@@ -8,3 +8,4 @@ rom.cpp
 rom.map
 rom_unpatched.bin
 mk_rom
+obj/*.s
