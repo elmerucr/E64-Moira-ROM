@@ -126,6 +126,18 @@ MXAN2R	equ	SNDM+$0d
 MXAN3L	equ	SNDM+$0e
 MXAN3R	equ	SNDM+$0f
 
+; cia
+CIA	equ	$0e00		; CIA base
+CIA_SR	equ	CIA		; status register
+CIA_CR	equ	CIA+$01		; control register
+CIA_KRD	equ	CIA+$02		; keyboard repeat delay in 10ms
+CIA_KRS	equ	CIA+$03		; keyboard repeat speed in 10ms
+CIA_AC	equ	CIA+$04		; ascii code
+CIA_KSA	equ	CIA+$80		; start of key state array
+
+CIA_CMD_GENERATE_EVENTS		equ	%00000001
+CIA_CMD_CLEAR_EVENT_LIST	equ	%10000000
+
 C64_BLACK		equ	$f000
 C64_WHITE		equ	$ffff
 C64_RED			equ	$f733

@@ -12,30 +12,49 @@ reset_exception::
 
 		jsr	init_vector_table
 		jsr	init_relocate_sections
-		jsr	init_heap_pointers
+		jsr	init_heap_pointers	; this doesn't make sense yet, memory area wrong?
 
 		jsr	blitter_clear_display_list
 		jsr	blitter_init_blit_0
 		jsr	blitter_init_display_list
 		jsr	blitter_set_bordersize_and_colors
 
-		move.b	#$01,BLITTER_CR		; turn on interrupt generation by BLITTER
+		; turn on interrupt generation by BLITTER (@ screenrefresh)
+		move.b	#$01,BLITTER_CR
+
+		;testing c routine... (to be removed later on)
+		;jsr	_test
+		move.w	#$f67f,-(A7)
+		jsr	_test2
+		lea	($2,A7),A7
+
+		; set up a 60Hz timer (3600bpm)
+		move.w	#3600,TIMER0_BPM.w
+		or.b	#%00000001,TIMER_CR	; turn on timer 0
+
+		; sound
+		jsr	sound_reset
+		jsr	sound_welcome_sound
+
+		; cia stuff
+		move.b	#CIA_CMD_CLEAR_EVENT_LIST,CIA_CR.w
+		move.b	#CIA_CMD_GENERATE_EVENTS,CIA_CR.w
+		move.b	#50,CIA_KRD.w				; 50 * 10ms = 0.5s keyboard repeat delay
+		move.b	#5,CIA_KRS.w				; 5 * 10ms = 50ms repeat speed
+
+		; do not yet activate interrupts here, during init and
+		; printing of first messages
+		jsr	se_init		; init screen editor
+		;ldx	#sysinfo
+		;jsr	puts
+		;jsr	cmd_r		; HACK! (show cpu status)
 
 		; set interrupt mask to 1, so all interrupts of 2 and higher allowed
 		move.w	#$1,-(A7)
 		jsr	set_interrupt_mask
 		lea	($2,SP),SP
 
-		jsr	sound_reset
-		jsr	sound_welcome_sound
-
-		jsr	_test
-
-		move.w	#$f0f0,-(A7)
-		jsr	_test2
-		lea	($2,A7),A7
-
-.1		bra	.1
+		jmp	se_loop
 
 init_relocate_sections
 		; move data section

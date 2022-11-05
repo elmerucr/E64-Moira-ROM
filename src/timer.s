@@ -8,8 +8,12 @@ timer_exception_handler::
 		;
 		; do something
 		;
+		clr.b	D0
 
-		add.b	#10,BLITTER_HBS.w
+
+		move.b	#%00000001,TIMER_SR
+
+		add.b	#1,BLITTER_HBS.w
 
 		movem.l	(SP)+,D0-D1/A0-A1	; restore scratch registers
 		rte
