@@ -6,17 +6,17 @@ This source code forms part of the E64 virtual computer system.
 
 ## Compiling
 
-Install the ```vasmm68k_mot``` assembler and the ```vlink``` linker. A standard ```<make>``` command will produce a 64k ```rom.bin``` file as well as the ```rom.cpp``` source file that forms part of ```E64```.
+Install the ```vasmm68k_mot``` assembler, the ```vlink``` linker and the ```vbccm68ks``` compiler. A standard ```<make>``` command will produce a 64k ```rom.bin``` file as well as the ```rom.cpp``` source file that forms part of ```E64```.
 
 ## Coding Style
 
 ### Calling Conventions
 
-Unless there are very good reasons to do it otherwise, the standard C m68k calling convention is the way to go:
+The standard C m68k calling convention is the way to go:
 
 * ``D0``, ``D1``, ``A0`` and ``A1`` are scratch registers
 * All other registers are callee saved / restored
-* ``A6`` is the frame pointer
+* ``A5`` is the frame pointer
 * Parameters are pushed onto the stack, from right to left
 * Return value is stored in ``D0``
 * Responsibility of the callee is to save and restore all other registers that it uses
@@ -32,6 +32,7 @@ Scratch registers mean that the caller is aware that the contents are not necess
 * [stb](https://github.com/nothings/stb) - single-file public domain (or MIT licensed) libraries for C/C++
 * [vAmiga](https://dirkwhoffmann.github.io/vAmiga/) - An Amiga 500, 1000, or 2000 on your Apple Macintosh by Dirk W. Hoffmann.
 * [vasm assembler](http://sun.hasenbraten.de/vasm/) - A portable and retargetable assembler.
+* [vbcc portable ISO C compiler](http://www.compilers.de/vbcc.html) - vbcc is a highly optimizing portable and retargetable ISO C compiler. It supports ISO C according to ISO/IEC 9899:1989 and most of ISO/IEC 9899:1999 (C99).
 * [VirtualC64](https://dirkwhoffmann.github.io/virtualc64/) - A Commodore 64 on your Apple Macintosh by Dirk W. Hoffmann.
 * [vlink linker](http://www.compilers.de/vlink.html) - vlink is a versatile linker (written by Frank Wille)
 

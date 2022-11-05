@@ -5,7 +5,7 @@
 		dc.l	$0000e000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'E64-ROM v0.4 20221023',0
+rom_version::	dc.b	'E64-ROM v0.4 20221105',0
 
 reset_exception::
 		move.w	#$2700,sr	; supervisor mode, highest IPL
@@ -24,13 +24,13 @@ reset_exception::
 
 		;testing c routine... (to be removed later on)
 		;jsr	_test
-		move.w	#$f67f,-(A7)
-		jsr	_test2
-		lea	($2,A7),A7
+		;move.w	#$f67f,-(A7)
+		;jsr	_test2
+		;lea	($2,A7),A7
 
 		; set up a 60Hz timer (3600bpm)
 		move.w	#3600,TIMER0_BPM.w
-		or.b	#%00000001,TIMER_CR	; turn on timer 0
+		or.b	#%00000001,TIMER_CR.w	; turn on timer 0
 
 		; sound
 		jsr	sound_reset
@@ -45,6 +45,8 @@ reset_exception::
 		; do not yet activate interrupts here, during init and
 		; printing of first messages
 		jsr	se_init		; init screen editor
+		movea.l	#rom_version,A0
+		jsr	se_puts
 		;ldx	#sysinfo
 		;jsr	puts
 		;jsr	cmd_r		; HACK! (show cpu status)

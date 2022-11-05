@@ -49,7 +49,7 @@ blitter_init_display_list::
 		rts
 
 blitter_set_bordersize_and_colors::
-		move.w	#C64_BLUE,BLITTER_CLC.w
+		move.w	e64_blue_03,BLITTER_CLC.w
 		move.w	e64_blue_01,BLITTER_HBC.w
 		move.w	e64_blue_01,BLITTER_VBC.w
 		move.b	#20,BLITTER_HBS.w
