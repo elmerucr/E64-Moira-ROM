@@ -29,8 +29,10 @@ reset_exception::
 		;lea	($2,A7),A7
 
 		; set up a 60Hz timer (3600bpm)
-		move.w	#3600,TIMER1_BPM.w
-		or.b	#%00000010,TIMER_CR.w	; turn on timer 0
+		move.w	#3600,TIMER4_BPM.w
+		or.b	#%00010000,TIMER_CR.w	; turn on timer 1
+		move.w	#3600,TIMER0_BPM.w
+		or.b	#%00000001,TIMER_CR.w	; turn on timer 0
 
 		; sound
 		jsr	sound_reset
@@ -49,9 +51,6 @@ reset_exception::
 		jsr	se_puts
 		move.b	#ASCII_LF,D0
 		jsr	se_putchar
-		;ldx	#sysinfo
-		;jsr	puts
-		;jsr	cmd_r		; HACK! (show cpu status)
 
 		; set interrupt mask to 1, so all interrupts of 2 and higher allowed
 		move.w	#$1,-(A7)
