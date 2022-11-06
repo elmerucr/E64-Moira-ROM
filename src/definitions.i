@@ -138,6 +138,16 @@ CIA_KSA	equ	CIA+$80		; start of key state array
 CIA_CMD_GENERATE_EVENTS		equ	%00000001
 CIA_CMD_CLEAR_EVENT_LIST	equ	%10000000
 
+; ascii
+ASCII_BACKSPACE		equ	$08
+ASCII_LF		equ	$0a
+ASCII_CR		equ	$0d
+ASCII_CURSOR_DOWN	equ	$11
+ASCII_CURSOR_RIGHT	equ	$1d
+ASCII_CURSOR_UP		equ	$91
+ASCII_CURSOR_LEFT	equ	$9d
+
+; colors
 C64_BLACK		equ	$f000
 C64_WHITE		equ	$ffff
 C64_RED			equ	$f733

@@ -6,7 +6,7 @@ This source code forms part of the E64 virtual computer system.
 
 ## Compiling
 
-Install the ```vasmm68k_mot``` assembler, the ```vlink``` linker and the ```vbccm68ks``` compiler. A standard ```<make>``` command will produce a 64k ```rom.bin``` file as well as the ```rom.cpp``` source file that forms part of ```E64```.
+Install the ```vasmm68k_mot```, ```vlink``` and ```vbccm68ks```. A standard ```make``` command will produce ```rom.bin``` (64k) and ```rom.cpp``` that forms part of the ```E64``` source.
 
 ## Coding Style
 

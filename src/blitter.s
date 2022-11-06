@@ -34,7 +34,7 @@ blitter_init_blit_0::
 		move.b	#45,BLIT_ROWS.w
 		move.b	#1,BLIT_TILE_WIDTH.w
 		move.b	#1,BLIT_TILE_HEIGHT.w
-		move.w	e64_blue_07,BLIT_FG_COLOR.w
+		move.w	e64_blue_08,BLIT_FG_COLOR.w
 		clr.w	BLIT_BG_COLOR.w
 		rts
 
