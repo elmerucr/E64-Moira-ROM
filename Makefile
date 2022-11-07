@@ -30,17 +30,17 @@ all: rom.bin
 rom.bin: rom_unpatched.bin mk_rom
 	./mk_rom
 
+mk_rom: tools/mk_rom.c
+	$(CCNATIVE) -o mk_rom tools/mk_rom.c
+
 rom_unpatched.bin: $(OBJECTS) rom.ld
-	$(LD) $(LDFLAGS) $(OBJECTS) -o rom_unpatched.bin
+	$(LD) $(LDFLAGS) $(OBJECTS) -o $@
 
 $(SOBJECTS) : obj/%.s : src/%.c
 	$(CC) $(CFLAGS) -o=$@ $<
 
 obj/%.o : %.s
 	$(AS) $(ASFLAGS) $< -o $@ -L $@.list
-
-mk_rom: tools/mk_rom.c
-	$(CCNATIVE) -o mk_rom tools/mk_rom.c
 
 .PHONY: clean
 clean:
