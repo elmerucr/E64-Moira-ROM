@@ -78,7 +78,7 @@ blitter_screen_refresh_exception_handler::
 		move.w	(A0)+,(BLIT_XPOS,A1)
 		move.w	(A0)+,(BLIT_YPOS,A1)
 		move.b	#BLIT_CMD_DRAW_BLIT,(BLIT_CR,A1)
-		cmp	DISPL_LIST+$100,A0
+		cmp	#DISPL_LIST+$100,A0
 		bne	.1
 
 .2		move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_TASK.w

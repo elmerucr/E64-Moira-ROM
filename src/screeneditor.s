@@ -1,8 +1,14 @@
 		include	"definitions.i"
 
+		section	BSS
+
+se_current_scr	ds.b	1
+
 		section	TEXT
 
 se_init::
+		clr.b	se_current_scr
+		move.b	#$b0,se_current_scr
 		jsr	se_clear_screen
 		move.b	#BLIT_CMD_ACTIVATE_CURSOR,BLIT_CONTEXT_00+BLIT_CR
 		rts
