@@ -20,7 +20,7 @@ reset_exception::
 		jsr	blitter_set_bordersize_and_colors
 
 		; turn on interrupt generation by BLITTER (@ screenrefresh)
-		move.b	#$01,BLITTER_CR
+		move.b	#$01,BLITTER_CR.w
 
 		;testing c routine... (to be removed later on)
 		;jsr	_test
@@ -29,8 +29,8 @@ reset_exception::
 		;lea	($2,A7),A7
 
 		; set up a 60Hz timer (3600bpm)
-		move.w	#3600,TIMER4_BPM.w
-		or.b	#%00010000,TIMER_CR.w	; turn on timer 1
+		;move.w	#3600,TIMER7_BPM.w
+		;or.b	#%10000000,TIMER_CR.w	; turn on timer 7
 		move.w	#3600,TIMER0_BPM.w
 		or.b	#%00000001,TIMER_CR.w	; turn on timer 0
 

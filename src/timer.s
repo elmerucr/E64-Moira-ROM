@@ -28,18 +28,16 @@ timer_exception_handler::
 		rte
 
 timer_0_handler::
-		clr.b	BLITTER_CONTEXT_0
-		move.b	#BLIT_CMD_PROCESS_CURSOR_STATE,BLIT_CR.w
+		;clr.b	BLITTER_CONTEXT_0
+		move.b	#BLIT_CMD_PROCESS_CURSOR_STATE,BLIT_CONTEXT_00+BLIT_CR
 		rts
-
 timer_1_handler::
-		rts
 timer_2_handler::
 timer_3_handler::
 timer_4_handler::
-		add.b	#1,BLITTER_HBS.w	; TODO remove later
-		rts
 timer_5_handler::
 timer_6_handler::
+		rts
 timer_7_handler::
+		add.b	#1,BLITTER_HBS.w	; TODO remove later
 		rts

@@ -28,14 +28,15 @@ blitter_clear_display_list::
 		rts
 
 blitter_init_blit_0::
-		clr.b	BLITTER_CONTEXT_0.w	; work with 1st blit
-		move.b	#$14,BLIT_CURSOR_BLINK_INTERVAL.w
-		move.b	#80,BLIT_COLUMNS.w
-		move.b	#45,BLIT_ROWS.w
-		move.b	#1,BLIT_TILE_WIDTH.w
-		move.b	#1,BLIT_TILE_HEIGHT.w
-		move.w	e64_blue_08,BLIT_FG_COLOR.w
-		clr.w	BLIT_BG_COLOR.w
+		;movea.l	#BLIT,A0		; work with blit 0
+		;clr.b	BLITTER_CONTEXT_0.w
+		move.b	#$14,BLIT_CONTEXT_00+BLIT_CURSOR_BLINK_INTERVAL
+		move.b	#80,BLIT_CONTEXT_00+BLIT_COLUMNS
+		move.b	#45,BLIT_CONTEXT_00+BLIT_ROWS
+		move.b	#1,BLIT_CONTEXT_00+BLIT_TILE_WIDTH
+		move.b	#1,BLIT_CONTEXT_00+BLIT_TILE_HEIGHT
+		move.w	e64_blue_08,BLIT_CONTEXT_00+BLIT_FG_COLOR
+		clr.w	BLIT_CONTEXT_00+BLIT_BG_COLOR
 		rts
 
 blitter_init_display_list::
@@ -62,24 +63,28 @@ blitter_screen_refresh_exception_handler::
 		move.b	#$1,BLITTER_SR.w	; confirm pending irq
 		move.b	#BLITTER_CMD_CLEAR_FRAMEBUFFER,BLITTER_TASK.w
 
-		move.b	BLITTER_CONTEXT_0,-(SP)	; save current context
+		;move.b	BLITTER_CONTEXT_0,-(SP)	; save current context
 
 		movea	#DISPL_LIST,A0
 .1		move.b	(A0)+,D0		; check command (1 = blit, 2 = ..., 4 = ...)
-		beq	.2			; if zero, end it
-		move.b	(A0)+,BLITTER_CONTEXT_0	; load context number
-		move.b	(A0)+,BLIT_FLAGS_0
-		move.b	(A0)+,BLIT_FLAGS_1
-		move.w	(A0)+,BLIT_XPOS
-		move.w	(A0)+,BLIT_YPOS
-		move.b	#BLIT_CMD_DRAW_BLIT,BLIT_CR
+		beq	.2			; if zero, end
+		clr.l	D0
+		move.b	(A0)+,D0		; load context number
+		lsl.l	#8,D0
+		add.l	#$10000,D0
+		move.l	D0,A1			; A1 points to right blit context
+		move.b	(A0)+,(BLIT_FLAGS_0,A1)
+		move.b	(A0)+,(BLIT_FLAGS_1,A1)
+		move.w	(A0)+,(BLIT_XPOS,A1)
+		move.w	(A0)+,(BLIT_YPOS,A1)
+		move.b	#BLIT_CMD_DRAW_BLIT,(BLIT_CR,A1)
 		cmp	DISPL_LIST+$100,A0
 		bne	.1
 
 .2		move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_TASK.w
 		move.b	#BLITTER_CMD_DRAW_VER_BORDER,BLITTER_TASK.w
 
-		move.b	(SP)+,BLITTER_CONTEXT_0	; restore old context
+		;move.b	(SP)+,BLITTER_CONTEXT_0	; restore old context
 
 		movem.l	(SP)+,D0-D1/A0-A1	; restore scratch registers
 		rte
