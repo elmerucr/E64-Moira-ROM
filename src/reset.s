@@ -5,7 +5,7 @@
 		dc.l	$0000e000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'E64-ROM v0.4 20221106',0
+rom_version::	dc.b	'E64-ROM v0.4 20221110',0
 
 reset_exception::
 		move.w	#$2700,sr	; supervisor mode, highest IPL
@@ -46,7 +46,8 @@ reset_exception::
 
 		; do not yet activate interrupts here, during init and
 		; printing of first messages
-		jsr	se_init		; init screen editor
+		clr.b	BLITTER_CONTEXT_PTR_NO	; let's use screen/blit 0 in kernel mode
+		jsr	se_clear_screen		; init screen editor
 		movea.l	#rom_version,A0
 		jsr	se_puts
 		move.b	#ASCII_LF,D0

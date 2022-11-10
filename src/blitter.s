@@ -30,13 +30,15 @@ blitter_clear_display_list::
 blitter_init_blit_0::
 		;movea.l	#BLIT,A0		; work with blit 0
 		;clr.b	BLITTER_CONTEXT_0.w
-		move.b	#$14,BLIT_CONTEXT_00+BLIT_CURSOR_BLINK_INTERVAL
-		move.b	#80,BLIT_CONTEXT_00+BLIT_COLUMNS
-		move.b	#45,BLIT_CONTEXT_00+BLIT_ROWS
-		move.b	#1,BLIT_CONTEXT_00+BLIT_TILE_WIDTH
-		move.b	#1,BLIT_CONTEXT_00+BLIT_TILE_HEIGHT
-		move.w	e64_blue_08,BLIT_CONTEXT_00+BLIT_FG_COLOR
-		clr.w	BLIT_CONTEXT_00+BLIT_BG_COLOR
+		clr.b	BLITTER_CONTEXT_PTR_NO;
+		movea.l	BLITTER_CONTEXT_PTR,A0
+		move.b	#$14,(BLIT_CURSOR_BLINK_INTERVAL,A0)
+		move.b	#80,(BLIT_COLUMNS,A0)
+		move.b	#44,(BLIT_ROWS,A0)
+		move.b	#1,(BLIT_TILE_WIDTH,A0)
+		move.b	#1,(BLIT_TILE_HEIGHT,A0)
+		move.w	e64_blue_08,(BLIT_FG_COLOR,A0)
+		clr.w	(BLIT_BG_COLOR,A0)
 		rts
 
 blitter_init_display_list::
@@ -46,14 +48,14 @@ blitter_init_display_list::
 		move.b	#%10001010,(A0)+	; flags 0 = $8a
 		clr.b	(A0)+			; flags 1 = $00
 		move.w	#0,(A0)+		; x position
-		move.w	#20,(A0)		; y position
+		move.w	#24,(A0)		; y position
 		rts
 
 blitter_set_bordersize_and_colors::
 		move.w	e64_blue_03,BLITTER_CLC.w
 		move.w	e64_blue_01,BLITTER_HBC.w
 		move.w	e64_blue_01,BLITTER_VBC.w
-		move.b	#20,BLITTER_HBS.w
+		move.b	#24,BLITTER_HBS.w
 		clr.b	BLITTER_VBS.w
 		rts
 
@@ -61,18 +63,13 @@ blitter_screen_refresh_exception_handler::
 		movem.l	D0-D1/A0-A1,-(SP)	; save scratch registers
 
 		move.b	#$1,BLITTER_SR.w	; confirm pending irq
-		move.b	#BLITTER_CMD_CLEAR_FRAMEBUFFER,BLITTER_TASK.w
-
-		;move.b	BLITTER_CONTEXT_0,-(SP)	; save current context
+		move.b	#BLITTER_CMD_CLEAR_FRAMEBUFFER,BLITTER_OPERATION.w
 
 		movea	#DISPL_LIST,A0
-.1		move.b	(A0)+,D0		; check command (1 = blit, 2 = ..., 4 = ...)
-		beq	.2			; if zero, end
-		clr.l	D0
-		move.b	(A0)+,D0		; load context number
-		lsl.l	#8,D0
-		add.l	#$10000,D0
-		move.l	D0,A1			; A1 points to right blit context
+.1		move.b	(A0)+,D0		; check command (1 = blit, 2 = ..., 4 = ...) TODO
+		beq	.2			; if zero, go to end
+		move.b	(A0)+,BLITTER_CONTEXT_PTR_NO.w		; load context number
+		movea.l	BLITTER_CONTEXT_PTR,A1			; A1 points to right blit context
 		move.b	(A0)+,(BLIT_FLAGS_0,A1)
 		move.b	(A0)+,(BLIT_FLAGS_1,A1)
 		move.w	(A0)+,(BLIT_XPOS,A1)
@@ -81,10 +78,8 @@ blitter_screen_refresh_exception_handler::
 		cmp	#DISPL_LIST+$100,A0
 		bne	.1
 
-.2		move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_TASK.w
-		move.b	#BLITTER_CMD_DRAW_VER_BORDER,BLITTER_TASK.w
-
-		;move.b	(SP)+,BLITTER_CONTEXT_0	; restore old context
+.2		move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_OPERATION.w
+		move.b	#BLITTER_CMD_DRAW_VER_BORDER,BLITTER.w
 
 		movem.l	(SP)+,D0-D1/A0-A1	; restore scratch registers
 		rte
