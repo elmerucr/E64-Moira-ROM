@@ -28,30 +28,31 @@ se_putsymbol::	movea.l	BLITTER_CONTEXT_PTR,A0
 		move.w	(BLIT_BG_COLOR,A0),(BLIT_CURSOR_BG_COLOR,A0)
 		rts
 
-se_putchar::	movea.l	BLITTER_CONTEXT_PTR,A0
+se_putchar::	movem.l	A2-A3,-(SP)
+		movea.l	BLITTER_CONTEXT_PTR,A0
 is_lf		cmpi.b	#ASCII_LF,D0
 		bne	is_cri
 .1		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 		btst	#6,(BLIT_SR,A0)	; did we reach column 0?
 		beq	.1		; no goto .1
 		btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
-		beq	.2
+		beq	finish
 		jsr	se_add_bottom_row
-.2		rts
+		bra	finish
 is_cri		cmpi.b	#ASCII_CURSOR_RIGHT,D0
 		bne	is_cl
 		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 		btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
-		beq	.1
+		beq	finish
 		jsr	se_add_bottom_row
-.1		rts
+		bra	finish
 is_cl		cmpi.b	#ASCII_CURSOR_LEFT,D0
 		bne	is_cd
 		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
 		btst	#5,(BLIT_SR,A0) ; did we cross start of the screen?
-		beq	.1		; no goto .1
+		beq	finish
 		jsr	se_add_top_row
-.1		rts
+		bra	finish
 is_cd		cmpi.b	#ASCII_CURSOR_DOWN,D0
 		bne	is_cu
 		move.b	(BLIT_COLUMNS,A0),D0
@@ -63,7 +64,7 @@ is_cd		cmpi.b	#ASCII_CURSOR_DOWN,D0
 		move.l	(SP)+,D0
 .2		subq.b	#1,D0
 		bne	.1
-		rts
+		bra	finish
 is_cu		cmpi.b	#ASCII_CURSOR_UP,D0
 		bne	is_bksp
 		move.b	(BLIT_COLUMNS,A0),D0
@@ -75,6 +76,7 @@ is_cu		cmpi.b	#ASCII_CURSOR_UP,D0
 		move.l	(SP)+,D0
 .2		subq.b	#1,D0
 		bne	.1
+		movem.l	(SP)+,A2-A3	; finish
 		rts
 is_bksp		cmpi.b	#ASCII_BACKSPACE,D0
 		bne	is_cr
@@ -83,17 +85,36 @@ is_bksp		cmpi.b	#ASCII_BACKSPACE,D0
 		btst	#5,(BLIT_SR,A0) ; did we cross start of the screen?
 		beq	.1		; no goto .1
 		jsr	se_add_top_row
-.1		;
-		;move.b	(BLIT_CURSOR_COLUMN,A0),D0
-		;cmp.b	(BLIT_COLUMNS,A0),D
 
-		rts
+.1		move.l	(BLIT_TILE_RAM_PTR,A0),A1
+		movea.l (BLIT_FG_COLOR_RAM_PTR,A0),A2
+		movea.l (BLIT_BG_COLOR_RAM_PTR,A0),A3
+		moveq.l	#0,D0
+		move.w	(BLIT_CURSOR_POS,A0),D0
+		adda.l	D0,A1
+		lsl.b	#1,D0
+		adda.l	D0,A2
+		adda.l	D0,A3
+
+		move.b	(BLIT_COLUMNS,A0),D0
+		sub.b	(BLIT_CURSOR_COLUMN,A0),D0
+.2		subq.b	#1,D0				; D0 now contains the amount of chars to shift
+		beq	.3				; reached 0
+		move.b	(1,A1),(A1)+
+		move.w	(2,A2),(A2)+
+		move.w	(2,A3),(A3)+
+		bra	.2
+.3		move.b	#' ',(A1)
+		move.w	(BLIT_FG_COLOR,A0),(A2)
+		move.w	(BLIT_BG_COLOR,A0),(A3)
+		bra	finish
 is_cr		jsr	se_putsymbol
 		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 		btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
 		beq	finish
 		jsr	se_add_bottom_row
-finish		rts
+finish		movem.l	(SP)+,A2-A3
+		rts
 
 ; putstring, pointer in A0
 se_puts::	move.b	(A0)+,D0
