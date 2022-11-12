@@ -92,11 +92,12 @@ is_bksp		cmpi.b	#ASCII_BACKSPACE,D0
 		moveq.l	#0,D0
 		move.w	(BLIT_CURSOR_POS,A0),D0
 		adda.l	D0,A1
-		lsl.b	#1,D0
-		adda.l	D0,A2
-		adda.l	D0,A3
+		lsl.w	#1,D0
+		adda.w	D0,A2
+		adda.w	D0,A3
+		lsr.w	#1,D0
 
-		move.b	(BLIT_COLUMNS,A0),D0
+elmer		move.b	(BLIT_COLUMNS,A0),D0
 		sub.b	(BLIT_CURSOR_COLUMN,A0),D0
 .2		subq.b	#1,D0				; D0 now contains the amount of chars to shift
 		beq	.3				; reached 0
