@@ -43,8 +43,10 @@ BLIT_XPOS		equ	$0c	; 16 bit
 BLIT_YPOS		equ	$0e	; 16 bit
 BLIT_NO_OF_TILES	equ	$10	; 16 bit read only
 BLIT_CURSOR_POS		equ	$12	; 16 bit pointer
-BLIT_CURSOR_BLINK_INTERVAL	equ	$14	; read/write
-BLIT_CURSOR_CHAR	equ	$16	; read/write
+BLIT_CURSOR_COLUMN	equ	$14	; 8 bit read only
+BLIT_CURSOR_ROW		equ	$15	; 8 bit read only
+BLIT_CURSOR_BLINK_INTERVAL	equ	$16	; read/write
+BLIT_CURSOR_CHAR	equ	$17	; read/write
 BLIT_CURSOR_FG_COLOR	equ	$18	; read/write
 BLIT_CURSOR_BG_COLOR	equ	$1a	; read/write
 BLIT_TILE_RAM_PTR	equ	$20	; 32 bit read only

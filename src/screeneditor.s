@@ -64,7 +64,31 @@ is_cd		cmpi.b	#ASCII_CURSOR_DOWN,D0
 .2		subq.b	#1,D0
 		bne	.1
 		rts
-is_cu		jsr	se_putsymbol
+is_cu		cmpi.b	#ASCII_CURSOR_UP,D0
+		bne	is_bksp
+		move.b	(BLIT_COLUMNS,A0),D0
+.1		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
+		btst	#5,(BLIT_SR,A0)	; did we reach start of screen?
+		beq	.2
+		move.l	D0,-(SP)
+		jsr	se_add_top_row
+		move.l	(SP)+,D0
+.2		subq.b	#1,D0
+		bne	.1
+		rts
+is_bksp		cmpi.b	#ASCII_BACKSPACE,D0
+		bne	is_cr
+
+		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
+		btst	#5,(BLIT_SR,A0) ; did we cross start of the screen?
+		beq	.1		; no goto .1
+		jsr	se_add_top_row
+.1		;
+		;move.b	(BLIT_CURSOR_COLUMN,A0),D0
+		;cmp.b	(BLIT_COLUMNS,A0),D
+
+		rts
+is_cr		jsr	se_putsymbol
 		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 		btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
 		beq	finish
