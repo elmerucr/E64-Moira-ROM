@@ -1,5 +1,9 @@
 		include	"definitions.i"
 
+		section	BSS
+
+command_buffer	DS.B	88	; enough space (probably needs 81 bytes only)
+
 		section	TEXT
 
 se_loop::
@@ -8,8 +12,13 @@ se_loop::
 .1		move.b	CIA_AC,D0
 		beq	.1
 		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
-		jsr	se_putchar
-		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
+		cmp.b	#ASCII_LF,D0
+		bne	.2
+		jsr	se_fill_command_buffer
+		bra.s	.3
+		; do something with command buffer
+.2		jsr	se_putchar
+.3		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
 		bra	.1
 
 se_clear_screen::
@@ -96,8 +105,7 @@ is_bksp		cmpi.b	#ASCII_BACKSPACE,D0
 		adda.w	D0,A2
 		adda.w	D0,A3
 		lsr.w	#1,D0
-
-elmer		move.b	(BLIT_COLUMNS,A0),D0
+		move.b	(BLIT_COLUMNS,A0),D0
 		sub.b	(BLIT_CURSOR_COLUMN,A0),D0
 .2		subq.b	#1,D0				; D0 now contains the amount of chars to shift
 		beq	.3				; reached 0
@@ -106,10 +114,16 @@ elmer		move.b	(BLIT_COLUMNS,A0),D0
 		move.w	(2,A3),(A3)+
 		bra	.2
 .3		move.b	#' ',(A1)
-		move.w	(BLIT_FG_COLOR,A0),(A2)
-		move.w	(BLIT_BG_COLOR,A0),(A3)
+		;move.w	(BLIT_FG_COLOR,A0),(A2)
+		;move.w	(BLIT_BG_COLOR,A0),(A3)
 		bra	finish
-is_cr		jsr	se_putsymbol
+is_cr		cmp.b	#ASCII_CR,D0
+		bne	is_sym
+.1		btst.b	#6,(BLIT_SR,A0)
+		bne	finish
+		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
+		bra	.1
+is_sym		jsr	se_putsymbol
 		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 		btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
 		beq	finish
@@ -204,4 +218,16 @@ se_add_top_row::
 		bne	.3
 
 		movem.l	(SP)+,A2-A3
+		rts
+
+se_fill_command_buffer:
+		move.b	#ASCII_CR,D0
+		jsr	se_putchar
+		movea.l	#command_buffer,A1
+.1		move.b	(BLIT_CURSOR_CHAR,A0),(A1)+
+		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
+		btst.b	#6,(BLIT_SR,A0)
+		beq	.1
+		clr.b	(A1)	; place 0 at end of string
+		;move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
 		rts

@@ -2,10 +2,10 @@
 
 		section TEXT
 
-		dc.l	$0000e000	; initial SSP
+		dc.l	$00010000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'E64-ROM v0.4 20221110',0
+rom_version::	dc.b	'E64-ROM v0.4 20221113',0
 
 reset_exception::
 		move.w	#$2700,sr	; supervisor mode, highest IPL
@@ -36,7 +36,7 @@ reset_exception::
 
 		; sound
 		jsr	sound_reset
-		jsr	sound_welcome_sound
+		;jsr	sound_welcome_sound
 
 		; cia stuff
 		move.b	#CIA_CMD_CLEAR_EVENT_LIST,CIA_CR.w
