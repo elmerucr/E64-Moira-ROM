@@ -50,13 +50,15 @@ reset_exception::
 		jsr	se_clear_screen		; init screen editor
 		movea.l	#rom_version,A0
 		jsr	se_puts
-		move.b	#ASCII_LF,D0
-		jsr	se_putchar
+		;move.b	#ASCII_LF,D0
+		;jsr	se_putchar
 
 		; set interrupt mask to 1, so all interrupts of 2 and higher allowed
 		move.w	#$1,-(A7)
 		jsr	set_interrupt_mask
 		lea	($2,SP),SP
+
+		jsr	monitor_setup
 
 		jmp	se_loop
 

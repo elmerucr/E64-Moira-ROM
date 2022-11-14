@@ -2,19 +2,19 @@
 
 		section	DATA
 
-blitter_tty::	dc.b	%00001010	; flags_0
-		dc.b	%00000000	; flags_1
-		dc.b	%01010110	; size
-		dc.b	%00000000	; unused
-		dc.w	$00		; x
-		dc.w	$10		; y
-		dc.w	C64_LIGHTBLUE	; foreground color
-		dc.w	$0		; background color
-		dc.l	$0		; pixel data
-		dc.l	$0		; tiles
-		dc.l	$0		; tiles color
-		dc.l	$0		; tiles backgr color
-		dc.l	$0		; user data
+;blitter_tty::	dc.b	%00001010	; flags_0
+;		dc.b	%00000000	; flags_1
+;		dc.b	%01010110	; size
+;		dc.b	%00000000	; unused
+;		dc.w	$00		; x
+;		dc.w	$10		; y
+;		dc.w	C64_LIGHTBLUE	; foreground color
+;		dc.w	$0		; background color
+;		dc.l	$0		; pixel data
+;		dc.l	$0		; tiles
+;		dc.l	$0		; tiles color
+;		dc.l	$0		; tiles backgr color
+;		dc.l	$0		; user data
 
 
 		section	TEXT

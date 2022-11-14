@@ -9,6 +9,7 @@ OBJECTS =	obj/reset.o
 # Order of the rest of the objects doesn't matter.
 OBJECTS +=	obj/blitter.o \
 		obj/kernel.o \
+		obj/monitor.o \
 		obj/screeneditor.o \
 		obj/sound.o \
 		obj/tables.o \

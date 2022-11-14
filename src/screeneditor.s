@@ -2,24 +2,34 @@
 
 		section	BSS
 
-command_buffer	DS.B	88	; enough space (probably needs 81 bytes only)
+command_buffer	ds.b	80	; enough space (79 chars + '\0')
+prompt_vector::	ds.b	4
 
 		section	TEXT
 
-se_loop::
+se_loop::	movea.l	prompt_vector,A0
+		jsr	(A0)
 		movea.l	BLITTER_CONTEXT_PTR,A0
 		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
-.1		move.b	CIA_AC,D0
-		beq	.1
+
+se_loop1	move.b	CIA_AC,D0	; check for character
+		beq.s	se_loop1	; no
+
 		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
 		cmp.b	#ASCII_LF,D0
-		bne	.2
-		jsr	se_fill_command_buffer
-		bra.s	.3
+		beq.s	se_loop2
+		jsr	se_putchar
+		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
+		bra.s	se_loop1
+
+se_loop2	jsr	se_fill_command_buffer
+		;move.b	#ASCII_LF,D0
+		;jsr	se_putchar
+
 		; do something with command buffer
-.2		jsr	se_putchar
-.3		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
-		bra	.1
+
+		;move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
+		bra.s	se_loop
 
 se_clear_screen::
 		movea.l	BLITTER_CONTEXT_PTR,A0
@@ -228,6 +238,6 @@ se_fill_command_buffer:
 		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 		btst.b	#6,(BLIT_SR,A0)
 		beq	.1
-		clr.b	(A1)	; place 0 at end of string
-		;move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
+		clr.b	-(A1)	; place 0 at end of string
+		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
 		rts
