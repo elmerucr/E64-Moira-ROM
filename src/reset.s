@@ -5,7 +5,7 @@
 		dc.l	$00010000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'E64-ROM v0.4 20221113',0
+rom_version::	dc.b	'E64-ROM v0.4 20221116',0
 
 reset_exception::
 		move.w	#$2700,sr	; supervisor mode, highest IPL
@@ -94,6 +94,11 @@ init_vector_table
 		jsr	update_exception_vector
 		lea	($6,SP),SP
 
+		pea	address_error
+		move.b	#3,-(SP)
+		jsr	update_exception_vector
+		lea	($6,SP),SP
+
 		move.l	#timer_0_handler,TIMER0_VECTOR.w
 		move.l	#timer_1_handler,TIMER1_VECTOR.w
 		move.l	#timer_2_handler,TIMER2_VECTOR.w
@@ -113,3 +118,9 @@ init_heap_pointers
 		section	VEC
 
 timer_0_vec::	dc.l	timer_0_handler
+
+address_error
+	move.b	#$ff,BLITTER_HBS.w
+	move.w	#$ff00,BLITTER_HBC.w
+	move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_CR.w
+.1	bra	.1

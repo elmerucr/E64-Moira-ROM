@@ -2,35 +2,36 @@
 
 		section	BSS
 
-command_buffer	ds.b	80	; enough space (79 chars + '\0')
-prompt_vector::	ds.b	4
+se_command_buffer::	ds.b	80	; enough space (79 chars + '\0')
+prompt_vector::		ds.l	1
+execute_vector::	ds.l	1
 
 		section	TEXT
 
 se_loop::	movea.l	prompt_vector,A0
-		jsr	(A0)
+		jsr	se_puts
 		movea.l	BLITTER_CONTEXT_PTR,A0
 		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
 
-se_loop1	move.b	CIA_AC,D0	; check for character
-		beq.s	se_loop1	; no
+.1		move.b	CIA_AC,D0	; check for character
+		beq.s	.1		; no, check again
 
 		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
-		cmp.b	#ASCII_LF,D0
-		beq.s	se_loop2
+		cmp.b	#ASCII_LF,D0	; is it enter?
+		beq.s	.2		; yes, goto .2
 		jsr	se_putchar
 		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
-		bra.s	se_loop1
+		bra.s	.1
 
-se_loop2	jsr	se_fill_command_buffer
-		;move.b	#ASCII_LF,D0
-		;jsr	se_putchar
+.2		jsr	se_fill_command_buffer
 
 		; do something with command buffer
+		movea.l	execute_vector,A0
+		jsr	(A0)
 
-		;move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
 		bra.s	se_loop
 
+; destroys A0, D0
 se_clear_screen::
 		movea.l	BLITTER_CONTEXT_PTR,A0
 		clr.w	(BLIT_CURSOR_POS,A0)
@@ -39,14 +40,16 @@ se_clear_screen::
 		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 		btst	#7,(BLIT_SR,A0)
 		beq	.1
+		rts
 
-; putsymbol - expects code to be in D0
+; putsymbol - expects code to be in D0, destroys A0
 se_putsymbol::	movea.l	BLITTER_CONTEXT_PTR,A0
 		move.b	D0,(BLIT_CURSOR_CHAR,A0)
 		move.w	(BLIT_FG_COLOR,A0),(BLIT_CURSOR_FG_COLOR,A0)
 		move.w	(BLIT_BG_COLOR,A0),(BLIT_CURSOR_BG_COLOR,A0)
 		rts
 
+; expects code to be in D0, destroys A0,A1
 se_putchar::	movem.l	A2-A3,-(SP)
 		movea.l	BLITTER_CONTEXT_PTR,A0
 is_lf		cmpi.b	#ASCII_LF,D0
@@ -123,7 +126,7 @@ is_bksp		cmpi.b	#ASCII_BACKSPACE,D0
 		move.w	(2,A2),(A2)+
 		move.w	(2,A3),(A3)+
 		bra	.2
-.3		move.b	#' ',(A1)
+.3		move.b	#' ',(A1)			; puts space, but keeps old fore- and background color
 		;move.w	(BLIT_FG_COLOR,A0),(A2)
 		;move.w	(BLIT_BG_COLOR,A0),(A3)
 		bra	finish
@@ -141,7 +144,7 @@ is_sym		jsr	se_putsymbol
 finish		movem.l	(SP)+,A2-A3
 		rts
 
-; putstring, pointer in A0
+; putstring, needs pointer in A0, destroys content of D0
 se_puts::	move.b	(A0)+,D0
 		beq	.1
 		move.l	A0,-(SP)
@@ -231,9 +234,10 @@ se_add_top_row::
 		rts
 
 se_fill_command_buffer:
-		move.b	#ASCII_CR,D0
+		movea.l	BLITTER_CONTEXT_PTR,A0
+		move.b	#ASCII_CR,D0		; move cursor to first position
 		jsr	se_putchar
-		movea.l	#command_buffer,A1
+		movea.l	#se_command_buffer,A1
 .1		move.b	(BLIT_CURSOR_CHAR,A0),(A1)+
 		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 		btst.b	#6,(BLIT_SR,A0)
