@@ -2,9 +2,9 @@
 
 		section	BSS
 
-se_command_buffer::	ds.b	80	; enough space (79 chars + '\0')
 prompt_vector::		ds.l	1
 execute_vector::	ds.l	1
+se_command_buffer::	ds.b	80	; enough space (79 chars + '\0')
 
 		section	TEXT
 

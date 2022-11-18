@@ -39,7 +39,11 @@ search
 	bne	.3
 	lea	(1,A2),A2
 	bra	.1
-.3	clr.l	D0
+.3	tst.b	(A2)		; test for 0 (means empty command line)
+	bne	.4
+	lea	(4,SP),SP	; discard first return address from stack
+	rts			; directly return to caller of execute
+.4	clr.l	D0
 	move.b	(A0),D0			; get first byte (=length of string)
 	beq	search7			; if 0, then exit
 	lea.l	(6,A0,D0.w),A1		; calculate address of next entry
@@ -65,6 +69,7 @@ search7	and.b	#$fe,CCR		; fail, clear carry to indicate
 
 clear_comtab
 	bra	se_clear_screen
+
 ver_comtab
 	move.b	ASCII_LF,D0
 	jsr	se_putchar
@@ -75,14 +80,17 @@ ver_comtab
 jump_comtab
 
 m_comtab
-	lea.l	success,A0
-	jsr	se_puts
+	bsr	consume_space
+	bcs	.1
+	lea.l	ermes,A0
+	bra.s	.2
+.1	lea.l	success,A0
+.2	jsr	se_puts
 	rts
 
-*  comtab is the built-in command table. All entries are made up of
-*         a string length + number of characters to match + the string
-*         plus the address of the command relative to COMTAB
-*
+; comtab is the built-in command table. All entries are made up of
+; a string length + number of characters to match + the string
+; plus the address of the command relative to COMTAB
 comtab	dc.b	6,5
 	dc.b	'clear '
 	dc.l	clear_comtab
@@ -96,3 +104,11 @@ comtab	dc.b	6,5
 	dc.b	'jump'		; begin at <address>
 	dc.l	jump_comtab
 	dc.b	0,0		; end of table
+
+consume_space
+	cmp.b	#' ',(A2)+
+	bne	.1
+	or.b	#1,CCR
+	rts
+.1	and.b	#$fe,CCR
+	rts
