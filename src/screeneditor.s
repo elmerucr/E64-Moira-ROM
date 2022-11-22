@@ -25,7 +25,6 @@ se_loop::	movea.l	prompt_vector,A0
 
 .2		jsr	se_fill_command_buffer
 
-		; do something with command buffer
 		movea.l	execute_vector,A0
 		jsr	(A0)
 
@@ -235,6 +234,7 @@ se_add_top_row::
 
 se_fill_command_buffer:
 		movea.l	BLITTER_CONTEXT_PTR,A0
+		move.b	(BLIT_CURSOR_COLUMN,A0),-(SP)	; save current cursor pos
 		move.b	#ASCII_CR,D0		; move cursor to first position
 		jsr	se_putchar
 		movea.l	#se_command_buffer,A1
@@ -244,4 +244,5 @@ se_fill_command_buffer:
 		beq	.1
 		clr.b	-(A1)	; place 0 at end of string
 		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
+		move.b	(SP)+,(BLIT_CURSOR_COLUMN,A0)
 		rts

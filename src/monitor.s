@@ -3,8 +3,8 @@
 	section	RODATA
 
 prompt	dc.b	ASCII_LF,'.',0
-stmes	dc.b	ASCII_LF,ASCII_LF,'Monitor version 18.11.2022',0
-ermes	dc.b	ASCII_LF,'invalid command',0
+stmes	dc.b	ASCII_LF,ASCII_LF,'Monitor version 2022.11.22',0
+ermes	dc.b	'?',ASCII_LF,'invalid command',0
 success	dc.b	ASCII_LF,'command recognized',0
 
 	section	TEXT
@@ -20,12 +20,12 @@ monitor_setup::
 	rts
 
 execute
-	lea.l	comtab,A0
+	lea.l	commands,A0
 	bsr	search
-	bcs	exec2			; if command found, execute
+	bcs	.1			; if command found, execute
 	lea.l	ermes,A0		; error
 	bra	se_puts			; and return (rts in puts)
-exec2	movea.l	(A0),A0			; get command address
+.1	movea.l	(A0),A0			; get command address
 	jsr	(A0)
 
 ; at the end, A2 points to the next character in the command_buffer
@@ -67,48 +67,122 @@ search6	lea.l	(-4,A1),A0		; calc addr of command entry
 search7	and.b	#$fe,CCR		; fail, clear carry to indicate
 	rts				; and return
 
-clear_comtab
+clear_command
 	bra	se_clear_screen
 
-ver_comtab
-	move.b	ASCII_LF,D0
+ver_command
+	move.b	#ASCII_LF,D0
 	jsr	se_putchar
 	lea.l	rom_version,A0
 	jsr	se_puts
 	rts
 
-jump_comtab
+jump_command
 
-m_comtab
+m_command
 	bsr	consume_space
-	bcs	.1
-	lea.l	ermes,A0
-	bra.s	.2
-.1	lea.l	success,A0
-.2	jsr	se_puts
+	bcc	.3		; error
+	jsr	hex
+	bcc	.3		; error
+	clr.l	D1
+.1	add.b	D0,D1
+	jsr	hex
+	bcc	.2		; reached the end
+	lsl.l	#4,D1
+	bra	.1
+.2	;and.l	#$00fffffe,D1	; make 16bit boundary
+	bra.s	print_address
+	;lea.l	success,A0
+	;jsr	se_puts
+	rts
+.3	lea.l	ermes,A0
+	jsr	se_puts
 	rts
 
-; comtab is the built-in command table. All entries are made up of
+; commands is the built-in command table. All entries are made up of
 ; a string length + number of characters to match + the string
-; plus the address of the command relative to COMTAB
-comtab	dc.b	6,5
+; plus the address of the command relative to commands
+commands
+	dc.b	6,5
 	dc.b	'clear '
-	dc.l	clear_comtab
+	dc.l	clear_command
 	dc.b	2,1
 	dc.b	'm '		; m <address> examines contents of
-	dc.l	m_comtab	; <address> and allows them to be changed
+	dc.l	m_command	; <address> and allows them to be changed
 	dc.b	4,3
 	dc.b	'ver '
-	dc.l	ver_comtab
+	dc.l	ver_command
 	dc.b	4,4		; jump <address> causes execution to
 	dc.b	'jump'		; begin at <address>
-	dc.l	jump_comtab
+	dc.l	jump_command
 	dc.b	0,0		; end of table
 
 consume_space
 	cmp.b	#' ',(A2)+
 	bne	.1
-	or.b	#1,CCR
+	or.b	#1,CCR		; success
 	rts
-.1	and.b	#$fe,CCR
+.1	and.b	#$fe,CCR	; no success
+	rts
+
+hex	move.b	(A2)+,D0
+	sub.b	#$30,D0
+	bmi.s	not_hex		; less than 30? --> error
+	cmp.b	#$9,D0		; else test for number
+	ble.s	hex_ok		; yes, success
+	sub.b	#$7,D0		; convert letter to hex
+	and.b	#%11011111,D0	; convert to uppercase
+	cmp.b	#$f,D0		; if char range A to F
+	ble.s	hex_ok		; yes, exit successfully
+not_hex	and.b	#$fe,CCR
+	rts
+hex_ok	or.b	#$1,CCR
+	rts
+
+; byte	bsr.s	hex
+; 	asl.b	#4,D0
+; 	move.b	D0,D1
+; 	bsr.s	hex
+; 	add.b	D1,D0
+; 	rts
+
+; address in D1
+print_address
+	move.l	D1,D0
+	bsr	memory
+	rts
+
+out1x	move.w	D0,-(A7)	; Save D0
+        and.b	#$f,D0		; Mask off MS nybble
+	add.b	#$30,D0		; Convert to ASCII
+	cmp.b	#$39,D0		; ASCII = HEX + $30
+	bls.s	out1x1		; If ASCII <= $39 then print and exit
+	add.b	#$27,D0		; Else ASCII := HEX + $27
+out1x1	bsr	se_putchar	; Print the character
+	move.w	(A7)+,D0	; Restore D0
+	rts
+
+out2x	ror.b	#4,D0		; Get MS nybble in LS position
+        bsr.s	out1x		; Print MS nybble
+        rol.b	#4,D0		; Restore LS nybble
+        bra.s	out1x		; Print LS nybble and return
+
+out4x	ror.w	#8,D0		; Get MS byte in LS position
+	bsr.s	out2x		; Print MS byte
+	rol.w	#8,D0		; Restore LS byte
+	bra.s	out2x		; Print LS byte and return
+
+out8x	swap	D0		; Get MS word in LS position
+	bsr.s	out4x		; Print MS word
+	swap	D0		; Restore LS word
+	bra.s	out4x		; Print LS word and return
+
+memory
+	move.l	D0,-(SP)
+	move.b	#ASCII_LF,D0
+	jsr	se_putchar
+	move.b	#':',D0
+	jsr	se_putchar
+	move.l	(SP)+,D0
+	bsr.s	out8x
 	rts

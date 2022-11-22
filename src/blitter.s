@@ -32,6 +32,7 @@ blitter_init_blit_0::
 		;clr.b	BLITTER_CONTEXT_0.w
 		clr.b	BLITTER_CONTEXT_PTR_NO;
 		movea.l	BLITTER_CONTEXT_PTR,A0
+		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
 		move.b	#$14,(BLIT_CURSOR_BLINK_INTERVAL,A0)
 		move.b	#80,(BLIT_COLUMNS,A0)
 		move.b	#44,(BLIT_ROWS,A0)
