@@ -5,7 +5,7 @@
 		dc.l	$00010000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'E64-ROM v0.4 2022.11.16',0
+rom_version::	dc.b	'E64-ROM v20221127',0
 
 reset_exception::
 		move.w	#$2700,sr	; supervisor mode, highest IPL

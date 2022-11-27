@@ -3,8 +3,8 @@
 	section	RODATA
 
 prompt	dc.b	ASCII_LF,'.',0
-stmes	dc.b	ASCII_LF,ASCII_LF,'Monitor version 2022.11.22',0
-ermes	dc.b	'?',ASCII_LF,'invalid command',0
+stmes	dc.b	ASCII_LF,ASCII_LF,'Monitor',0
+ermes	dc.b	'?',ASCII_LF,'error',0
 success	dc.b	ASCII_LF,'command recognized',0
 
 	section	TEXT
@@ -72,32 +72,66 @@ clear_command
 
 ver_command
 	move.b	#ASCII_LF,D0
-	jsr	se_putchar
+	bsr	se_putchar
 	lea.l	rom_version,A0
-	jsr	se_puts
+	bsr	se_puts
 	rts
 
 jump_command
+	lea.l	success,A0
+	bsr	se_puts
+	rts
 
 m_command
 	bsr	consume_space
-	bcc	.3		; error
-	jsr	hex
-	bcc	.3		; error
+	bcc.s	.4		; error
+	bsr	hex
+	bcc.s	.4		; error
+	move.l	D2,-(SP)
 	clr.l	D1
 .1	add.b	D0,D1
-	jsr	hex
-	bcc	.2		; reached the end
+	bsr	hex
+	bcc.s	.2		; reached the end
 	lsl.l	#4,D1
-	bra	.1
-.2	;and.l	#$00fffffe,D1	; make 16bit boundary
-	bra.s	print_address
-	;lea.l	success,A0
-	;jsr	se_puts
+	bra.s	.1
+.2	and.l	#$00ffffff,D1	; make 24 bit address
+	move.l	D1,D0
+	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	(BLIT_ROWS,A0),D2
+	sub.b	#1,D2
+.3	bsr	memory
+	movea.l	BLITTER_CONTEXT_PTR,A0
+	cmp.b	(BLIT_CURSOR_ROW,A0),D2
+	bne.s	.3
+
+	clr.b	do_prompt
+	move.l	(SP)+,D2
 	rts
-.3	lea.l	ermes,A0
+.4	lea.l	ermes,A0
+	bsr	se_puts
+	rts
+
+; routine invoked with ":" character
+m_input_command
+	move.l	D2,-(SP)
+	clr.l	D1		; destination register
+	moveq	#6,D2		; need 6 hex digits
+
+.1	bsr.s	hex		; get one character
+	bcc.s	.2		; not a hex number
+	add.b	D0,D1
+	subq	#1,D2
+	bne.s	.1
+
+	lea.l	success,A0
+	bsr	se_puts
+	move.l	(SP)+,D2
+	rts
+.2	lea.l	ermes,A0
 	jsr	se_puts
+	move.l	(SP)+,D2
 	rts
+
 
 ; commands is the built-in command table. All entries are made up of
 ; a string length + number of characters to match + the string
@@ -115,27 +149,32 @@ commands
 	dc.b	4,4		; jump <address> causes execution to
 	dc.b	'jump'		; begin at <address>
 	dc.l	jump_command
+	dc.b	2,1
+	dc.b	': '
+	dc.l	m_input_command
 	dc.b	0,0		; end of table
 
 consume_space
 	cmp.b	#' ',(A2)+
-	bne	.1
+	bne.s	.1
 	or.b	#1,CCR		; success
 	rts
 .1	and.b	#$fe,CCR	; no success
 	rts
 
 hex	move.b	(A2)+,D0
+	andi.b	#%01111111,D0	; remove reversed
 	sub.b	#$30,D0
 	bmi.s	not_hex		; less than 30? --> error
 	cmp.b	#$9,D0		; else test for number
-	ble.s	hex_ok		; yes, success
-	sub.b	#$7,D0		; convert letter to hex
+	bls.s	hex_ok		; yes, success
 	and.b	#%11011111,D0	; convert to uppercase
-	cmp.b	#$f,D0		; if char range A to F
-	ble.s	hex_ok		; yes, exit successfully
+	sub.b	#$11,D0		; convert letter to hex
+	cmp.b	#$6,D0		; if char range A to F
+	bls.s	hex_ok2		; yes, exit successfully
 not_hex	and.b	#$fe,CCR
 	rts
+hex_ok2	add.b	#$a,D0
 hex_ok	or.b	#$1,CCR
 	rts
 
@@ -147,10 +186,10 @@ hex_ok	or.b	#$1,CCR
 ; 	rts
 
 ; address in D1
-print_address
-	move.l	D1,D0
-	bsr	memory
-	rts
+;print_address;
+;	move.l	D1,D0
+;	bsr	memory
+;	rts
 
 out1x	move.w	D0,-(A7)	; Save D0
         and.b	#$f,D0		; Mask off MS nybble
@@ -172,17 +211,46 @@ out4x	ror.w	#8,D0		; Get MS byte in LS position
 	rol.w	#8,D0		; Restore LS byte
 	bra.s	out2x		; Print LS byte and return
 
+out6x	swap	D0
+	bsr.s	out2x
+	swap	D0
+	bra.s	out4x
+
 out8x	swap	D0		; Get MS word in LS position
 	bsr.s	out4x		; Print MS word
 	swap	D0		; Restore LS word
 	bra.s	out4x		; Print LS word and return
 
+; starting address must be in D0
+; (address + 8) in D0 at end of routine
 memory
-	move.l	D0,-(SP)
-	move.b	#ASCII_LF,D0
-	jsr	se_putchar
-	move.b	#':',D0
-	jsr	se_putchar
-	move.l	(SP)+,D0
-	bsr.s	out8x
+	movem.l	A2-A4,-(SP)
+	move.l	D0,A2		; start address in A2
+	movea.l	A2,A4		; copy to A4
+	move.b	#ASCII_LF,D0	; next line
+	bsr	se_putchar
+	move.b	#':',D0		; print : and address
+	bsr	se_putchar
+	move.l	A2,D0
+	bsr.s	out6x
+	move.l	A2,A3
+	adda.l	#8,A3		; A3 now contains end address
+.1	move.b	#' ',D0
+	bsr	se_putchar
+	move.b	(A2)+,D0
+	bsr.s	out2x		; print hex byte
+	cmp.l	A2,A3
+	bne	.1
+	move.b	#' ',D0		; space between hex and chars
+	bsr	se_putchar
+	movea.l	A4,A2		; A2 back to start
+	movea.l	BLITTER_CONTEXT_PTR,A0
+.2	move.b	(A2)+,D0
+	bsr	se_putsymbol
+	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
+	cmp.l	A2,A3
+	bne	.2
+	move.l	A2,D0				; D0 contains next address
+	move.b	#8,(BLIT_CURSOR_COLUMN,A0)	; move cursor to right position
+	movem.l	(SP)+,A2-A4
 	rts
