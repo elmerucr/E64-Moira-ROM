@@ -111,7 +111,7 @@ m_command
 	bsr	se_puts
 	rts
 
-; routine invoked with ":" character
+; invoked with ":" character (monitor view)
 m_input_command
 	move.l	D2,-(SP)
 	clr.l	D1		; destination register
@@ -119,9 +119,13 @@ m_input_command
 
 .1	bsr.s	hex		; get one character
 	bcc.s	.2		; not a hex number
+	lsl.l	#4,D1
 	add.b	D0,D1
 	subq	#1,D2
 	bne.s	.1
+
+	move.l	D1,D0
+	bsr	out6x
 
 	lea.l	success,A0
 	bsr	se_puts
@@ -170,7 +174,7 @@ hex	move.b	(A2)+,D0
 	bls.s	hex_ok		; yes, success
 	and.b	#%11011111,D0	; convert to uppercase
 	sub.b	#$11,D0		; convert letter to hex
-	cmp.b	#$6,D0		; if char range A to F
+	cmp.b	#$5,D0		; if char range A (0) to F (5)
 	bls.s	hex_ok2		; yes, exit successfully
 not_hex	and.b	#$fe,CCR
 	rts
