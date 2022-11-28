@@ -80,7 +80,7 @@ blitter_screen_refresh_exception_handler::
 		bne	.1
 
 .2		move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_OPERATION.w
-		move.b	#BLITTER_CMD_DRAW_VER_BORDER,BLITTER.w
+		move.b	#BLITTER_CMD_DRAW_VER_BORDER,BLITTER_OPERATION.w
 
 		movem.l	(SP)+,D0-D1/A0-A1	; restore scratch registers
 		rte

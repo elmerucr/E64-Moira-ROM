@@ -5,6 +5,7 @@
 prompt	dc.b	ASCII_LF,'.',0
 stmes	dc.b	ASCII_LF,ASCII_LF,'Monitor',0
 ermes	dc.b	'?',ASCII_LF,'error',0
+ermes2	dc.b	'?',0
 success	dc.b	ASCII_LF,'command recognized',0
 
 	section	TEXT
@@ -99,7 +100,11 @@ m_command
 	movea.l	BLITTER_CONTEXT_PTR,A0
 	move.b	(BLIT_ROWS,A0),D2
 	sub.b	#1,D2
-.3	bsr	memory
+.3	move.b	D0,-(SP)
+	move.b	#ASCII_LF,D0
+	bsr	se_putchar
+	move.b	(SP)+,D0
+	bsr	memory
 	movea.l	BLITTER_CONTEXT_PTR,A0
 	cmp.b	(BLIT_CURSOR_ROW,A0),D2
 	bne.s	.3
@@ -113,27 +118,60 @@ m_command
 
 ; invoked with ":" character (monitor view)
 m_input_command
-	move.l	D2,-(SP)
+	movem.l	D2/A3-A4,-(SP)
 	clr.l	D1		; destination register
 	moveq	#6,D2		; need 6 hex digits
 
-.1	bsr.s	hex		; get one character
+.1	bsr	hex		; get one character
 	bcc.s	.2		; not a hex number
 	lsl.l	#4,D1
 	add.b	D0,D1
 	subq	#1,D2
 	bne.s	.1
 
-	move.l	D1,D0
-	bsr	out6x
+	movea.l	D1,A3		; prepare addresses
+	movea.l	A3,A4
+	adda.l	#8,A4
 
-	lea.l	success,A0
-	bsr	se_puts
-	move.l	(SP)+,D2
+.3	bsr	consume_space
+	bcc.s	.2
+	bsr	hex
+	bcc.s	.2
+	move.b	D0,D1
+	lsl.b	#4,D1
+	bsr	hex
+	bcc.s	.2
+	add.b	D0,D1
+	move.b	D1,(A3)+
+	cmp.l	A3,A4
+	bne	.3
+
+	move.b	#ASCII_CR,D0
+	bsr	se_putchar
+	move.l	A3,D0
+	sub.l	#8,D0
+	bsr	memory
+
+	move.b	#ASCII_LF,D0
+	bsr	se_putchar
+	move.b	#'.',D0
+	bsr	se_putchar
+	move.b	#':',D0
+	bsr	se_putchar
+
+	move.l	A3,D0
+	bsr	out6x
+	move.b	#' ',D0
+	bsr	se_putchar
+
+	;lea.l	success,A0
+	;bsr	se_puts
+	clr.b	do_prompt
+	movem.l	(SP)+,D2/A3-A4
 	rts
-.2	lea.l	ermes,A0
-	jsr	se_puts
-	move.l	(SP)+,D2
+.2	lea.l	ermes2,A0
+	bsr	se_puts
+	movem.l	(SP)+,D2/A3-A4
 	rts
 
 
@@ -231,9 +269,11 @@ memory
 	movem.l	A2-A4,-(SP)
 	move.l	D0,A2		; start address in A2
 	movea.l	A2,A4		; copy to A4
-	move.b	#ASCII_LF,D0	; next line
+	;move.b	#ASCII_LF,D0	; next line
+	;bsr	se_putchar
+	move.b	#'.',D0	; print '.:' and address
 	bsr	se_putchar
-	move.b	#':',D0		; print : and address
+	move.b	#':',D0
 	bsr	se_putchar
 	move.l	A2,D0
 	bsr.s	out6x
@@ -255,6 +295,6 @@ memory
 	cmp.l	A2,A3
 	bne	.2
 	move.l	A2,D0				; D0 contains next address
-	move.b	#8,(BLIT_CURSOR_COLUMN,A0)	; move cursor to right position
+	move.b	#9,(BLIT_CURSOR_COLUMN,A0)	; move cursor to right position
 	movem.l	(SP)+,A2-A4
 	rts
