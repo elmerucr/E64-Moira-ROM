@@ -20,9 +20,9 @@ SOBJECTS =	obj/test.s
 
 # Sometimes there seems be strange behaviour related to the -align option. Now
 # it seems ok. Another way would be to use the -devpac option?
-ASFLAGS = -align -no-opt -Felf -m68000 -quiet
+ASFLAGS = -align -no-opt -Felf -m68020 -quiet
 LDFLAGS = -b rawbin1 -Trom.ld -Mrom.map
-CFLAGS =  -quiet -use-framepointer -cpu=68000
+CFLAGS =  -quiet -use-framepointer -cpu=68020
 
 CCNATIVE = gcc
 

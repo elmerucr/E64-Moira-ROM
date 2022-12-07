@@ -5,10 +5,16 @@
 		dc.l	$00010000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'ROM v20221127',0
+rom_version::	dc.b	'rom v20221207',0
 
 reset_exception::
-		move.w	#$2700,sr	; supervisor mode, highest IPL
+		;move.w	#$2700,sr	; supervisor mode, highest IPL
+
+		;clr.l	D0		; not explicitly needed
+		;movec	D0,VBR		; reset exception sets VBR to $00000000
+
+		move.l	#$00040000,D0
+		movec	D0,USP
 
 		jsr	init_vector_table
 		jsr	init_relocate_sections
@@ -48,8 +54,10 @@ reset_exception::
 		; printing of first messages
 		clr.b	BLITTER_CONTEXT_PTR_NO	; let's use screen/blit 0 in kernel mode
 		jsr	se_clear_screen		; init screen editor
-		movea.l	#rom_version,A0
+		movea.l	#welcome,A0
 		jsr	se_puts
+		;movea.l	#rom_version,A0
+		;jsr	se_puts
 		;move.b	#ASCII_LF,D0
 		;jsr	se_putchar
 
@@ -111,8 +119,8 @@ init_vector_table
 		rts
 
 init_heap_pointers
-	move.l	#_BSS_END,heap_start
-	move.l	#_BSS_END,heap_end
+	move.l	#$00030000,heap_start
+	move.l	#$00030000,heap_end
 	rts
 
 		section	VEC
@@ -124,3 +132,5 @@ address_error
 	move.w	#$ff00,BLITTER_HBC.w
 	move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_CR.w
 .1	bra	.1
+
+welcome	dc.b	'E64 Computer System (C)2022 elmerucr',0

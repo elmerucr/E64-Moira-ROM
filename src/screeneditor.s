@@ -2,8 +2,10 @@
 
 		section	BSS
 
-prompt_vector::		ds.l	1
-execute_vector::	ds.l	1
+prompt_vector::		ds.l	1	; callback pointer (event)
+execute_vector::	ds.l	1	; callback pointer (event)
+bottom_row_vector::	ds.l	1	; callback pointer (event)
+top_row_vector::	ds.l	1	; callback pointer (event)
 se_command_buffer::	ds.b	80	; enough space (79 chars + '\0')
 do_prompt::		ds.b	1
 

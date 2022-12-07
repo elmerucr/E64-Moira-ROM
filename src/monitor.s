@@ -69,7 +69,12 @@ search7	and.b	#$fe,CCR		; fail, clear carry to indicate
 	rts				; and return
 
 clear_command
-	bra	se_clear_screen
+	clr.b	do_prompt
+	bsr	se_clear_screen
+	;movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	#'.',D0
+	jsr	se_putchar
+	rts
 
 ver_command
 	move.b	#ASCII_LF,D0
@@ -85,34 +90,51 @@ jump_command
 
 m_command
 	bsr	consume_space
-	bcc.s	.4		; error
+	bcc.s	m_err		; error
 	bsr	hex
-	bcc.s	.4		; error
-	move.l	D2,-(SP)
+	bcc.s	m_err		; error, not hex
+	movem.l	D2-D3,-(SP)
 	clr.l	D1
-.1	add.b	D0,D1
+m_nc	add.b	D0,D1
 	bsr	hex
-	bcc.s	.2		; reached the end
+	bcc.s	m_ea1		; not hex, reached the end of address1
 	lsl.l	#4,D1
-	bra.s	.1
-.2	and.l	#$00ffffff,D1	; make 24 bit address
-	move.l	D1,D0
+	bra.s	m_nc		; next char
+m_ea1	and.l	#$00ffffff,D1	; make 24 bit address
+	move.l	D1,D3		; D3 contains start address
+
+	addq	#1,A2		; advance pointer one step
+
+	bsr	hex		; start work on end address
+	bcc.s	.3		; not hex -> end address = start address
+
+	clr.l	D1
+	add.b	D0,D1
+	nop
+	nop
+	;
+	; process rest of end address
+	;
+	;
+
+
+.3	move.l	D3,D0		; move start address back into D0
 	movea.l	BLITTER_CONTEXT_PTR,A0
 	move.b	(BLIT_ROWS,A0),D2
 	sub.b	#1,D2
-.3	move.b	D0,-(SP)
+.4	move.b	D0,-(SP)
 	move.b	#ASCII_LF,D0
 	bsr	se_putchar
 	move.b	(SP)+,D0
 	bsr	memory
 	movea.l	BLITTER_CONTEXT_PTR,A0
 	cmp.b	(BLIT_CURSOR_ROW,A0),D2
-	bne.s	.3
+	bne.s	.4
 
 	clr.b	do_prompt
-	move.l	(SP)+,D2
+	movem.l	(SP)+,D2-D3
 	rts
-.4	lea.l	ermes,A0
+m_err	lea.l	ermes,A0
 	bsr	se_puts
 	rts
 
@@ -135,11 +157,11 @@ m_input_command
 
 .3	bsr	consume_space
 	bcc.s	.2
-	bsr	hex
+	bsr	hex	; grab first digit of byte
 	bcc.s	.2
 	move.b	D0,D1
 	lsl.b	#4,D1
-	bsr	hex
+	bsr	hex	; grab second digit of byte
 	bcc.s	.2
 	add.b	D0,D1
 	move.b	D1,(A3)+
@@ -169,7 +191,11 @@ m_input_command
 	clr.b	do_prompt
 	movem.l	(SP)+,D2/A3-A4
 	rts
-.2	lea.l	ermes2,A0
+.2	suba.l	#se_command_buffer,A2
+	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.l	A2,D0
+	move.b	D0,(BLIT_CURSOR_COLUMN,A0)
+	lea.l	ermes2,A0
 	bsr	se_puts
 	movem.l	(SP)+,D2/A3-A4
 	rts
