@@ -28,12 +28,6 @@ reset_exception::
 		; turn on interrupt generation by BLITTER (@ screenrefresh)
 		move.b	#$01,BLITTER_CR.w
 
-		;testing c routine... (to be removed later on)
-		;jsr	_test
-		;move.w	#$f67f,-(A7)
-		;jsr	_test2
-		;lea	($2,A7),A7
-
 		; set up a 60Hz timer (3600bpm)
 		;move.w	#3600,TIMER7_BPM.w
 		;or.b	#%10000000,TIMER_CR.w	; turn on timer 7
@@ -65,6 +59,13 @@ reset_exception::
 		move.w	#$1,-(A7)
 		jsr	set_interrupt_mask
 		lea	($2,SP),SP
+
+		;testing c routine... (to be removed later on)
+		jsr	_test
+		jsr	_test3
+		;move.w	#$f67f,-(A7)
+		;jsr	_test2
+		;lea	($2,A7),A7
 
 		jsr	monitor_setup
 

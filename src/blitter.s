@@ -1,22 +1,5 @@
 		include	"definitions.i"
 
-		section	DATA
-
-;blitter_tty::	dc.b	%00001010	; flags_0
-;		dc.b	%00000000	; flags_1
-;		dc.b	%01010110	; size
-;		dc.b	%00000000	; unused
-;		dc.w	$00		; x
-;		dc.w	$10		; y
-;		dc.w	C64_LIGHTBLUE	; foreground color
-;		dc.w	$0		; background color
-;		dc.l	$0		; pixel data
-;		dc.l	$0		; tiles
-;		dc.l	$0		; tiles color
-;		dc.l	$0		; tiles backgr color
-;		dc.l	$0		; user data
-
-
 		section	TEXT
 
 blitter_clear_display_list::
@@ -30,7 +13,7 @@ blitter_clear_display_list::
 blitter_init_blit_0::
 		;movea.l	#BLIT,A0		; work with blit 0
 		;clr.b	BLITTER_CONTEXT_0.w
-		clr.b	BLITTER_CONTEXT_PTR_NO;
+		clr.b	BLITTER_CONTEXT_PTR_NO.w
 		movea.l	BLITTER_CONTEXT_PTR,A0
 		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
 		move.b	#$14,(BLIT_CURSOR_BLINK_INTERVAL,A0)

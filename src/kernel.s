@@ -16,7 +16,7 @@ heap_end::	ds.l	1
 ;}
 malloc::	move.l	($4,SP),D1	; load chunk size parameter from stack
 		btst.l	#$0,D1		; test bit zero
-		beq	.1
+		beq.s	.1
 		addq	#$1,D1		; add one for word alignment
 .1		move.l	heap_end,D0	; return value in D0
 		add.l	D1,heap_end	; update heap pointer
@@ -31,10 +31,10 @@ malloc::	move.l	($4,SP),D1	; load chunk size parameter from stack
 memcpy::	movea.l	($4,SP),A1	; dest
 		movea.l	($8,SP),A0	; src
 		move.l	($c,SP),D0	; no of bytes
-		beq	.2		; if no of bytes=0 then return
+		beq.s	.2		; if no of bytes=0 then return
 .1		move.b	(A0)+,(A1)+
 		subq	#$1,D0
-		bne	.1
+		bne.s	.1
 .2		rts
 
 ;u8 *memset(u8 *dest, u8 val, size_t count)
@@ -46,10 +46,10 @@ memcpy::	movea.l	($4,SP),A1	; dest
 memset::	movea.l	($4,SP),A0	; destination
 		move.b	($8,SP),D0	; value
 		move.l	($a,SP),D1	; no of bytes
-		beq	.2		; if no of bytes=0 then return
+		beq.s	.2		; if no of bytes=0 then return
 .1		move.b	D0,(A0)+
 		subq	#$1,D1
-		bne	.1
+		bne.s	.1
 .2		rts
 
 **************************************
@@ -65,18 +65,17 @@ set_interrupt_mask::
 		move	D1,SR		; move back to SR
 		rts
 
-*********************************
-* uint16_t get_interrupt_mask() *
-*********************************
+****************************
+* u16 get_interrupt_mask() *
+****************************
 get_interrupt_mask::
 		move	SR,D0
 		andi.w	#$0700,D0
 		lsr.w	#$8,D0		; current priority is in D0 = return value
 		rts
 
-
 *****************************************************************
-* void update_exception_vector(byte vectornumber, long address) *
+* void update_exception_vector(u8 vectornumber, u32 address);   *
 *****************************************************************
 update_exception_vector::
 		link	A6,#-$2		; local storage for current imask
@@ -96,4 +95,43 @@ update_exception_vector::
 		jsr	set_interrupt_mask
 		lea	($2,SP),SP
 		unlk	A6
+		rts
+
+_pokeb::	move.b	($9,SP),D0
+		move.l	($4,SP),D1
+		andi.l	#$00ffffff,D1
+		movea.l	D1,A0
+		move.b	D0,(A0)
+		rts
+
+_peekb::	move.l	($4,SP),D0
+		andi.l	#$00ffffff,D0
+		movea.l	D0,A0
+		move.b	(A0),D0
+		rts
+
+_pokew::	move.w	($8,SP),D0
+		move.l	($4,SP),D1
+		andi.l	#$00ffffff,D1
+		movea.l	D1,A0
+		move.w	D0,(A0)
+		rts
+
+_peekw::	move.l	($4,SP),D0
+		andi.l	#$00ffffff,D0
+		movea.l	D0,A0
+		move.w	(A0),D0
+		rts
+
+_pokel::	move.l	($8,SP),D0
+		move.l	($4,SP),D1
+		andi.l	#$00ffffff,D1
+		movea.l	D1,A0
+		move.l	D0,(A0)
+		rts
+
+_peekl::	move.l	($4,SP),D0
+		andi.l	#$00ffffff,D0
+		movea.l	D0,A0
+		move.l	(A0),D0
 		rts

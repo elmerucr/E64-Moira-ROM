@@ -10,13 +10,15 @@ OBJECTS =	obj/reset.o
 OBJECTS +=	obj/blitter.o \
 		obj/kernel.o \
 		obj/monitor.o \
+		obj/monitor_c.o \
 		obj/screeneditor.o \
 		obj/sound.o \
 		obj/tables.o \
 		obj/test.o \
 		obj/timer.o
 
-SOBJECTS =	obj/test.s
+SOBJECTS =	obj/monitor_c.s \
+		obj/test.s
 
 # Sometimes there seems be strange behaviour related to the -align option. Now
 # it seems ok. Another way would be to use the -devpac option?
