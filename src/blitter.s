@@ -35,14 +35,6 @@ blitter_init_display_list::
 		move.w	#24,(A0)		; y position
 		rts
 
-blitter_set_bordersize_and_colors::
-		move.w	e64_blue_03,BLITTER_CLC.w
-		move.w	e64_blue_01,BLITTER_HBC.w
-		move.w	e64_blue_01,BLITTER_VBC.w
-		move.b	#24,BLITTER_HBS.w
-		clr.b	BLITTER_VBS.w
-		rts
-
 blitter_screen_refresh_exception_handler::
 		movem.l	D0-D1/A0-A1,-(SP)	; save scratch registers
 

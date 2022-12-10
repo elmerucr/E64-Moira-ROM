@@ -7,6 +7,7 @@ execute_vector::	ds.l	1	; callback pointer (event)
 bottom_row_vector::	ds.l	1	; callback pointer (event)
 top_row_vector::	ds.l	1	; callback pointer (event)
 se_command_buffer::	ds.b	80	; enough space (79 chars + '\0')
+se_command_buffer_ptr	ds.l	1
 do_prompt::		ds.b	1
 
 		section	TEXT
@@ -251,4 +252,10 @@ se_fill_command_buffer:
 		clr.b	-(A1)	; place 0 at end of string
 		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
 		move.b	(SP)+,(BLIT_CURSOR_COLUMN,A0)
+		move.l	#se_command_buffer,se_command_buffer_ptr
+		rts
+
+se_command_buffer_get_char::
+		move.b	se_command_buffer_ptr,D0
+		addi.l	#1,se_command_buffer_ptr
 		rts

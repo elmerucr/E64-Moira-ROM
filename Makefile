@@ -8,6 +8,7 @@ OBJECTS =	obj/reset.o
 
 # Order of the rest of the objects doesn't matter.
 OBJECTS +=	obj/blitter.o \
+		obj/blitter_c.o \
 		obj/kernel.o \
 		obj/monitor.o \
 		obj/monitor_c.o \
@@ -17,7 +18,8 @@ OBJECTS +=	obj/blitter.o \
 		obj/test.o \
 		obj/timer.o
 
-SOBJECTS =	obj/monitor_c.s \
+SOBJECTS =	obj/blitter_c.s \
+		obj/monitor_c.s \
 		obj/test.s
 
 # Sometimes there seems be strange behaviour related to the -align option. Now

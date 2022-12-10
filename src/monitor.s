@@ -29,6 +29,17 @@ execute
 .1	movea.l	(A0),A0			; get command address
 	jsr	(A0)
 
+; search_wrong
+; .1	bsr	se_command_buffer_get_char
+; 	cmp.b	#'.',D0
+; 	beq	.1
+; 	cmp.b	#' ',D0
+; 	beq	.1
+; 	tst.b	D0
+; 	bne	.2
+; 	lea	(4,SP),SP
+; .2	rts
+
 ; at the end, A2 points to the next character in the command_buffer
 search
 	lea.l	se_command_buffer,A2	; A2 points to command_buffer

@@ -15,4 +15,7 @@ u16	peekw(u32 address);
 void	pokel(u32 address, u32 longword);
 u32	peekl(u32 address);
 
+#define	E64_BLUE_01	0xf113
+#define	E64_BLUE_03	0xf339
+
 #endif
