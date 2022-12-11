@@ -6,7 +6,7 @@ This source code forms part of the E64 virtual computer system.
 
 ## Compiling
 
-Install the ```vasmm68k_mot```, ```vlink``` and ```vbccm68ks```. A standard ```make``` command will produce ```rom.bin``` (64k) and ```rom.cpp``` that forms part of the ```E64``` source.
+Install ```vasmm68k_mot```, ```vlink``` and ```vbccm68ks```. A standard ```make``` command will produce ```rom.bin``` (64k) and ```rom.cpp``` that forms part of the ```E64``` source.
 
 ## Coding Style
 
@@ -25,17 +25,17 @@ Scratch registers mean that the caller is aware that the contents are not necess
 
 ## Websites and Projects of Interest
 
-* [E64](https://github.com/elmerucr/E64) - E64 virtual computer system inspired by the Commodore 64, Amiga 500 and Atari ST.
-* [68000 single-board retro-computing project](https://github.com/jefftranter/68000) - Designs and code related to the Motorola 68000 microprocessor by Jeff Tranter.
+* [E64](https://github.com/elmerucr/E64) - E64 virtual computer system inspired by Commodore 64, Amiga 500 and Atari ST by elmerucr.
 * [Moira](https://github.com/dirkwhoffmann/Moira) - Motorola 68000 cpu emulator written in C++ by Dirk W. Hoffmann.
 * [reSID](http://www.zimmers.net/anonftp/pub/cbm/crossplatform/emulators/resid/index.html) - ReSID is a Commodore 6581 or 8580 Sound Interface Device emulator by Dag Lem.
 * [SDL Simple DirectMedia Layer](https://www.libsdl.org) - A cross-platform development library by Sam Lantinga designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware.
 * [stb](https://github.com/nothings/stb) - single-file public domain (or MIT licensed) libraries for C/C++
 * [vAmiga](https://dirkwhoffmann.github.io/vAmiga/) - An Amiga 500, 1000, or 2000 on your Apple Macintosh by Dirk W. Hoffmann.
-* [vasm assembler](http://sun.hasenbraten.de/vasm/) - A portable and retargetable assembler.
-* [vbcc portable ISO C compiler](http://www.compilers.de/vbcc.html) - vbcc is a highly optimizing portable and retargetable ISO C compiler. It supports ISO C according to ISO/IEC 9899:1989 and most of ISO/IEC 9899:1999 (C99).
+* [vasm assembler](http://sun.hasenbraten.de/vasm/) - A portable and retargetable assembler by Frank Wille / Volker Barthelmann.
+* [vbcc portable ISO C compiler](http://www.compilers.de/vbcc.html) - vbcc is a highly optimizing portable and retargetable ISO C compiler. It supports ISO C according to ISO/IEC 9899:1989 and most of ISO/IEC 9899:1999 (C99) by Volker Barthelmann.
 * [VirtualC64](https://dirkwhoffmann.github.io/virtualc64/) - A Commodore 64 on your Apple Macintosh by Dirk W. Hoffmann.
-* [vlink linker](http://www.compilers.de/vlink.html) - vlink is a versatile linker (written by Frank Wille)
+* [vlink linker](http://www.compilers.de/vlink.html) - vlink is a versatile linker by Frank Wille.
+* [68000 single-board retro-computing project](https://github.com/jefftranter/68000) - Designs and code related to the Motorola 68000 microprocessor by Jeff Tranter.
 
 ## MIT License
 
