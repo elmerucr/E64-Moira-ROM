@@ -11,8 +11,6 @@ blitter_clear_display_list::
 		rts
 
 blitter_init_blit_0::
-		;movea.l	#BLIT,A0		; work with blit 0
-		;clr.b	BLITTER_CONTEXT_0.w
 		clr.b	BLITTER_CONTEXT_PTR_NO.w
 		movea.l	BLITTER_CONTEXT_PTR,A0
 		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)

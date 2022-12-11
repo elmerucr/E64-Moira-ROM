@@ -7,19 +7,23 @@ VPATH =		src obj
 OBJECTS =	obj/reset.o
 
 # Order of the rest of the objects doesn't matter.
-OBJECTS +=	obj/blitter.o \
-		obj/blitter_c.o \
+OBJECTS +=	obj/blitter_asm.o \
+		obj/blitter.o \
+		obj/cia.o \
 		obj/kernel.o \
+		obj/kernel_asm.o \
+		obj/monitor_asm.o \
 		obj/monitor.o \
-		obj/monitor_c.o \
 		obj/screeneditor.o \
 		obj/sound.o \
 		obj/tables.o \
 		obj/test.o \
 		obj/timer.o
 
-SOBJECTS =	obj/blitter_c.s \
-		obj/monitor_c.s \
+SOBJECTS =	obj/blitter.s \
+		obj/cia.s \
+		obj/kernel.s \
+		obj/monitor.s \
 		obj/test.s
 
 # Sometimes there seems be strange behaviour related to the -align option. Now

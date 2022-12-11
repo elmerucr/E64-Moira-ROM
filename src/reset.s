@@ -5,15 +5,15 @@
 		dc.l	$00010000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'rom v20221207',0
+rom_version::	dc.b	'rom v20221211',0
 
 reset_exception::
-		;move.w	#$2700,sr	; supervisor mode, highest IPL
+		;move.w	#$2700,sr	; supervisor mode, highest IPL (done by reset)
 
-		;clr.l	D0		; not explicitly needed
-		;movec	D0,VBR		; reset exception sets VBR to $00000000
+		;clr.l	D0		; Not needed, reset exception
+		;movec	D0,VBR		; sets VBR to $00000000.
 
-		move.l	#$00040000,D0
+		move.l	#$00040000,D0	; set USP
 		movec	D0,USP
 
 		jsr	init_vector_table
@@ -39,10 +39,7 @@ reset_exception::
 		;jsr	sound_welcome_sound
 
 		; cia stuff
-		move.b	#CIA_CMD_CLEAR_EVENT_LIST,CIA_CR.w
-		move.b	#CIA_CMD_GENERATE_EVENTS,CIA_CR.w
-		move.b	#50,CIA_KRD.w				; 50 * 10ms = 0.5s keyboard repeat delay
-		move.b	#5,CIA_KRS.w				; 5 * 10ms = 50ms repeat speed
+		jsr	_cia_init_keyboard
 
 		; do not yet activate interrupts here, during init and
 		; printing of first messages
@@ -120,8 +117,8 @@ init_vector_table
 		rts
 
 init_heap_pointers
-	move.l	#$00030000,heap_start
-	move.l	#$00030000,heap_end
+	move.l	#$00030000,_heap_start
+	move.l	#$00030000,_heap_end
 	rts
 
 		section	VEC
