@@ -1,6 +1,6 @@
 # E64-ROM
 
-This source code forms part of the E64 virtual computer system.
+This code is part of the E64 virtual computer system.
 
 ![E64](./docs/E64_icon_156x156.png)
 

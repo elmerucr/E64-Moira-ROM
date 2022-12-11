@@ -18,9 +18,10 @@ OBJECTS +=	obj/blitter_asm.o \
 		obj/sound.o \
 		obj/tables.o \
 		obj/test.o \
-		obj/timer.o
+		obj/timer.o \
+		obj/vectors.o
 
-SOBJECTS =	obj/blitter.s \
+ASMTARGETS =	obj/blitter.s \
 		obj/cia.s \
 		obj/kernel.s \
 		obj/monitor.s \
@@ -45,7 +46,7 @@ mk_rom: tools/mk_rom.c
 rom_unpatched.bin: $(OBJECTS) rom.ld
 	$(LD) $(LDFLAGS) $(OBJECTS) -o $@
 
-$(SOBJECTS) : obj/%.s : src/%.c
+$(ASMTARGETS) : obj/%.s : src/%.c
 	$(CC) $(CFLAGS) -o=$@ $<
 
 obj/%.o : %.s

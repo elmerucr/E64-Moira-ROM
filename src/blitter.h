@@ -1,3 +1,10 @@
+/*
+ * blitter.h
+ * E64
+ *
+ * Copyright © 2022 elmerucr. All rights reserved.
+ */
+
 #ifndef BLITTER_H
 #define BLITTER_H
 
@@ -20,8 +27,14 @@ struct blitter_ic {
 
 struct display_list_entry {
 	u8	active;
+	u8	blit_no;
+	u8	flags0;
+	u8	flags1;
+	u16	xpos;
+	u16	ypos;
 };
 
+void blitter_init_display_list();
 void blitter_set_bordersize_and_colors();
 
 #endif

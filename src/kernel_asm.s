@@ -1,3 +1,10 @@
+;
+; kernel_asm.s
+; E64
+;
+; Copyright © 2022 elmerucr. All rights reserved.
+;
+
 		section	TEXT
 
 ;void *malloc(size_t chunk)

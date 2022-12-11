@@ -1,3 +1,9 @@
+/*
+ * cia.h
+ * E64
+ *
+ * Copyright © 2022 elmerucr. All rights reserved.
+ */
 
 #ifndef	CIA_H
 #define	CIA_H

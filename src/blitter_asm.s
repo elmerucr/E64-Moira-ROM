@@ -1,14 +1,13 @@
+;
+; blitter_asm.s
+; E64
+;
+; Copyright © 2022 elmerucr. All rights reserved.
+;
+
 		include	"definitions.i"
 
 		section	TEXT
-
-blitter_clear_display_list::
-		move.l	#$100,-(SP)		; 256 bytes
-		move.b	#0,-(SP)		; put in 0
-		move.l	#DISPL_LIST,-(SP)	; @ location displ list
-		jsr	memset
-		lea	($a,SP),SP		; restore stack
-		rts
 
 blitter_init_blit_0::
 		clr.b	BLITTER_CONTEXT_PTR_NO.w
@@ -21,16 +20,6 @@ blitter_init_blit_0::
 		move.b	#1,(BLIT_TILE_HEIGHT,A0)
 		move.w	e64_blue_08,(BLIT_FG_COLOR,A0)
 		clr.w	(BLIT_BG_COLOR,A0)
-		rts
-
-blitter_init_display_list::
-		movea.l	#DISPL_LIST,A0
-		move.b	#%00000001,(A0)+	; this is a blit
-		clr.b	(A0)+			; we're dealing with blit0
-		move.b	#%10001010,(A0)+	; flags 0 = $8a
-		clr.b	(A0)+			; flags 1 = $00
-		move.w	#0,(A0)+		; x position
-		move.w	#24,(A0)		; y position
 		rts
 
 blitter_screen_refresh_exception_handler::

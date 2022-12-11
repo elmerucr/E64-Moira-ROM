@@ -1,3 +1,10 @@
+/*
+ * monitor.c
+ * E64
+ *
+ * Copyright © 2022 elmerucr. All rights reserved.
+ */
+
 #include "kernel.h"
 
 u32 get_address(const char *command_line)

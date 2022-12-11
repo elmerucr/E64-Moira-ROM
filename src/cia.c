@@ -1,3 +1,10 @@
+/*
+ * cia.c
+ * E64
+ *
+ * Copyright © 2022 elmerucr. All rights reserved.
+ */
+
 #include "cia.h"
 
 void cia_init_keyboard()

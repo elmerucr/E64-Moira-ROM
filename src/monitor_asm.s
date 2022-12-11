@@ -1,3 +1,10 @@
+;
+; monitor_asm.s
+; E64
+;
+; Copyright © 2022 elmerucr. All rights reserved.
+;
+
 	include	"definitions.i"
 
 	section	RODATA

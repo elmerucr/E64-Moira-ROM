@@ -1,3 +1,10 @@
+;
+; definitions.i
+; E64
+;
+; Copyright © 2022 elmerucr. All rights reserved.
+;
+
 ; fixed ram locations
 DISPL_LIST		equ	$0400
 TIMER0_VECTOR		equ	$0500

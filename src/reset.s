@@ -16,13 +16,10 @@ reset_exception::
 		move.l	#$00040000,D0	; set USP
 		movec	D0,USP
 
-		jsr	init_vector_table
-		jsr	init_relocate_sections
-		jsr	init_heap_pointers	; this doesn't make sense yet, memory area wrong?
+		jsr	_init_kernel
 
-		jsr	blitter_clear_display_list
+		jsr	_blitter_init_display_list
 		jsr	blitter_init_blit_0
-		jsr	blitter_init_display_list
 		jsr	_blitter_set_bordersize_and_colors
 
 		; turn on interrupt generation by BLITTER (@ screenrefresh)
@@ -59,24 +56,20 @@ reset_exception::
 
 		;testing c routine... (to be removed later on)
 		jsr	_test
-		jsr	_test3
-		;move.w	#$f67f,-(A7)
-		;jsr	_test2
-		;lea	($2,A7),A7
 
 		jsr	monitor_setup
 
 		jmp	se_loop
 
-init_relocate_sections
+_init_relocate_sections::
 		; move data section
-		MOVE.L	#_DATA_END,D0
-		SUB.L	#_DATA_START,D0
-		MOVE.L	D0,-(SP)	; push number of bytes
-		PEA	_DATA_START	; push source address
-		PEA	_RAM_START	; push destination address
-		JSR	memcpy
-		LEA	($c,SP),SP	; clean up stack
+		move.l	#_DATA_END,D0
+		sub.l	#_DATA_START,D0
+		move.l	D0,-(SP)	; push number of bytes
+		pea	_DATA_START	; push source address
+		pea	_RAM_START	; push destination address
+		jsr	memcpy
+		lea	($c,SP),SP	; clean up stack
 
 		; zero bss section
 		move.l	#_BSS_END,D0
@@ -89,7 +82,7 @@ init_relocate_sections
 
 		rts
 
-init_vector_table
+_init_vector_table::
 		pea	timer_exception_handler
 		move.b	#26,-(SP)
 		jsr	update_exception_vector
@@ -115,15 +108,6 @@ init_vector_table
 		move.l	#timer_7_handler,TIMER7_VECTOR.w
 
 		rts
-
-init_heap_pointers
-	move.l	#$00030000,_heap_start
-	move.l	#$00030000,_heap_end
-	rts
-
-		section	VEC
-
-timer_0_vec::	dc.l	timer_0_handler
 
 address_error
 	move.b	#$ff,BLITTER_HBS.w
