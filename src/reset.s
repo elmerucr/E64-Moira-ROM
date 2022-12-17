@@ -19,7 +19,7 @@ reset_exception::
 		jsr	_init_kernel
 
 		jsr	_blitter_init_display_list
-		jsr	blitter_init_blit_0
+		jsr	_blitter_init_blit_0
 		jsr	_blitter_set_bordersize_and_colors
 
 		; turn on interrupt generation by BLITTER (@ screenrefresh)
@@ -33,7 +33,7 @@ reset_exception::
 
 		; sound
 		jsr	_sound_reset
-		jsr	_sound_welcome_sound
+		;jsr	_sound_welcome_sound
 
 		; cia stuff
 		jsr	_cia_init_keyboard
@@ -44,10 +44,6 @@ reset_exception::
 		jsr	se_clear_screen		; init screen editor
 		movea.l	#welcome,A0
 		jsr	se_puts
-		;movea.l	#rom_version,A0
-		;jsr	se_puts
-		;move.b	#ASCII_LF,D0
-		;jsr	se_putchar
 
 		; set interrupt mask to 1, so all interrupts of 2 and higher allowed
 		move.w	#$1,-(A7)

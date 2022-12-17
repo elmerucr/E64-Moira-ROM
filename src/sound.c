@@ -7,6 +7,12 @@
 
 #include "sound.h"
 
+/*
+ * The following table is based on a SID clock frequency of 985248Hz
+ * (PAL). Calculations were made according to Codebase64 article:
+ * https://codebase64.org/doku.php?id=base:how_to_calculate_your_own_sid_frequency_table
+ */
+
 const u16 music_notes[95] = {
 	0x0116, 0x0127, 0x0139, 0x014b, 0x015f, 0x0174,	// N_C0_ to N_B0_
 	0x018a, 0x01a1, 0x01ba, 0x01d4, 0x01f0, 0x020e,
@@ -24,7 +30,7 @@ const u16 music_notes[95] = {
 	0x6272, 0x684c, 0x6e80, 0x7512, 0x7c08, 0x8368,
 	0x8b39, 0x9380, 0x9c45, 0xa590, 0xaf68, 0xb9d6,	// N_C7_ to N_A7S
 	0xc4e3, 0xd099, 0xdd00, 0xea24, 0xf810
-}
+};
 
 void sound_reset()
 {
@@ -49,34 +55,13 @@ void sound_welcome_sound()
 	SOUND->sid0_voice1_attack_decay = 0x09;
 	SOUND->sid0_voice1_pulsewidth = 0xf0f;
 	SOUND_MIXER->sid0_volume_left = 0xff;
-	pokeb(0x0000d00,0xff);	// solve this
-	pokeb(0x0000d01,0x10);	// solve this
+	SOUND_MIXER->sid0_volume_right = 0x10;
 	SOUND->sid0_voice1_control_register = 0x41;
 
 	SOUND->sid1_voice1_frequency = music_notes[N_A3_];
 	SOUND->sid1_voice1_attack_decay = 0x09;
 	SOUND->sid1_voice1_pulsewidth = 0xf0f;
-	pokeb(0x0000d02,0x10);	// solve this
-	pokeb(0x0000d03,0xff);	// solve this
+	SOUND_MIXER->sid1_volume_left = 0x10;
+	SOUND_MIXER->sid1_volume_right = 0xff;
 	SOUND->sid1_voice1_control_register = 0x41;
 }
-
-		// ; play a welcome sound on SID0
-		// lea	SID0,A0
-		// lea	music_notes,A1
-		// move.w	(N_D3_,A1),(A0)		; set frequency of voice 1
-		// move.b	#%00001001,($5,A0)	; attack and decay of voice 1
-		// move.w	#$f0f,$02(A0)		; pulse width of voice 1
-		// move.b	#$ff,SNDM0L		; left channel mix
-		// move.b	#$10,SNDM0R		; right channel mix
-		// move.b	#%01000001,($4,A0)	; pulse (bit 6) and open gate (bit 0)
-		// ; play a welcome sound on SID1
-		// lea	SID1,A0
-		// lea	music_notes,A1
-		// move.w	(N_A3_,A1),(A0)		; set frequency of voice 1
-		// move.b	#%00001001,($5,A0)	; attack and decay of voice 1
-		// move.w	#$f0f,($2,A0)		; pulse width of voice 1
-		// move.b	#$10,SNDM1L		; left channel mix
-		// move.b	#$ff,SNDM1R		; right channel mix
-		// move.b	#%01000001,($4,A0)	; pulse (bit 6) and open gate (bit 0)
-		// rts

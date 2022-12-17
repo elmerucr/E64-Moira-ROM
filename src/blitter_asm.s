@@ -9,18 +9,18 @@
 
 		section	TEXT
 
-blitter_init_blit_0::
-		clr.b	BLITTER_CONTEXT_PTR_NO.w
-		movea.l	BLITTER_CONTEXT_PTR,A0
-		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
-		move.b	#$14,(BLIT_CURSOR_BLINK_INTERVAL,A0)
-		move.b	#80,(BLIT_COLUMNS,A0)
-		move.b	#44,(BLIT_ROWS,A0)
-		move.b	#1,(BLIT_TILE_WIDTH,A0)
-		move.b	#1,(BLIT_TILE_HEIGHT,A0)
-		move.w	e64_blue_08,(BLIT_FG_COLOR,A0)
-		clr.w	(BLIT_BG_COLOR,A0)
-		rts
+; blitter_init_blit_0::
+; 		clr.b	BLITTER_CONTEXT_PTR_NO.w
+; 		movea.l	BLITTER_CONTEXT_PTR,A0
+; 		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
+; 		move.b	#$14,(BLIT_CURSOR_BLINK_INTERVAL,A0)
+; 		move.b	#80,(BLIT_COLUMNS,A0)
+; 		move.b	#44,(BLIT_ROWS,A0)
+; 		move.b	#1,(BLIT_TILE_WIDTH,A0)
+; 		move.b	#1,(BLIT_TILE_HEIGHT,A0)
+; 		move.w	e64_blue_08,(BLIT_FG_COLOR,A0)
+; 		clr.w	(BLIT_BG_COLOR,A0)
+; 		rts
 
 blitter_screen_refresh_exception_handler::
 		movem.l	D0-D1/A0-A1,-(SP)	; save scratch registers
