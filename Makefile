@@ -25,6 +25,7 @@ ASMTARGETS =	obj/blitter.s \
 		obj/cia.s \
 		obj/kernel.s \
 		obj/monitor.s \
+		obj/sound.s \
 		obj/test.s
 
 # Sometimes there seems be strange behaviour related to the -align option. Now

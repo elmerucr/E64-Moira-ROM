@@ -5,7 +5,7 @@
 		dc.l	$00010000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'rom v20221211',0
+rom_version::	dc.b	'rom v20221217',0
 
 reset_exception::
 		;move.w	#$2700,sr	; supervisor mode, highest IPL (done by reset)
@@ -32,8 +32,8 @@ reset_exception::
 		or.b	#%00000001,TIMER_CR.w	; turn on timer 0
 
 		; sound
-		jsr	sound_reset
-		;jsr	sound_welcome_sound
+		jsr	_sound_reset
+		jsr	_sound_welcome_sound
 
 		; cia stuff
 		jsr	_cia_init_keyboard
