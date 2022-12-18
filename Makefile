@@ -17,7 +17,6 @@ OBJECTS +=	obj/blitter_asm.o \
 		obj/screeneditor.o \
 		obj/sound.o \
 		obj/tables.o \
-		obj/test.o \
 		obj/timer.o \
 		obj/vectors.o
 

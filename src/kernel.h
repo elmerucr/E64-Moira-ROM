@@ -1,6 +1,6 @@
 /*
  * kernel.h
- * E64
+ * E64-ROM
  *
  * Copyright © 2022 elmerucr. All rights reserved.
  */
@@ -17,6 +17,8 @@ typedef	signed long	i32;
 
 #define	E64_BLUE_01	0xf113
 #define	E64_BLUE_03	0xf339
+#define	E64_BLUE_08	0xfbbf
+#define	E64_BLUE_09	0xfddf
 
 void	pokeb(u32 address, u8 byte);
 u8	peekb(u32 address);
@@ -26,6 +28,8 @@ void	pokel(u32 address, u32 longword);
 u32	peekl(u32 address);
 
 void	init_kernel();
-void	init_heap_pointers();
+void	reset_heap_pointers();
+void	reset_vector_table();
+void	reset_relocate_sections();
 
 #endif

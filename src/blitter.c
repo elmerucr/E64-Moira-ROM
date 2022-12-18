@@ -1,6 +1,6 @@
 /*
  * blitter.c
- * E64
+ * E64-ROM
  *
  * Copyright © 2022 elmerucr. All rights reserved.
  */
@@ -22,7 +22,7 @@ void blitter_init_display_list()
 
 	for (u8 i=1; i<32; i++) {
 		DISPLAY_LIST[i].active  = 0;
-		DISPLAY_LIST[i].blit_no = 31;
+		DISPLAY_LIST[i].blit_no = 0;
 		DISPLAY_LIST[i].flags0  = 0;
 		DISPLAY_LIST[i].flags1  = 0;
 		DISPLAY_LIST[i].xpos    = 0;
@@ -38,7 +38,7 @@ void blitter_init_blit_0()
 	BLIT[0].rows = 44;
 	BLIT[0].tile_width = 1;
 	BLIT[0].tile_height = 1;
-	BLIT[0].foreground_color = 0xfbbf;	// e64_blue_08
+	BLIT[0].foreground_color = E64_BLUE_08;
 	BLIT[0].background_color = 0x0000;
 }
 

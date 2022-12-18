@@ -1,6 +1,6 @@
 /*
  * sound.c
- * E64
+ * E64-ROM
  *
  * Copyright © 2022 elmerucr. All rights reserved.
  */
@@ -45,7 +45,7 @@ void sound_reset()
 	SOUND->sid3_filtermode_volume = 0x0f;
 
 	for (u32 i=0; i<16; i++) {
-		pokeb(0x00000d00+i,0xf);
+		pokeb(0x00000d00+i,0x7f);	// 50% volume
 	}
 }
 

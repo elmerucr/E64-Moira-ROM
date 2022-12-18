@@ -24,7 +24,7 @@ no_prompt	move.b	#1,do_prompt		; std is to print the prompt
 		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
 		cmp.b	#ASCII_LF,D0	; is it enter?
 		beq.s	.2		; yes, goto .2
-		bsr	se_putchar
+		bsr	putchar
 		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
 		bra.s	.1
 
@@ -56,7 +56,7 @@ se_putsymbol::	movea.l	BLITTER_CONTEXT_PTR,A0
 		rts
 
 ; expects code to be in D0, destroys A0,A1
-se_putchar::	movem.l	A2-A3,-(SP)
+putchar::	movem.l	A2-A3,-(SP)
 		movea.l	BLITTER_CONTEXT_PTR,A0
 is_lf		cmpi.b	#ASCII_LF,D0
 		bne	is_cri
@@ -154,7 +154,7 @@ finish		movem.l	(SP)+,A2-A3
 se_puts::	move.b	(A0)+,D0
 		beq.s	.1
 		move.l	A0,-(SP)
-		bsr	se_putchar
+		bsr	putchar
 		move.l	(SP)+,A0
 		bra.s	se_puts
 .1		rts
@@ -243,7 +243,7 @@ se_fill_command_buffer:
 		movea.l	BLITTER_CONTEXT_PTR,A0
 		move.b	(BLIT_CURSOR_COLUMN,A0),-(SP)	; save current cursor pos
 		move.b	#ASCII_CR,D0		; move cursor to first position
-		bsr	se_putchar
+		bsr	putchar
 		movea.l	#se_command_buffer,A1
 .1		move.b	(BLIT_CURSOR_CHAR,A0),(A1)+
 		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)

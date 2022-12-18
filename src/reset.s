@@ -5,7 +5,7 @@
 		dc.l	$00010000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'rom v20221217',0
+rom_version::	dc.b	'rom v20221218',0
 
 reset_exception::
 		;move.w	#$2700,sr	; supervisor mode, highest IPL (done by reset)
@@ -13,7 +13,7 @@ reset_exception::
 		;clr.l	D0		; Not needed, reset exception
 		;movec	D0,VBR		; sets VBR to $00000000.
 
-		move.l	#$00040000,D0	; set USP
+		move.l	#$00100000,D0	; set USP
 		movec	D0,USP
 
 		jsr	_init_kernel
@@ -50,14 +50,11 @@ reset_exception::
 		jsr	set_interrupt_mask
 		lea	($2,SP),SP
 
-		;testing c routine... (to be removed later on)
-		jsr	_test
-
 		jsr	monitor_setup
 
 		jmp	se_loop
 
-_init_relocate_sections::
+_reset_relocate_sections::
 		; move data section
 		move.l	#_DATA_END,D0
 		sub.l	#_DATA_START,D0
@@ -78,7 +75,7 @@ _init_relocate_sections::
 
 		rts
 
-_init_vector_table::
+_reset_vector_table::
 		pea	timer_exception_handler
 		move.b	#26,-(SP)
 		jsr	update_exception_vector

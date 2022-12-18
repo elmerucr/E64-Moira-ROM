@@ -1,6 +1,6 @@
 /*
  * sound.h
- * E64
+ * E64-ROM
  *
  * Copyright © 2022 elmerucr. All rights reserved.
  */
