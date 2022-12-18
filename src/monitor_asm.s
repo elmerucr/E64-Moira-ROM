@@ -95,9 +95,8 @@ clear_command
 	rts
 
 ver_command
-	move.b	#ASCII_LF,-(SP)
+	move.b	#ASCII_LF,D0
 	bsr	_putchar
-	lea.l	(2,SP),SP
 	lea.l	rom_version,A0
 	bsr	se_puts
 	rts
