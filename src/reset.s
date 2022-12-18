@@ -16,10 +16,12 @@ reset_exception::
 		move.l	#$00100000,D0	; set USP
 		movec	D0,USP
 
-		jsr	_init_kernel
+		jsr	_reset_vector_table
+		jsr	_reset_relocate_sections
+		jsr	_reset_heap_pointers
 
 		jsr	_blitter_init_display_list
-		jsr	_blitter_init_blit_0
+		jsr	_blitter_init_default_blit
 		jsr	_blitter_set_bordersize_and_colors
 
 		; turn on interrupt generation by BLITTER (@ screenrefresh)
@@ -38,10 +40,11 @@ reset_exception::
 		; cia stuff
 		jsr	_cia_init_keyboard
 
-		; do not yet activate interrupts here, during init and
-		; printing of first messages
+		; do not yet activate interrupts here during init,
+		; print of first messages
 		clr.b	BLITTER_CONTEXT_PTR_NO	; let's use screen/blit 0 in kernel mode
-		jsr	se_clear_screen		; init screen editor
+		;jsr	se_clear_screen		; init screen editor
+		jsr	_clear_screen
 		movea.l	#welcome,A0
 		jsr	se_puts
 

@@ -7,7 +7,7 @@
 
 #include "blitter.h"
 
-//struct display_list_entry *display_list;
+u8 current_blit;
 
 void blitter_init_display_list()
 {
@@ -30,16 +30,17 @@ void blitter_init_display_list()
 	}
 }
 
-void blitter_init_blit_0()
+void blitter_init_default_blit()
 {
-	BLIT[0].control_register = 0xc1;	// deactivate cursor
-	BLIT[0].cursor_blink_speed = 0x14;
-	BLIT[0].columns = 80;
-	BLIT[0].rows = 44;
-	BLIT[0].tile_width = 1;
-	BLIT[0].tile_height = 1;
-	BLIT[0].foreground_color = E64_BLUE_08;
-	BLIT[0].background_color = 0x0000;
+	current_blit = 0;
+	BLIT[current_blit].control_register = 0xc1;	// deactivate cursor
+	BLIT[current_blit].cursor_blink_speed = 0x14;
+	BLIT[current_blit].columns = 80;
+	BLIT[current_blit].rows = 44;
+	BLIT[current_blit].tile_width = 1;
+	BLIT[current_blit].tile_height = 1;
+	BLIT[current_blit].foreground_color = E64_BLUE_08;
+	BLIT[current_blit].background_color = 0x0000;
 }
 
 void blitter_set_bordersize_and_colors()
@@ -49,7 +50,20 @@ void blitter_set_bordersize_and_colors()
 	BLITTER->ver_border_color = E64_BLUE_01;
 	BLITTER->hor_border_size = 24;
 	BLITTER->ver_border_size = 0;
-	__asm(	"	nop\n"
-		"	clr.b	D0\n"
-		"	nop");			// just a test
+//	__asm(	"	nop\n"
+//		"	clr.b	D0\n"
+//		"	nop");			// just a test
+}
+
+void clear_screen()
+{
+	BLIT[current_blit].cursor_pos = 0;
+
+	do {
+		BLIT[current_blit].cursor_char = ' ';
+		BLIT[current_blit].cursor_foreground_color = BLIT[current_blit].foreground_color;
+		BLIT[current_blit].cursor_background_color = BLIT[current_blit].background_color;
+		BLIT[current_blit].control_register = BLIT_CMD_INCREASE_CURSOR_POS;
+	}
+	while (!(BLIT[current_blit].status_register & 0x80));
 }

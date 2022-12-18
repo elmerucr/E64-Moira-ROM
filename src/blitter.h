@@ -11,8 +11,10 @@
 #include "kernel.h"
 
 #define	BLITTER	((struct blitter_ic *)0x00000800)
-#define BLIT ((struct blit_ic *)0x00010000)
-#define DISPLAY_LIST ((struct display_list_entry *)0x00000400)
+#define	BLIT ((struct blit_ic *)0x00010000)
+#define	DISPLAY_LIST ((struct display_list_entry *)0x00000400)
+
+#define	BLIT_CMD_INCREASE_CURSOR_POS	0x81
 
 struct blitter_ic {
 	u8	status_register;
@@ -81,7 +83,11 @@ struct display_list_entry {
 };
 
 void blitter_init_display_list();
-void blitter_init_blit_0();
+void blitter_init_default_blit();
 void blitter_set_bordersize_and_colors();
+
+void clear_screen();
+void putsymbol(u8 symbol);
+void putchar(u8 character);
 
 #endif

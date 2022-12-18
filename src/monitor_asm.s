@@ -88,15 +88,16 @@ search7	and.b	#$fe,CCR		; fail, clear carry to indicate
 
 clear_command
 	clr.b	do_prompt
-	bsr	se_clear_screen
+	bsr	_clear_screen
 	;movea.l	BLITTER_CONTEXT_PTR,A0
 	move.b	#'.',D0
-	jsr	putchar
+	jsr	_putchar
 	rts
 
 ver_command
-	move.b	#ASCII_LF,D0
-	bsr	putchar
+	move.b	#ASCII_LF,-(SP)
+	bsr	_putchar
+	lea.l	(2,SP),SP
 	lea.l	rom_version,A0
 	bsr	se_puts
 	rts
@@ -142,7 +143,7 @@ m_ea1	and.l	#$00ffffff,D1	; make 24 bit address
 	sub.b	#1,D2
 .4	move.b	D0,-(SP)
 	move.b	#ASCII_LF,D0
-	bsr	putchar
+	bsr	_putchar
 	move.b	(SP)+,D0
 	bsr	memory
 	movea.l	BLITTER_CONTEXT_PTR,A0
@@ -187,22 +188,22 @@ m_input_command
 	bne	.3
 
 	move.b	#ASCII_CR,D0
-	bsr	putchar
+	bsr	_putchar
 	move.l	A3,D0
 	sub.l	#8,D0
 	bsr	memory
 
 	move.b	#ASCII_LF,D0
-	bsr	putchar
+	bsr	_putchar
 	move.b	#'.',D0
-	bsr	putchar
+	bsr	_putchar
 	move.b	#':',D0
-	bsr	putchar
+	bsr	_putchar
 
 	move.l	A3,D0
 	bsr	out6x
 	move.b	#' ',D0
-	bsr	putchar
+	bsr	_putchar
 
 	;lea.l	success,A0
 	;bsr	se_puts
@@ -283,7 +284,7 @@ out1x	move.w	D0,-(A7)	; Save D0
 	cmp.b	#$39,D0		; ASCII = HEX + $30
 	bls.s	out1x1		; If ASCII <= $39 then print and exit
 	add.b	#$27,D0		; Else ASCII := HEX + $27
-out1x1	bsr	putchar	; Print the character
+out1x1	bsr	_putchar	; Print the character
 	move.w	(A7)+,D0	; Restore D0
 	rts
 
@@ -314,27 +315,28 @@ memory
 	move.l	D0,A2		; start address in A2
 	movea.l	A2,A4		; copy to A4
 	;move.b	#ASCII_LF,D0	; next line
-	;bsr	putchar
+	;bsr	_putchar
 	move.b	#'.',D0	; print '.:' and address
-	bsr	putchar
+	bsr	_putchar
 	move.b	#':',D0
-	bsr	putchar
+	bsr	_putchar
 	move.l	A2,D0
 	bsr.s	out6x
 	move.l	A2,A3
 	adda.l	#8,A3		; A3 now contains end address
 .1	move.b	#' ',D0
-	bsr	putchar
+	bsr	_putchar
 	move.b	(A2)+,D0
 	bsr.s	out2x		; print hex byte
 	cmp.l	A2,A3
 	bne	.1
 	move.b	#' ',D0		; space between hex and chars
-	bsr	putchar
+	bsr	_putchar
 	movea.l	A4,A2		; A2 back to start
 	movea.l	BLITTER_CONTEXT_PTR,A0
-.2	move.b	(A2)+,D0
-	bsr	se_putsymbol
+.2	move.b	(A2)+,-(SP)
+	bsr	_putsymbol
+	lea	(2,SP),SP
 	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 	cmp.l	A2,A3
 	bne	.2

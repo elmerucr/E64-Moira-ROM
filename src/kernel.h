@@ -28,8 +28,5 @@ void	pokel(u32 address, u32 longword);
 u32	peekl(u32 address);
 
 void	init_kernel();
-void	reset_heap_pointers();
-void	reset_vector_table();
-void	reset_relocate_sections();
 
 #endif

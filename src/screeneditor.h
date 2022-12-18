@@ -10,6 +10,4 @@
 
 #include "kernel.h"
 
-void putchar(u8 character);
-
 #endif
