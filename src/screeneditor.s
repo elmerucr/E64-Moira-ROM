@@ -12,8 +12,9 @@ do_prompt::		ds.b	1
 
 		section	TEXT
 
-se_loop::	movea.l	prompt_vector,A0
-		bsr	se_puts
+se_loop::	movea.l	prompt_vector,-(SP)
+		bsr	_puts
+		lea	(4,SP),SP
 no_prompt	move.b	#1,do_prompt		; std is to print the prompt
 		movea.l	BLITTER_CONTEXT_PTR,A0
 		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
@@ -24,7 +25,9 @@ no_prompt	move.b	#1,do_prompt		; std is to print the prompt
 		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
 		cmp.b	#ASCII_LF,D0	; is it enter?
 		beq.s	.2		; yes, goto .2
+		move.b	D0,-(SP)
 		bsr	_putchar
+		lea	(2,SP),SP
 		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
 		bra.s	.1
 
@@ -36,15 +39,6 @@ no_prompt	move.b	#1,do_prompt		; std is to print the prompt
 		tst.b	do_prompt
 		beq.s	no_prompt
 		bra.s	se_loop
-
-; putstring, needs pointer in A0, destroys content of D0
-se_puts::	move.b	(A0)+,D0
-		beq.s	.1
-		move.l	A0,-(SP)
-		bsr	_putchar
-		move.l	(SP)+,A0
-		bra.s	se_puts
-.1		rts
 
 se_add_bottom_row::
 		movem.l	A2-A3,-(SP)
@@ -129,8 +123,9 @@ se_add_top_row::
 se_fill_command_buffer:
 		movea.l	BLITTER_CONTEXT_PTR,A0
 		move.b	(BLIT_CURSOR_COLUMN,A0),-(SP)	; save current cursor pos
-		move.b	#ASCII_CR,D0		; move cursor to first position
+		move.b	#ASCII_CR,-(SP)		; move cursor to first position
 		bsr	_putchar
+		lea	(2,SP),SP
 		movea.l	#se_command_buffer,A1
 .1		move.b	(BLIT_CURSOR_CHAR,A0),(A1)+
 		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)

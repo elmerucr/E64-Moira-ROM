@@ -43,9 +43,11 @@ _putsymbol::
 	move.w	(BLIT_BG_COLOR,A0),(BLIT_CURSOR_BG_COLOR,A0)
 	rts
 
-; expects character to be on D0, destroys A0,A1
-_putchar::	movem.l	A2-A3,-(SP)
+; expects character to be on stack, destroys A0,A1
+_putchar::	link	A6,#0
+		movem.l	A2-A3,-(SP)
 		movea.l	BLITTER_CONTEXT_PTR,A0
+		move.b	(8,A6),D0
 is_lf		cmpi.b	#ASCII_LF,D0
 		bne	is_cri
 .1		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
@@ -93,6 +95,7 @@ is_cu		cmpi.b	#ASCII_CURSOR_UP,D0
 .2		subq.b	#1,D0
 		bne.s	.1
 		movem.l	(SP)+,A2-A3	; finish
+		unlk	A6
 		rts
 is_bksp		cmpi.b	#ASCII_BACKSPACE,D0
 		bne	is_cr
@@ -138,4 +141,17 @@ is_sym		move.b	D0,-(SP)
 		beq	finish
 		bsr	se_add_bottom_row
 finish		movem.l	(SP)+,A2-A3
+		unlk	A6
 		rts
+
+; putstring, needs pointer in A0, destroys content of D0
+_puts::	movea.l	(4,SP),A0
+.1	move.b	(A0)+,D0
+	beq.s	.2
+	move.l	A0,-(SP)
+	move.b	D0,-(SP)
+	bsr	_putchar
+	lea	(2,SP),SP
+	move.l	(SP)+,A0
+	bra.s	.1
+.2	rts

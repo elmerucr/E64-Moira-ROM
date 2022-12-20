@@ -45,8 +45,9 @@ reset_exception::
 		clr.b	BLITTER_CONTEXT_PTR_NO	; let's use screen/blit 0 in kernel mode
 		;jsr	se_clear_screen		; init screen editor
 		jsr	_clear_screen
-		movea.l	#welcome,A0
-		jsr	se_puts
+		pea	welcome
+		jsr	_puts
+		lea	(4,SP),SP
 
 		; set interrupt mask to 1, so all interrupts of 2 and higher allowed
 		move.w	#$1,-(A7)
