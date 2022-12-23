@@ -5,7 +5,7 @@
 		dc.l	$00010000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'rom v20221218',0
+rom_version::	dc.b	'rom v20221221',0
 
 reset_exception::
 		;move.w	#$2700,sr	; supervisor mode, highest IPL (done by reset)
@@ -44,19 +44,19 @@ reset_exception::
 		; print of first messages
 		clr.b	BLITTER_CONTEXT_PTR_NO	; let's use screen/blit 0 in kernel mode
 		;jsr	se_clear_screen		; init screen editor
-		jsr	_clear_screen
+		bsr	_clear_screen
 		pea	welcome
-		jsr	_puts
+		bsr	_puts
 		lea	(4,SP),SP
 
 		; set interrupt mask to 1, so all interrupts of 2 and higher allowed
 		move.w	#$1,-(A7)
-		jsr	set_interrupt_mask
+		bsr	_set_interrupt_mask
 		lea	($2,SP),SP
 
-		jsr	monitor_setup
+		bsr	monitor_setup
 
-		jmp	se_loop
+		bra	se_loop
 
 _reset_relocate_sections::
 		; move data section
@@ -65,7 +65,7 @@ _reset_relocate_sections::
 		move.l	D0,-(SP)	; push number of bytes
 		pea	_DATA_START	; push source address
 		pea	_RAM_START	; push destination address
-		jsr	memcpy
+		bsr	memcpy
 		lea	($c,SP),SP	; clean up stack
 
 		; zero bss section
@@ -74,7 +74,7 @@ _reset_relocate_sections::
 		move.l	D0,-(SP)	; push number of bytes
 		move.b	#$00,-(SP)	; push the clear value
 		pea	_BSS_START	; push address
-		jsr	memset
+		bsr	memset
 		lea	($a,SP),SP	; clean up stack
 
 		rts

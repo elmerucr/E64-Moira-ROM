@@ -55,22 +55,22 @@ memset::	movea.l	($4,SP),A0	; destination
 .2		rts
 
 **************************************
-* void set_interrupt_mask(word mask) *
+* void set_interrupt_mask(u16 value) *
 **************************************
-set_interrupt_mask::
-		move.w	($4,SP),D0	; get word value from stack
-		andi.w	#$7,D0		; between 0 and 7
-		lsl.w	#$8,D0		; leftshift 8 bits
-		move	SR,D1		; get current status register
-		andi.w	#$f8ff,D1	; clear IPL values
-		or.w	D0,D1		; apply new level
-		move	D1,SR		; move back to SR
-		rts
+_set_interrupt_mask::
+	move.w	($4,SP),D0	; get word value from stack
+	andi.w	#$7,D0		; between 0 and 7
+	lsl.w	#$8,D0		; leftshift 8 bits
+	move	SR,D1		; get current status register
+	andi.w	#$f8ff,D1	; clear IPL values
+	or.w	D0,D1		; apply new level
+	move	D1,SR		; move back to SR
+	rts
 
 ****************************
 * u16 get_interrupt_mask() *
 ****************************
-get_interrupt_mask::
+_get_interrupt_mask::
 		move	SR,D0
 		andi.w	#$0700,D0
 		lsr.w	#$8,D0		; current priority is in D0 = return value
@@ -81,10 +81,10 @@ get_interrupt_mask::
 *****************************************************************
 update_exception_vector::
 		link	A6,#-$2		; local storage for current imask
-		jsr	get_interrupt_mask
+		bsr	_get_interrupt_mask
 		move.w	D0,(-$2,A6)	; store it
 		move.w	#$7,-(SP)	; mask all incoming irq's
-		jsr	set_interrupt_mask
+		bsr	_set_interrupt_mask
 		lea	($2,SP),SP
 		clr.l	D0
 		move.b	($8,A6),D0
@@ -94,7 +94,7 @@ update_exception_vector::
 		move.l	($a,A6),D0
 		move.l	D0,(A0)
 		move.w	(-$2,A6),-(SP)	; push former value imask on stack
-		jsr	set_interrupt_mask
+		jsr	_set_interrupt_mask
 		lea	($2,SP),SP
 		unlk	A6
 		rts

@@ -22,68 +22,56 @@ monitor_setup::
 	move.l	A0,prompt_vector
 	lea	execute,A0
 	move.l	A0,execute_vector
-
-	pea	stmes	; Point to banner
+	pea	stmes		; Point to banner
 	bsr	_puts		; and print heading
 	lea	(4,SP),SP
 	rts
 
 execute
-	lea.l	commands,A0
+	lea	commands,A0
 	bsr	search
-	bcs	.1			; if command found, execute
+	bcs	.1		; if command found, execute
 	pea	ermes		; error
-	bsr	_puts			; and return (rts in puts)
+	bsr	_puts		; and return (rts in puts)
 	lea	(4,SP),SP
 	rts
 .1	movea.l	(A0),A0			; get command address
 	jsr	(A0)
 
-; search_wrong
-; .1	bsr	se_command_buffer_get_char
-; 	cmp.b	#'.',D0
-; 	beq	.1
-; 	cmp.b	#' ',D0
-; 	beq	.1
-; 	tst.b	D0
-; 	bne	.2
-; 	lea	(4,SP),SP
-; .2	rts
-
 ; at the end, A2 points to the next character in the command_buffer
 search
-	lea.l	se_command_buffer,A2	; A2 points to command_buffer
+	lea	se_command_buffer,A2	; A2 points to command_buffer
 .1	cmp.b	#'.',(A2)
 	bne	.2
 	lea	(1,A2),A2
-	bra	.1
+	bra.s	.1
 .2	cmp.b	#' ',(A2)
 	bne	.3
 	lea	(1,A2),A2
-	bra	.1
+	bra.s	.1
 .3	tst.b	(A2)		; test for 0 (means empty command line)
-	bne	.4
+	bne.s	.4
 	lea	(4,SP),SP	; discard first return address from stack
 	rts			; directly return to caller of execute
 .4	clr.l	D0
 	move.b	(A0),D0			; get first byte (=length of string)
-	beq	search7			; if 0, then exit
-	lea.l	(6,A0,D0.w),A1		; calculate address of next entry
+	beq.s	search7			; if 0, then exit
+	lea	(6,A0,D0.w),A1		; calculate address of next entry
 	move.b	(1,A0),D1		; get characters to match
 	move.b	(2,A0),D2		; get first character in this entry
 	cmp.b	(A2)+,D2		; from the table and match with buffer
-	beq	search3			; if match then try rest of string
+	beq.s	search3			; if match then try rest of string
 search2	move.l	A1,A0			; else get address of next entry
-	bra	search
+	bra.s	search
 search3	sub.b	#1,D1			; One less character to match
-	beq	search6			; if match counter=0, then all done
-	lea.l	(3,A0),A0		; else point to next char in table
+	beq.s	search6			; if match counter=0, then all done
+	lea	(3,A0),A0		; else point to next char in table
 search4	move.b	(A0)+,D2		; now match a pair of characters
 	cmp.b	(A2)+,D2
-	bne	search2			; no match, try next entry
+	bne.s	search2			; no match, try next entry
 	sub.b	#1,D1			; else decr counter and
-	bne	search4			; repeat until no chars left to match
-search6	lea.l	(-4,A1),A0		; calc addr of command entry
+	bne.s	search4			; repeat until no chars left to match
+search6	lea	(-4,A1),A0		; calc addr of command entry
 	or.b	#1,CCR			; point. Mark carry flag as success
 	rts				; and return
 search7	and.b	#$fe,CCR		; fail, clear carry to indicate
@@ -92,14 +80,13 @@ search7	and.b	#$fe,CCR		; fail, clear carry to indicate
 clear_command
 	clr.b	do_prompt
 	bsr	_clear_screen
-	;movea.l	BLITTER_CONTEXT_PTR,A0
-	move.b	#'.',-(SP)
+	move.w	#'.',-(SP)
 	jsr	_putchar
 	lea	(2,SP),SP
 	rts
 
 ver_command
-	move.b	#ASCII_LF,-(SP)
+	move.w	#ASCII_LF,-(SP)
 	bsr	_putchar
 	lea	(2,SP),SP
 	pea	rom_version
@@ -111,6 +98,7 @@ jump_command
 	pea	success
 	bsr	_puts
 	lea	(4,SP),SP
+	bsr	_execute
 	rts
 
 m_command
@@ -148,7 +136,7 @@ m_ea1	and.l	#$00ffffff,D1	; make 24 bit address
 	move.b	(BLIT_ROWS,A0),D2
 	sub.b	#1,D2
 .4	move.b	D0,-(SP)
-	move.b	#ASCII_LF,-(SP)
+	move.w	#ASCII_LF,-(SP)
 	bsr	_putchar
 	lea	(2,SP),SP
 	move.b	(SP)+,D0
@@ -195,26 +183,26 @@ m_input_command
 	cmp.l	A3,A4
 	bne	.3
 
-	move.b	#ASCII_CR,-(SP)
+	move.w	#ASCII_CR,-(SP)
 	bsr	_putchar
 	lea	(2,SP),SP
 	move.l	A3,D0
 	sub.l	#8,D0
 	bsr	memory
 
-	move.b	#ASCII_LF,-(SP)
+	move.w	#ASCII_LF,-(SP)
 	bsr	_putchar
 	lea	(2,SP),SP
-	move.b	#'.',-(SP)
+	move.w	#'.',-(SP)
 	bsr	_putchar
 	lea	(2,SP),SP
-	move.b	#':',-(SP)
+	move.w	#':',-(SP)
 	bsr	_putchar
 	lea	(2,SP),SP
 
 	move.l	A3,D0
 	bsr	out6x
-	move.b	#' ',-(SP)
+	move.w	#' ',-(SP)
 	bsr	_putchar
 	lea	(2,SP),SP
 
@@ -296,7 +284,7 @@ out1x	move.w	D0,-(A7)	; Save D0
 	cmp.b	#$39,D0		; ASCII = HEX + $30
 	bls.s	out1x1		; If ASCII <= $39 then print and exit
 	add.b	#$27,D0		; Else ASCII := HEX + $27
-out1x1	move.b	D0,-(SP)
+out1x1	move.w	D0,-(SP)
 	bsr	_putchar	; Print the character
 	lea	(2,SP),SP
 	move.w	(A7)+,D0	; Restore D0
@@ -328,26 +316,24 @@ memory
 	movem.l	A2-A4,-(SP)
 	move.l	D0,A2		; start address in A2
 	movea.l	A2,A4		; copy to A4
-	;move.b	#ASCII_LF,D0	; next line
-	;bsr	_putchar
-	move.b	#'.',-(SP)	; print '.:' and address
+	move.w	#'.',-(SP)	; print '.:' and address
 	bsr	_putchar
 	lea	(2,SP),SP
-	move.b	#':',-(SP)
+	move.w	#':',-(SP)
 	bsr	_putchar
 	lea	(2,SP),SP
 	move.l	A2,D0
 	bsr.s	out6x
 	move.l	A2,A3
 	adda.l	#8,A3		; A3 now contains end address
-.1	move.b	#' ',-(SP)
+.1	move.w	#' ',-(SP)
 	bsr	_putchar
 	lea	(2,SP),SP
 	move.b	(A2)+,D0
 	bsr.s	out2x		; print hex byte
 	cmp.l	A2,A3
 	bne	.1
-	move.b	#' ',-(SP)		; space between hex and chars
+	move.w	#' ',-(SP)		; space between hex and chars
 	bsr	_putchar
 	lea	(2,SP),SP
 	movea.l	A4,A2		; A2 back to start

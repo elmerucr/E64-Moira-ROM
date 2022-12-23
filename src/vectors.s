@@ -1,3 +1,4 @@
-		section	VEC
+	section	VEC
 
-timer_0_vec::	dc.l	timer_0_handler
+timer_0_vec::
+	dc.l	timer_0_handler

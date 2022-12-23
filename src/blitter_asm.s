@@ -15,7 +15,7 @@ blitter_screen_refresh_exception_handler::
 	move.b	#$1,BLITTER_SR.w	; confirm pending irq
 	move.b	#BLITTER_CMD_CLEAR_FRAMEBUFFER,BLITTER_OPERATION.w
 
-	movea	#DISPL_LIST,A0
+	movea.l	#DISPL_LIST,A0
 .1	move.b	(A0)+,D0		; check command (1 = blit, 2 = ..., 4 = ...) TODO
 	beq	.2			; if zero, go to end
 	move.b	(A0)+,BLITTER_CONTEXT_PTR_NO.w		; load context number
@@ -44,114 +44,117 @@ _putsymbol::
 	rts
 
 ; expects character to be on stack, destroys A0,A1
-_putchar::	link	A6,#0
-		movem.l	A2-A3,-(SP)
-		movea.l	BLITTER_CONTEXT_PTR,A0
-		move.b	(8,A6),D0
-is_lf		cmpi.b	#ASCII_LF,D0
-		bne	is_cri
-.1		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
-		btst	#6,(BLIT_SR,A0)	; did we reach column 0?
-		beq.s	.1		; no goto .1
-		btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
-		beq	finish
-		bsr	se_add_bottom_row
-		bra	finish
-is_cri		cmpi.b	#ASCII_CURSOR_RIGHT,D0
-		bne	is_cl
-		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
-		btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
-		beq	finish
-		bsr	se_add_bottom_row
-		bra	finish
-is_cl		cmpi.b	#ASCII_CURSOR_LEFT,D0
-		bne	is_cd
-		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
-		btst	#5,(BLIT_SR,A0) ; did we cross start of the screen?
-		beq	finish
-		bsr	se_add_top_row
-		bra	finish
-is_cd		cmpi.b	#ASCII_CURSOR_DOWN,D0
-		bne	is_cu
-		move.b	(BLIT_COLUMNS,A0),D0
-.1		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
-		btst	#5,(BLIT_SR,A0)	; did we reach end screen?
-		beq.s	.2
-		move.l	D0,-(SP)
-		bsr	se_add_bottom_row
-		move.l	(SP)+,D0
-.2		subq.b	#1,D0
-		bne.s	.1
-		bra	finish
-is_cu		cmpi.b	#ASCII_CURSOR_UP,D0
-		bne	is_bksp
-		move.b	(BLIT_COLUMNS,A0),D0
-.1		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
-		btst	#5,(BLIT_SR,A0)	; did we reach start of screen?
-		beq.s	.2
-		move.l	D0,-(SP)
-		bsr	se_add_top_row
-		move.l	(SP)+,D0
-.2		subq.b	#1,D0
-		bne.s	.1
-		movem.l	(SP)+,A2-A3	; finish
-		unlk	A6
-		rts
-is_bksp		cmpi.b	#ASCII_BACKSPACE,D0
-		bne	is_cr
-
-		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
-		btst	#5,(BLIT_SR,A0) ; did we cross start of the screen?
-		beq	.1		; no goto .1
-		bsr	se_add_top_row
-
-.1		move.l	(BLIT_TILE_RAM_PTR,A0),A1
-		movea.l (BLIT_FG_COLOR_RAM_PTR,A0),A2
-		movea.l (BLIT_BG_COLOR_RAM_PTR,A0),A3
-		moveq.l	#0,D0
-		move.w	(BLIT_CURSOR_POS,A0),D0
-		adda.l	D0,A1
-		lsl.w	#1,D0
-		adda.w	D0,A2
-		adda.w	D0,A3
-		lsr.w	#1,D0
-		move.b	(BLIT_COLUMNS,A0),D0
-		sub.b	(BLIT_CURSOR_COLUMN,A0),D0
-.2		subq.b	#1,D0				; D0 now contains the amount of chars to shift
-		beq.s	.3				; reached 0
-		move.b	(1,A1),(A1)+
-		move.w	(2,A2),(A2)+
-		move.w	(2,A3),(A3)+
-		bra.s	.2
-.3		move.b	#' ',(A1)			; puts space, but keeps old fore- and background color
-		;move.w	(BLIT_FG_COLOR,A0),(A2)
-		;move.w	(BLIT_BG_COLOR,A0),(A3)
-		bra	finish
-is_cr		cmp.b	#ASCII_CR,D0
-		bne	is_sym
-.1		btst.b	#6,(BLIT_SR,A0)
-		bne	finish
-		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
-		bra.s	.1
-is_sym		move.b	D0,-(SP)
-		bsr	_putsymbol
-		lea	(2,SP),SP
-		move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
-		btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
-		beq	finish
-		bsr	se_add_bottom_row
-finish		movem.l	(SP)+,A2-A3
-		unlk	A6
-		rts
-
-; putstring, needs pointer in A0, destroys content of D0
-_puts::	movea.l	(4,SP),A0
-.1	move.b	(A0)+,D0
+_putchar::
+	;link	A6,#0
+	movem.l	A2-A3,-(SP)
+	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	($d,SP),D0
+is_lf	cmpi.b	#ASCII_LF,D0
+	bne	is_cri
+.1	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
+	btst	#6,(BLIT_SR,A0)	; did we reach column 0?
+	beq.s	.1		; no goto .1
+	btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
+	beq	finish
+	bsr	se_add_bottom_row
+	bra	finish
+is_cri	cmpi.b	#ASCII_CURSOR_RIGHT,D0
+	bne	is_cl
+	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
+	btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
+	beq	finish
+	bsr	se_add_bottom_row
+	bra	finish
+is_cl	cmpi.b	#ASCII_CURSOR_LEFT,D0
+	bne	is_cd
+	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
+	btst	#5,(BLIT_SR,A0) ; did we cross start of the screen?
+	beq	finish
+	bsr	se_add_top_row
+	bra	finish
+is_cd	cmpi.b	#ASCII_CURSOR_DOWN,D0
+	bne	is_cu
+	move.b	(BLIT_COLUMNS,A0),D0
+.1	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
+	btst	#5,(BLIT_SR,A0)	; did we reach end screen?
 	beq.s	.2
-	move.l	A0,-(SP)
-	move.b	D0,-(SP)
+	move.l	D0,-(SP)
+	bsr	se_add_bottom_row
+	move.l	(SP)+,D0
+.2	subq.b	#1,D0
+	bne.s	.1
+	bra	finish
+is_cu	cmpi.b	#ASCII_CURSOR_UP,D0
+	bne	is_bksp
+	move.b	(BLIT_COLUMNS,A0),D0
+.1	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
+	btst	#5,(BLIT_SR,A0)	; did we reach start of screen?
+	beq.s	.2
+	move.l	D0,-(SP)
+	bsr	se_add_top_row
+	move.l	(SP)+,D0
+.2	subq.b	#1,D0
+	bne.s	.1
+	movem.l	(SP)+,A2-A3	; finish
+	;unlk	A6
+	rts
+
+is_bksp	cmpi.b	#ASCII_BACKSPACE,D0
+	bne	is_cr
+
+	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
+	btst	#5,(BLIT_SR,A0) ; did we cross start of the screen?
+	beq	.1		; no goto .1
+	bsr	se_add_top_row
+
+.1	move.l	(BLIT_TILE_RAM_PTR,A0),A1
+	movea.l (BLIT_FG_COLOR_RAM_PTR,A0),A2
+	movea.l (BLIT_BG_COLOR_RAM_PTR,A0),A3
+	moveq.l	#0,D0
+	move.w	(BLIT_CURSOR_POS,A0),D0
+	adda.l	D0,A1
+	lsl.w	#1,D0
+	adda.w	D0,A2
+	adda.w	D0,A3
+	lsr.w	#1,D0
+	move.b	(BLIT_COLUMNS,A0),D0
+	sub.b	(BLIT_CURSOR_COLUMN,A0),D0
+.2	subq.b	#1,D0				; D0 now contains the amount of chars to shift
+	beq.s	.3				; reached 0
+	move.b	(1,A1),(A1)+
+	move.w	(2,A2),(A2)+
+	move.w	(2,A3),(A3)+
+	bra.s	.2
+.3	move.b	#' ',(A1)			; puts space keeps existing fg and bg color
+	bra	finish
+is_cr	cmp.b	#ASCII_CR,D0
+	bne	is_sym
+.1	btst.b	#6,(BLIT_SR,A0)
+	bne	finish
+	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
+	bra.s	.1
+is_sym	move.b	D0,(BLIT_CURSOR_CHAR,A0)			; _putsymbol directly
+	move.w	(BLIT_FG_COLOR,A0),(BLIT_CURSOR_FG_COLOR,A0)	; _putsymbol directly
+	move.w	(BLIT_BG_COLOR,A0),(BLIT_CURSOR_BG_COLOR,A0)	; _putsymbol directly
+	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
+	btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
+	beq	finish
+	bsr	se_add_bottom_row
+finish	movem.l	(SP)+,A2-A3
+	;unlk	A6
+	rts
+
+; putstring, needs pointer on stack
+_puts::	;link	A6,#0
+	move.l	A2,-(SP)
+	movea.l	($8,SP),A2
+	;moveq	#0,D0
+.1	move.b	(A2)+,D0
+	beq.s	.2
+	move.w	D0,-(SP)	; move as word in stead of byte
 	bsr	_putchar
 	lea	(2,SP),SP
-	move.l	(SP)+,A0
 	bra.s	.1
-.2	rts
+.2	movea.l	(SP)+,A2
+	;unlk	A6
+	rts

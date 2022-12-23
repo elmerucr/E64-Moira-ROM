@@ -10,4 +10,6 @@
 
 #include "kernel.h"
 
+u8 se_command_buffer_get_char();
+
 #endif
