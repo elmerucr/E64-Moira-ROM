@@ -88,6 +88,6 @@ void blitter_set_bordersize_and_colors();
 
 void clear_screen();
 void putsymbol(u8 symbol);
-//void putchar(u8 character);	// huh? u8 not working...
+void putchar(u8 character);
 
 #endif

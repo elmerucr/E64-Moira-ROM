@@ -5,25 +5,56 @@
  * Copyright © 2022 elmerucr. All rights reserved.
  */
 
-#include "kernel.h"
-//#include "screeneditor.h"
-//#include "blitter.h"
+//#include "kernel.h"
+#include "blitter.h"
 
-u32 get_address(const char *command_line)
+extern u8 do_prompt;
+extern void *se_command_buffer;
+void ver_command();
+
+u8 *command_buffer;
+
+static u8 advance()
 {
-	return 0xffce;
+	command_buffer++;
+	return command_buffer[-1];
 }
 
-void putchar(u8 letter);
+static u8 peek() {
+	return *command_buffer;
+}
+
+static void skip_white_space() {
+	for (;;) {
+		u8 c = peek();
+		switch (c) {
+			case ' ':
+			case '.':
+				advance();
+				break;
+			default:
+				return;
+		}
+	}
+}
 
 void execute()
 {
-	u8 letter;
+	command_buffer = &se_command_buffer;	// reset to start of buffer
 
-	while (letter = se_command_buffer_get_char()) {
-		putchar(letter);
+	/*
+	 *  Skip all '.' and ' '
+	 */
+	skip_white_space();
+
+	u8 new_char = advance();
+
+	switch (new_char) {
+		case 'v':
+			puts("\ntesting something");
+			ver_command();
+			break;
+		default:
+			//
 	}
-	// for (u8 i=0; i<10; i++) {
-	// 	putchar('*');		// not put on stack as byte!!! but as word!!!
-	// }
 }

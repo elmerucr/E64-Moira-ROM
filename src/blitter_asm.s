@@ -34,11 +34,12 @@ blitter_screen_refresh_exception_handler::
 	movem.l	(SP)+,D0-D1/A0-A1	; restore scratch registers
 	rte
 
-; putsymbol - expects code to be on stack, destroys A0
+; putsymbol - expects code to be on stack
+; the code must be pushed as a word, hence (5,SP)
 _putsymbol::
 	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO
 	movea.l	BLITTER_CONTEXT_PTR,A0
-	move.b	(4,SP),(BLIT_CURSOR_CHAR,A0)
+	move.b	(5,SP),(BLIT_CURSOR_CHAR,A0)
 	move.w	(BLIT_FG_COLOR,A0),(BLIT_CURSOR_FG_COLOR,A0)
 	move.w	(BLIT_BG_COLOR,A0),(BLIT_CURSOR_BG_COLOR,A0)
 	rts

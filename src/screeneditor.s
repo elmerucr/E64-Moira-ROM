@@ -6,79 +6,83 @@ prompt_vector::		ds.l	1	; callback pointer (event)
 execute_vector::	ds.l	1	; callback pointer (event)
 bottom_row_vector::	ds.l	1	; callback pointer (event)
 top_row_vector::	ds.l	1	; callback pointer (event)
-se_command_buffer::	ds.b	80	; enough space (79 chars + '\0')
+_se_command_buffer::	ds.b	80	; enough space (79 chars + '\0')
 se_command_buffer_ptr	ds.l	1	; points to a character in command buffer
-do_prompt::		ds.b	1
+_do_prompt::		ds.b	1
 
 		section	TEXT
 
-se_loop::	move.l	prompt_vector,-(SP)
-		bsr	_puts
-		lea	(4,SP),SP
-no_prompt	move.b	#1,do_prompt		; std is to print the prompt
-		movea.l	BLITTER_CONTEXT_PTR,A0
-		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
+se_loop::
+	move.l	prompt_vector,-(SP)
+	bsr	_puts
+	lea	(4,SP),SP
+no_prompt
+	move.b	#1,_do_prompt		; std is to print the prompt
+	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
 
-.1		move.b	CIA_AC,D0	; check for character
-		beq.s	.1		; no, check again
+.1	move.b	CIA_AC,D0	; check for character
+	beq.s	.1		; no, check again
 
-		move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
-		cmp.b	#ASCII_LF,D0	; is it enter?
-		beq.s	.2		; yes, goto .2
-		move.w	D0,-(SP)
-		bsr	_putchar
-		lea	(2,SP),SP
-		move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
-		bra.s	.1
+	move.b	#BLIT_CMD_DEACTIVATE_CURSOR,(BLIT_CR,A0)
+	cmp.b	#ASCII_LF,D0	; is it enter?
+	beq.s	.2		; yes, goto .2
+	move.w	D0,-(SP)
+	bsr	_putchar
+	lea	(2,SP),SP
+	move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
+	bra.s	.1
 
-.2		bsr	se_fill_command_buffer
+.2	bsr	se_fill_command_buffer
 
-		movea.l	execute_vector,A0
-		jsr	(A0)
+	movea.l	execute_vector,A0
+	jsr	(A0)
 
-		tst.b	do_prompt
-		beq.s	no_prompt
-		bra.s	se_loop
+	tst.b	_do_prompt
+	beq.s	no_prompt
+	bra.s	se_loop
 
 se_add_bottom_row::
-		movem.l	A2-A3,-(SP)
+	movem.l	A2-A3,-(SP)
 
-		movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO
+	movea.l	BLITTER_CONTEXT_PTR,A0
 
-		move.w	(BLIT_NO_OF_TILES,A0),D0
-		clr.l	D1
-		move.b	(BLIT_COLUMNS,A0),D1
-		sub.w	D1,D0
+	move.w	(BLIT_NO_OF_TILES,A0),D0
+	clr.l	D1
+	move.b	(BLIT_COLUMNS,A0),D1
+	sub.w	D1,D0
 
-		movea.l	(BLIT_TILE_RAM_PTR,A0),A1
-		movea.l (BLIT_FG_COLOR_RAM_PTR,A0),A2
-		movea.l (BLIT_BG_COLOR_RAM_PTR,A0),A3
+	movea.l	(BLIT_TILE_RAM_PTR,A0),A1
+	movea.l (BLIT_FG_COLOR_RAM_PTR,A0),A2
+	movea.l (BLIT_BG_COLOR_RAM_PTR,A0),A3
 
-.1		move.b	(0,A1,D1),(A1)+
-		lsl.b	D1
-		move.w	(0,A2,D1),(A2)+
-		move.w	(0,A3,D1),(A3)+
-		lsr.b	D1
-		subq	#1,D0
-		bne.s	.1
+.1	move.b	(0,A1,D1),(A1)+
+	lsl.b	D1
+	move.w	(0,A2,D1),(A2)+
+	move.w	(0,A3,D1),(A3)+
+	lsr.b	D1
+	subq	#1,D0
+	bne.s	.1
 
-.2		move.b	#' ',(A1)+
-		move.w	(BLIT_FG_COLOR,A0),(A2)+
-		move.w	(BLIT_BG_COLOR,A0),(A3)+
-		subq	#1,D1
-		bne.s	.2
+.2	move.b	#' ',(A1)+
+	move.w	(BLIT_FG_COLOR,A0),(A2)+
+	move.w	(BLIT_BG_COLOR,A0),(A3)+
+	subq	#1,D1
+	bne.s	.2
 
-		move.b	(BLIT_COLUMNS,A0),D0
-.3		move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
-		sub.b	#1,D0
-		bne.s	.3
+	move.b	(BLIT_COLUMNS,A0),D0
+.3	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
+	sub.b	#1,D0
+	bne.s	.3
 
-		movem.l	(SP)+,A2-A3
-		rts
+	movem.l	(SP)+,A2-A3
+	rts
 
 se_add_top_row::
 	movem.l	A2-A3,-(SP)
 
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO
 	movea.l	BLITTER_CONTEXT_PTR,A0
 
 	move.w	(BLIT_NO_OF_TILES,A0),D0
@@ -126,7 +130,7 @@ se_fill_command_buffer:
 	move.w	#ASCII_CR,-(SP)			; move cursor to first position
 	bsr	_putchar
 	lea	(2,SP),SP
-	movea.l	#se_command_buffer,A1
+	movea.l	#_se_command_buffer,A1
 .1	move.b	(BLIT_CURSOR_CHAR,A0),(A1)+
 	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 	btst.b	#6,(BLIT_SR,A0)
@@ -134,12 +138,12 @@ se_fill_command_buffer:
 	clr.b	-(A1)	; place 0 at end of string
 	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
 	move.b	(SP)+,(BLIT_CURSOR_COLUMN,A0)
-	move.l	#se_command_buffer,se_command_buffer_ptr
+	move.l	#_se_command_buffer,se_command_buffer_ptr
 	rts
 
-_se_command_buffer_get_char::
-	move.l	se_command_buffer_ptr,A0
-	move.b	(A0),D0
-	beq.s	.1				; if '\0', do not increase pointer
-	addi.l	#1,se_command_buffer_ptr
-.1	rts
+; _se_command_buffer_get_char::
+; 	move.l	se_command_buffer_ptr,A0
+; 	move.b	(A0),D0
+; 	beq.s	.1				; if '\0', do not increase pointer
+; 	addi.l	#1,se_command_buffer_ptr
+; .1	rts

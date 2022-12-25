@@ -20,7 +20,7 @@ success	dc.b	ASCII_LF,'command recognized',0
 monitor_setup::
 	lea	prompt,A0
 	move.l	A0,prompt_vector
-	lea	execute,A0
+	lea	_execute,A0
 	move.l	A0,execute_vector
 	pea	stmes		; Point to banner
 	bsr	_puts		; and print heading
@@ -40,7 +40,7 @@ execute
 
 ; at the end, A2 points to the next character in the command_buffer
 search
-	lea	se_command_buffer,A2	; A2 points to command_buffer
+	lea	_se_command_buffer,A2	; A2 points to command_buffer
 .1	cmp.b	#'.',(A2)
 	bne	.2
 	lea	(1,A2),A2
@@ -78,14 +78,14 @@ search7	and.b	#$fe,CCR		; fail, clear carry to indicate
 	rts				; and return
 
 clear_command
-	clr.b	do_prompt
+	clr.b	_do_prompt
 	bsr	_clear_screen
 	move.w	#'.',-(SP)
 	jsr	_putchar
 	lea	(2,SP),SP
 	rts
 
-ver_command
+_ver_command::
 	move.w	#ASCII_LF,-(SP)
 	bsr	_putchar
 	lea	(2,SP),SP
@@ -145,7 +145,7 @@ m_ea1	and.l	#$00ffffff,D1	; make 24 bit address
 	cmp.b	(BLIT_CURSOR_ROW,A0),D2
 	bne.s	.4
 
-	clr.b	do_prompt
+	clr.b	_do_prompt
 	movem.l	(SP)+,D2-D3
 	rts
 m_err	pea	ermes
@@ -206,10 +206,10 @@ m_input_command
 	bsr	_putchar
 	lea	(2,SP),SP
 
-	clr.b	do_prompt
+	clr.b	_do_prompt
 	movem.l	(SP)+,D2/A3-A4
 	rts
-.2	suba.l	#se_command_buffer,A2
+.2	suba.l	#_se_command_buffer,A2
 	movea.l	BLITTER_CONTEXT_PTR,A0
 	move.l	A2,D0
 	move.b	D0,(BLIT_CURSOR_COLUMN,A0)
@@ -232,7 +232,7 @@ commands
 	dc.l	m_command	; <address> and allows them to be changed
 	dc.b	4,3
 	dc.b	'ver '
-	dc.l	ver_command
+	dc.l	_ver_command
 	dc.b	4,4		; jump <address> causes execution to
 	dc.b	'jump'		; begin at <address>
 	dc.l	jump_command
