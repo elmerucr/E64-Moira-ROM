@@ -5,10 +5,10 @@
 		dc.l	$00010000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'rom v20221221',0
+rom_version::	dc.b	'rom v20221227',0
 
 reset_exception::
-		;move.w	#$2700,sr	; supervisor mode, highest IPL (done by reset)
+		;move.w	#$2700,sr	; supervisor mode, highest IPL (is done by reset)
 
 		;clr.l	D0		; Not needed, reset exception
 		;movec	D0,VBR		; sets VBR to $00000000.

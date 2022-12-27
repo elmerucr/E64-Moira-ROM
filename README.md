@@ -26,7 +26,8 @@ Scratch registers mean that the caller is aware that the contents are not necess
 ## Websites and Projects of Interest
 
 * [E64](https://github.com/elmerucr/E64) - E64 virtual computer system inspired by Commodore 64, Amiga 500 and Atari ST by elmerucr.
-* [Moira](https://github.com/dirkwhoffmann/Moira) - Motorola 68000 cpu emulator written in C++ by Dirk W. Hoffmann.
+* [Crafting Interpreters](https://craftinginterpreters.com) - By Robert Nystrom. Inspiring material for repl/scripting/E64 kernel development.
+* [Moira](https://github.com/dirkwhoffmann/Moira) - Motorola m68k cpu emulator written in C++ by Dirk W. Hoffmann.
 * [reSID](http://www.zimmers.net/anonftp/pub/cbm/crossplatform/emulators/resid/index.html) - ReSID is a Commodore 6581 or 8580 Sound Interface Device emulator by Dag Lem.
 * [SDL Simple DirectMedia Layer](https://www.libsdl.org) - A cross-platform development library by Sam Lantinga designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware.
 * [stb](https://github.com/nothings/stb) - single-file public domain (or MIT licensed) libraries for C/C++

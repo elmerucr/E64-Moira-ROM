@@ -78,7 +78,7 @@ search7	and.b	#$fe,CCR		; fail, clear carry to indicate
 	rts				; and return
 
 clear_command
-	clr.b	_do_prompt
+	clr.b	_se_do_prompt
 	bsr	_clear_screen
 	move.w	#'.',-(SP)
 	jsr	_putchar
@@ -145,7 +145,7 @@ m_ea1	and.l	#$00ffffff,D1	; make 24 bit address
 	cmp.b	(BLIT_CURSOR_ROW,A0),D2
 	bne.s	.4
 
-	clr.b	_do_prompt
+	clr.b	_se_do_prompt
 	movem.l	(SP)+,D2-D3
 	rts
 m_err	pea	ermes
@@ -206,7 +206,7 @@ m_input_command
 	bsr	_putchar
 	lea	(2,SP),SP
 
-	clr.b	_do_prompt
+	clr.b	_se_do_prompt
 	movem.l	(SP)+,D2/A3-A4
 	rts
 .2	suba.l	#_se_command_buffer,A2
@@ -264,19 +264,6 @@ not_hex	and.b	#$fe,CCR
 hex_ok2	add.b	#$a,D0
 hex_ok	or.b	#$1,CCR
 	rts
-
-; byte	bsr.s	hex
-; 	asl.b	#4,D0
-; 	move.b	D0,D1
-; 	bsr.s	hex
-; 	add.b	D1,D0
-; 	rts
-
-; address in D1
-;print_address;
-;	move.l	D1,D0
-;	bsr	memory
-;	rts
 
 out1x	move.w	D0,-(A7)	; Save D0
         and.b	#$f,D0		; Mask off MS nybble

@@ -8,7 +8,7 @@ bottom_row_vector::	ds.l	1	; callback pointer (event)
 top_row_vector::	ds.l	1	; callback pointer (event)
 _se_command_buffer::	ds.b	80	; enough space (79 chars + '\0')
 se_command_buffer_ptr	ds.l	1	; points to a character in command buffer
-_do_prompt::		ds.b	1
+_se_do_prompt::		ds.b	1
 
 		section	TEXT
 
@@ -17,7 +17,7 @@ se_loop::
 	bsr	_puts
 	lea	(4,SP),SP
 no_prompt
-	move.b	#1,_do_prompt		; std is to print the prompt
+	move.b	#1,_se_do_prompt		; std is to print the prompt
 	movea.l	BLITTER_CONTEXT_PTR,A0
 	move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
 
@@ -38,7 +38,7 @@ no_prompt
 	movea.l	execute_vector,A0
 	jsr	(A0)
 
-	tst.b	_do_prompt
+	tst.b	_se_do_prompt
 	beq.s	no_prompt
 	bra.s	se_loop
 

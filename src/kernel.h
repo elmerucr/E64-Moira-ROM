@@ -20,6 +20,8 @@ typedef	signed long	i32;
 #define	E64_BLUE_08	0xfbbf
 #define	E64_BLUE_09	0xfddf
 
+#define	ASCII_CURSOR_RIGHT	0x1d
+
 void	pokeb(u32 address, u8 byte);
 u8	peekb(u32 address);
 void	pokew(u32 address, u16 word);
