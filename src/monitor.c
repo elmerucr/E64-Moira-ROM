@@ -26,7 +26,7 @@ static u8 peek()
 	return *command_buffer;
 }
 
-static void skip_dots_and_white_space() {
+static void skip_dots_and_spaces() {
 	for (;;) {
 		u8 c = peek();
 		switch (c) {
@@ -40,11 +40,6 @@ static void skip_dots_and_white_space() {
 	}
 }
 
-static void monitor_command()
-{
-	puts("\nmonitor command");
-}
-
 static void error()
 {
 	putchar('\r');
@@ -54,6 +49,55 @@ static void error()
 	putchar('?');
 }
 
+static u8 is_hex(u8 *sym)
+{
+	if (*sym >= '0' && *sym <= '9') {
+		*sym = *sym - '0';
+	} else if (*sym >= 'a' && *sym <='f') {
+		*sym = *sym - 'a' + 10;
+	} else if (*sym >= 'A' && *sym <='F') {
+		*sym = *sym - 'A' + 10;
+	} else {
+		// Not a hex value
+		return 0;
+	}
+	return 1;
+}
+
+static u8 get_hex(u32 *hex_number)
+{
+	*hex_number = 0;
+
+	u8 result = 0;
+
+	u8 c = advance();
+
+	while (is_hex(&c)) {
+		*hex_number = (*hex_number << 4) | c;
+		result = 1;
+		c = advance();
+	}
+
+	return result;
+}
+
+static void monitor_command()
+{
+	u32 start_address;
+	u32 end_address;
+
+	if (!(get_hex(&start_address))) {
+		advance();
+		error();
+	} else {
+		puts("\ngot first address");
+		advance();
+		if (get_hex(&end_address)) {
+			puts("\ngot second address");
+		}
+	}
+}
+
 static u8 check_keyword(u8 length, const u8 *rest)
 {
 	for (u8 i = 0; i < length; i++) {
@@ -61,7 +105,6 @@ static u8 check_keyword(u8 length, const u8 *rest)
 			return 0;
 		}
 		advance();
-		//skips++;
 	}
 	return 1;
 }
@@ -71,7 +114,7 @@ void execute()
 	command_buffer = &se_command_buffer;	// reset to start of buffer
 	skips = 0;
 
-	skip_dots_and_white_space();
+	skip_dots_and_spaces();
 
 	u8 c = advance();
 
