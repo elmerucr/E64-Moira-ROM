@@ -13,6 +13,26 @@ void ver_command();	// definition elsewhere
 
 u8 *command_buffer;
 u8 skips;
+const u8 hex_values[] = "0123456789abcdef";
+
+static void out2x(u8 byte)
+{
+	putchar(hex_values[byte >> 4]);
+	putchar(hex_values[byte & 0x0f]);
+}
+
+static void out4x(u16 word)
+{
+	out2x(word >> 8);
+	out2x(word & 0x00ff);
+}
+
+static void out6x(u32 longword)
+{
+	out2x(longword >> 16);
+	out2x((longword >> 8) & 0xff);
+	out2x(longword & 0xff);
+}
 
 static u8 advance()
 {
@@ -90,10 +110,11 @@ static void monitor_command()
 		advance();
 		error();
 	} else {
-		puts("\ngot first address");
-		advance();
+		puts("\nfirst address:  ");
+		out6x(start_address);
 		if (get_hex(&end_address)) {
-			puts("\ngot second address");
+			puts("\nsecond address: ");
+			out6x(end_address);
 		}
 	}
 }
