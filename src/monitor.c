@@ -6,6 +6,7 @@
  */
 
 #include "blitter.h"
+#include "cia.h"
 
 extern u8 se_do_prompt;	// part of screeneditor
 extern void *se_command_buffer;
@@ -110,13 +111,36 @@ static void monitor_command()
 		advance();
 		error();
 	} else {
-		puts("\nfirst address:  ");
-		out6x(start_address);
-		if (get_hex(&end_address)) {
-			puts("\nsecond address: ");
-			out6x(end_address);
+		start_address &= 0xffffff;
+		if (!(get_hex(&end_address))) {
+			end_address = start_address;
+		} else if (end_address < start_address) {
+			end_address |= 0x01000000;
 		}
 	}
+
+	for (u32 i = start_address; i <= end_address; i += 8) {
+		puts("\n.:");
+		out6x(i & 0xffffff);
+
+		for (u32 no = 0; no < 8; no++) {
+			putchar(' ');
+			out2x(peekb((i+ no) & 0xffffff));
+		}
+
+		putchar(' ');
+
+		for (u32 no = 0; no < 8; no++) {
+			putsymbol(peekb((i+ no) & 0xffffff));
+			putchar(ASCII_CURSOR_RIGHT);
+		}
+
+		if (CIA_KEYSTATES[CIA_KEY_ESCAPE] != 0) {
+			puts("\nbreak");
+			break;
+		}
+	}
+	CIA->control_register = CIA_CMD_CLEAR_EVENT_LIST | CIA_CMD_GENERATE_EVENTS;
 }
 
 static u8 check_keyword(u8 length, const u8 *rest)

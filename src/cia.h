@@ -13,6 +13,12 @@
 #define	CIA		((struct cia_ic *)0x00000e00)
 #define CIA_KEYSTATES	((u8 *)0x00000e80)
 
+#define CIA_KEY_EMPTY	0x00
+#define CIA_KEY_ESCAPE	0x01
+#define CIA_KEY_F1	0x02
+// etc...
+//
+
 #define	CIA_CMD_GENERATE_EVENTS		0x01
 #define	CIA_CMD_CLEAR_EVENT_LIST	0x80
 
