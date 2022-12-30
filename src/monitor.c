@@ -11,6 +11,7 @@
 extern u8 se_do_prompt;	// part of screeneditor
 extern void *se_command_buffer;
 void ver_command();	// definition elsewhere
+extern u8 current_blit;
 
 u8 *command_buffer;
 u8 skips;
@@ -102,6 +103,26 @@ static u8 get_hex(u32 *hex_number)
 	return result;
 }
 
+static void monitor_line(u32 address)
+{
+	puts("\r.:");
+	out6x(address & 0xffffff);
+
+	for (u32 no = 0; no < 8; no++) {
+		putchar(' ');
+		out2x(peekb((address + no) & 0xffffff));
+	}
+
+	putchar(' ');
+
+	for (u32 no = 0; no < 8; no++) {
+		putsymbol(peekb((address + no) & 0xffffff));
+		putchar(ASCII_CURSOR_RIGHT);
+	}
+
+	BLIT[current_blit].cursor_column = 9;
+}
+
 static void monitor_command()
 {
 	u32 start_address;
@@ -121,26 +142,19 @@ static void monitor_command()
 
 	for (u32 i = start_address; i <= end_address; i += 8) {
 		puts("\n.:");
-		out6x(i & 0xffffff);
-
-		for (u32 no = 0; no < 8; no++) {
-			putchar(' ');
-			out2x(peekb((i+ no) & 0xffffff));
-		}
-
-		putchar(' ');
-
-		for (u32 no = 0; no < 8; no++) {
-			putsymbol(peekb((i+ no) & 0xffffff));
-			putchar(ASCII_CURSOR_RIGHT);
-		}
-
+		monitor_line(i);
+		/*
+		 * check for escape key
+		 */
 		if (CIA_KEYSTATES[CIA_KEY_ESCAPE] != 0) {
 			puts("\nbreak");
-			break;
+			CIA->control_register = CIA_CMD_CLEAR_EVENT_LIST | CIA_CMD_GENERATE_EVENTS;
+			return;
 		}
 	}
+
 	CIA->control_register = CIA_CMD_CLEAR_EVENT_LIST | CIA_CMD_GENERATE_EVENTS;
+	se_do_prompt = 0;
 }
 
 static u8 check_keyword(u8 length, const u8 *rest)
@@ -154,6 +168,19 @@ static u8 check_keyword(u8 length, const u8 *rest)
 	return 1;
 }
 
+static void monitor_input_command()
+{
+	u32 address;
+
+	if (!get_hex(&address)) {
+		error();
+		return;
+	}
+
+	putchar('\n');
+	out6x(address);
+}
+
 void execute()
 {
 	command_buffer = &se_command_buffer;	// reset to start of buffer
@@ -164,6 +191,10 @@ void execute()
 	u8 c = advance();
 
 	switch (c) {
+		case ':':
+			monitor_input_command();
+			puts("\nmonitor input");
+			break;
 		case 'c':
 			if (check_keyword(5, "lear ")) {
 				clear_screen();
