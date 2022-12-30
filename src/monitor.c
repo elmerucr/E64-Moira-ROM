@@ -86,18 +86,30 @@ static u8 is_hex(u8 *sym)
 	return 1;
 }
 
-static u8 get_hex(u32 *hex_number)
+/*
+ * No (of bytes) must be between 1 and 4 (8, 16, 24 or 32 bits)
+ */
+static u8 get_hex(u32 *hex_number, u8 no)
 {
 	*hex_number = 0;
 
-	u8 result = 0;
+	if ((no == 0) || (no > 4))
+		return 1;
 
+	// no of chars to fetch
+	no = no << 1;
+
+	u8 result = 0;
 	u8 c = advance();
 
-	while (is_hex(&c)) {
-		*hex_number = (*hex_number << 4) | c;
-		result = 1;
-		c = advance();
+	while (no--) {
+		if (is_hex(&c)) {
+			result = 1;
+			*hex_number = (*hex_number << 4) | c;
+			c = advance();
+		} else {
+			return 0;
+		}
 	}
 
 	return result;
@@ -128,12 +140,14 @@ static void monitor_command()
 	u32 start_address;
 	u32 end_address;
 
-	if (!(get_hex(&start_address))) {
-		advance();
+	if (!(get_hex(&start_address, 3))) {
+		//advance();
 		error();
+		return;
 	} else {
 		start_address &= 0xffffff;
-		if (!(get_hex(&end_address))) {
+		//advance();
+		if (!(get_hex(&end_address, 3))) {
 			end_address = start_address;
 		} else if (end_address < start_address) {
 			end_address |= 0x01000000;
@@ -172,13 +186,26 @@ static void monitor_input_command()
 {
 	u32 address;
 
-	if (!get_hex(&address)) {
+	if (!get_hex(&address, 3)) {
 		error();
 		return;
 	}
 
-	putchar('\n');
-	out6x(address);
+	for (u32 i=0; i < 8; i++) {
+		u32 number;
+		if(!get_hex(&number, 1)) {
+			error();
+			return;
+		}
+		pokeb(address + i, number & 0xff);
+	}
+
+	monitor_line(address);
+
+	puts("\n.:");
+	out6x((address + 8) & 0xffffff);
+	putchar(' ');
+	se_do_prompt = 0;
 }
 
 void execute()
@@ -193,7 +220,6 @@ void execute()
 	switch (c) {
 		case ':':
 			monitor_input_command();
-			puts("\nmonitor input");
 			break;
 		case 'c':
 			if (check_keyword(5, "lear ")) {
