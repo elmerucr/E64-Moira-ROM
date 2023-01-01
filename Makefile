@@ -15,6 +15,7 @@ OBJECTS +=	obj/blitter_asm.o \
 		obj/monitor_asm.o \
 		obj/monitor.o \
 		obj/screeneditor.o \
+		obj/screeneditor_asm.o \
 		obj/sound.o \
 		obj/tables.o \
 		obj/timer.o \
@@ -24,6 +25,7 @@ ASMTARGETS =	obj/blitter.s \
 		obj/cia.s \
 		obj/kernel.s \
 		obj/monitor.s \
+		obj/screeneditor.s \
 		obj/sound.s \
 		obj/test.s
 

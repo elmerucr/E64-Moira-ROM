@@ -28,7 +28,8 @@ timer_exception_handler::
 		rte
 
 timer_0_handler::
-		movea.l	BLITTER_CONTEXT_PTR,A0
+		move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
+		movea.l	BLITTER_CONTEXT_PTR.w,A0
 		move.b	#BLIT_CMD_PROCESS_CURSOR_STATE,(BLIT_CR,A0)
 		rts
 timer_1_handler::

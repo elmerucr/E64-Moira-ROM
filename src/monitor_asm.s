@@ -2,7 +2,7 @@
 ; monitor_asm.s
 ; E64-ROM
 ;
-; Copyright © 2022 elmerucr. All rights reserved.
+; Copyright © 2022-2023 elmerucr. All rights reserved.
 ;
 
 	include	"definitions.i"
@@ -22,6 +22,10 @@ monitor_setup::
 	move.l	A0,prompt_vector
 	lea	_execute,A0
 	move.l	A0,execute_vector
+	lea	_bottom_row,A0
+	move.l	A0,bottom_row_callback
+	lea	_top_row,A0
+	move.l	A0,top_row_callback
 	pea	stmes		; Point to banner
 	bsr	_puts		; and print heading
 	lea	(4,SP),SP

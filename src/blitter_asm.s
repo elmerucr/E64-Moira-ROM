@@ -7,6 +7,11 @@
 
 	include	"definitions.i"
 
+	section	BSS
+
+add_row_flag
+	ds.w	1
+
 	section	TEXT
 
 blitter_screen_refresh_exception_handler::
@@ -37,8 +42,8 @@ blitter_screen_refresh_exception_handler::
 ; putsymbol - expects code to be on stack
 ; the code must be pushed as a word, hence (5,SP)
 _putsymbol::
-	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO
-	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
+	movea.l	BLITTER_CONTEXT_PTR.w,A0
 	move.b	(5,SP),(BLIT_CURSOR_CHAR,A0)
 	move.w	(BLIT_FG_COLOR,A0),(BLIT_CURSOR_FG_COLOR,A0)
 	move.w	(BLIT_BG_COLOR,A0),(BLIT_CURSOR_BG_COLOR,A0)
@@ -48,7 +53,9 @@ _putsymbol::
 _putchar::
 	;link	A6,#0
 	movem.l	A2-A3,-(SP)
-	movea.l	BLITTER_CONTEXT_PTR,A0
+	clr.w	add_row_flag
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO
+	movea.l	BLITTER_CONTEXT_PTR.w,A0
 	move.b	($d,SP),D0
 is_lf	cmpi.b	#ASCII_LF,D0
 	bne	is_cri
@@ -57,46 +64,61 @@ is_lf	cmpi.b	#ASCII_LF,D0
 	beq.s	.1		; no goto .1
 	btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
 	beq	finish
+	move.l	A0,-(SP)
 	bsr	se_add_bottom_row
+	move.l	(SP)+,A0
 	bra	finish
 is_cri	cmpi.b	#ASCII_CURSOR_RIGHT,D0
 	bne	is_cl
 	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 	btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
 	beq	finish
+	move.l	A0,-(SP)
 	bsr	se_add_bottom_row
+	move.l	(SP)+,A0
 	bra	finish
 is_cl	cmpi.b	#ASCII_CURSOR_LEFT,D0
 	bne	is_cd
 	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
 	btst	#5,(BLIT_SR,A0) ; did we cross start of the screen?
 	beq	finish
+	move.l	A0,-(SP)
 	bsr	se_add_top_row
+	move.l	(SP)+,A0
 	bra	finish
 is_cd	cmpi.b	#ASCII_CURSOR_DOWN,D0
 	bne	is_cu
 	move.b	(BLIT_COLUMNS,A0),D0
 .1	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 	btst	#5,(BLIT_SR,A0)	; did we reach end screen?
-	beq.s	.2
-	move.l	D0,-(SP)
-	bsr	se_add_bottom_row
-	move.l	(SP)+,D0
+	beq.s	.2		; no
+	move.w	#1,add_row_flag	; yes
 .2	subq.b	#1,D0
 	bne.s	.1
-	bra	finish
+	tst.w	add_row_flag
+	beq	.3
+	move.l	A0,-(SP)
+	bsr	se_add_bottom_row
+	move.l	(SP)+,A0
+.3	bra	finish
 is_cu	cmpi.b	#ASCII_CURSOR_UP,D0
 	bne	is_bksp
 	move.b	(BLIT_COLUMNS,A0),D0
 .1	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
 	btst	#5,(BLIT_SR,A0)	; did we reach start of screen?
-	beq.s	.2
-	move.l	D0,-(SP)
-	bsr	se_add_top_row
-	move.l	(SP)+,D0
+	beq.s	.2		; no
+	move.w	#1,add_row_flag	; yes
+	;move.l	D0,-(SP)
+	;bsr	se_add_top_row
+	;move.l	(SP)+,D0
 .2	subq.b	#1,D0
 	bne.s	.1
-	movem.l	(SP)+,A2-A3	; finish
+	tst.w	add_row_flag
+	beq	.3
+	move.l	A0,-(SP)
+	bsr	se_add_top_row
+	move.l	(SP)+,A0
+.3	movem.l	(SP)+,A2-A3	; finish
 	;unlk	A6
 	rts
 
@@ -106,7 +128,9 @@ is_bksp	cmpi.b	#ASCII_BACKSPACE,D0
 	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
 	btst	#5,(BLIT_SR,A0) ; did we cross start of the screen?
 	beq	.1		; no goto .1
+	move.l	A0,-(SP)
 	bsr	se_add_top_row
+	move.l	(SP)+,A0
 
 .1	move.l	(BLIT_TILE_RAM_PTR,A0),A1
 	movea.l (BLIT_FG_COLOR_RAM_PTR,A0),A2
@@ -140,7 +164,9 @@ is_sym	move.b	D0,(BLIT_CURSOR_CHAR,A0)			; _putsymbol directly
 	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
 	btst	#5,(BLIT_SR,A0)	; did we reach the end of the screen?
 	beq	finish
+	move.l	A0,-(SP)
 	bsr	se_add_bottom_row
+	move.l	(SP)+,A0
 finish	movem.l	(SP)+,A2-A3
 	;unlk	A6
 	rts

@@ -2,7 +2,7 @@
  * cia.c
  * E64-ROM
  *
- * Copyright © 2022 elmerucr. All rights reserved.
+ * Copyright © 2022-2023 elmerucr. All rights reserved.
  */
 
 #include "cia.h"

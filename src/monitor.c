@@ -2,7 +2,7 @@
  * monitor.c
  * E64-ROM
  *
- * Copyright © 2022 elmerucr. All rights reserved.
+ * Copyright © 2022-2023 elmerucr. All rights reserved.
  */
 
 #include "blitter.h"
@@ -89,15 +89,14 @@ static u8 is_hex(u8 *sym)
 /*
  * No (of bytes) must be between 1 and 4 (8, 16, 24 or 32 bits)
  */
-static u8 get_hex(u32 *hex_number, u8 no)
+static u8 get_hex_specific(u32 *hex_number, u8 bytes)
 {
 	*hex_number = 0;
 
-	if ((no == 0) || (no > 4))
-		return 1;
+	if (bytes > 4) return 1;
 
 	// no of chars to fetch
-	no = no << 1;
+	u8 no = bytes << 1;
 
 	u8 result = 0;
 	u8 c = advance();
@@ -110,6 +109,22 @@ static u8 get_hex(u32 *hex_number, u8 no)
 		} else {
 			return 0;
 		}
+	}
+
+	return result;
+}
+
+static u8 get_hex(u32 *hex_number)
+{
+	*hex_number = 0;
+
+	u8 result = 0;
+	u8 c = advance();
+
+	while (is_hex(&c)) {
+		result = 1;
+		*hex_number = (*hex_number << 4) | c;
+		c = advance();
 	}
 
 	return result;
@@ -140,14 +155,12 @@ static void monitor_command()
 	u32 start_address;
 	u32 end_address;
 
-	if (!(get_hex(&start_address, 3))) {
-		//advance();
+	if (!(get_hex(&start_address))) {
 		error();
 		return;
 	} else {
 		start_address &= 0xffffff;
-		//advance();
-		if (!(get_hex(&end_address, 3))) {
+		if (!(get_hex(&end_address))) {
 			end_address = start_address;
 		} else if (end_address < start_address) {
 			end_address |= 0x01000000;
@@ -186,14 +199,14 @@ static void monitor_input_command()
 {
 	u32 address;
 
-	if (!get_hex(&address, 3)) {
+	if (!get_hex_specific(&address, 3)) {
 		error();
 		return;
 	}
 
 	for (u32 i=0; i < 8; i++) {
 		u32 number;
-		if(!get_hex(&number, 1)) {
+		if(!get_hex_specific(&number, 1)) {
 			error();
 			return;
 		}
@@ -253,4 +266,14 @@ void execute()
 		default:
 			error();
 	}
+}
+
+void bottom_row()
+{
+	//puts("down");
+}
+
+void top_row()
+{
+	//puts("up");
 }

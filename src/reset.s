@@ -5,7 +5,7 @@
 		dc.l	$00010000	; initial SSP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'rom v20221230',0
+rom_version::	dc.b	'rom v20230101',0
 
 reset_exception::
 		;move.w	#$2700,sr	; supervisor mode, highest IPL (is done by reset)
@@ -112,4 +112,4 @@ address_error
 	move.b	#BLITTER_CMD_DRAW_HOR_BORDER,BLITTER_CR.w
 .1	bra	.1
 
-welcome	dc.b	'E64 Computer System (C)2022 elmerucr',0
+welcome	dc.b	'E64 Computer System (C)2019-2023 elmerucr',0
