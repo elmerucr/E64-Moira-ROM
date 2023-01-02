@@ -136,7 +136,8 @@ m_ea1	and.l	#$00ffffff,D1	; make 24 bit address
 
 
 .3	move.l	D3,D0		; move start address back into D0
-	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
+	movea.l	BLITTER_CONTEXT_PTR.w,A0
 	move.b	(BLIT_ROWS,A0),D2
 	sub.b	#1,D2
 .4	move.b	D0,-(SP)
@@ -145,7 +146,8 @@ m_ea1	and.l	#$00ffffff,D1	; make 24 bit address
 	lea	(2,SP),SP
 	move.b	(SP)+,D0
 	bsr	memory
-	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
+	movea.l	BLITTER_CONTEXT_PTR.w,A0
 	cmp.b	(BLIT_CURSOR_ROW,A0),D2
 	bne.s	.4
 
@@ -214,7 +216,8 @@ m_input_command
 	movem.l	(SP)+,D2/A3-A4
 	rts
 .2	suba.l	#_se_command_buffer,A2
-	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
+	movea.l	BLITTER_CONTEXT_PTR.w,A0
 	move.l	A2,D0
 	move.b	D0,(BLIT_CURSOR_COLUMN,A0)
 	pea	ermes2
@@ -328,7 +331,8 @@ memory
 	bsr	_putchar
 	lea	(2,SP),SP
 	movea.l	A4,A2		; A2 back to start
-	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
+	movea.l	BLITTER_CONTEXT_PTR.w,A0
 .2	move.b	(A2)+,-(SP)
 	bsr	_putsymbol
 	lea	(2,SP),SP

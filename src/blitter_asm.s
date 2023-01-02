@@ -24,7 +24,7 @@ blitter_screen_refresh_exception_handler::
 .1	move.b	(A0)+,D0		; check command (1 = blit, 2 = ..., 4 = ...) TODO
 	beq	.2			; if zero, go to end
 	move.b	(A0)+,BLITTER_CONTEXT_PTR_NO.w		; load context number
-	movea.l	BLITTER_CONTEXT_PTR,A1			; A1 points to right blit context
+	movea.l	BLITTER_CONTEXT_PTR.w,A1			; A1 points to right blit context
 	move.b	(A0)+,(BLIT_FLAGS_0,A1)
 	move.b	(A0)+,(BLIT_FLAGS_1,A1)
 	move.w	(A0)+,(BLIT_XPOS,A1)

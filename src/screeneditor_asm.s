@@ -18,7 +18,8 @@ se_loop::
 	lea	(4,SP),SP
 no_prompt
 	move.b	#1,_se_do_prompt		; reset prompt flag
-	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
+	movea.l	BLITTER_CONTEXT_PTR.w,A0
 .1	move.b	#BLIT_CMD_ACTIVATE_CURSOR,(BLIT_CR,A0)
 .2	move.b	CIA_AC,D0	; check for character
 	beq.s	.2		; no, check again
@@ -39,8 +40,8 @@ no_prompt
 se_add_bottom_row::
 	movem.l	A2-A3,-(SP)
 
-	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO
-	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
+	movea.l	BLITTER_CONTEXT_PTR.w,A0
 
 	move.w	(BLIT_NO_OF_TILES,A0),D0
 	clr.l	D1
@@ -80,8 +81,8 @@ se_add_bottom_row::
 se_add_top_row::
 	movem.l	A2-A3,-(SP)
 
-	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO
-	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
+	movea.l	BLITTER_CONTEXT_PTR.w,A0
 
 	move.w	(BLIT_NO_OF_TILES,A0),D0
 	subq.w	#1,D0	; D0 = index to last char
@@ -127,7 +128,8 @@ se_add_top_row::
 	rts
 
 se_fill_command_buffer:
-	movea.l	BLITTER_CONTEXT_PTR,A0
+	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
+	movea.l	BLITTER_CONTEXT_PTR.w,A0
 	move.b	(BLIT_CURSOR_COLUMN,A0),-(SP)	; save current cursor pos
 	move.w	#ASCII_CR,-(SP)			; move cursor to first position
 	bsr	_putchar
