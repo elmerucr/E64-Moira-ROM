@@ -2,7 +2,7 @@
 
 		section TEXT
 
-		dc.l	$00010000	; initial SSP
+		dc.l	$00010000	; initial ISP
 		dc.l	reset_exception	; initial PC
 
 rom_version::	dc.b	'rom v20230101',0

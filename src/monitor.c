@@ -142,10 +142,16 @@ static void monitor_line(u32 address)
 
 	putchar(' ');
 
+	u16 old_color = BLIT[current_blit].background_color;
+
+	BLIT[current_blit].background_color = BLIT[current_blit].foreground_color & 0x1fff;
+
 	for (u32 no = 0; no < 8; no++) {
 		putsymbol(peekb((address + no) & 0xffffff));
 		putchar(ASCII_CURSOR_RIGHT);
 	}
+
+	BLIT[current_blit].background_color = old_color;
 
 	BLIT[current_blit].cursor_column = 9;
 }

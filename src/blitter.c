@@ -15,7 +15,7 @@ void blitter_init_display_list()
 
 	DISPLAY_LIST[0].active  = 0x01;
 	DISPLAY_LIST[0].blit_no = 0x00;
-	DISPLAY_LIST[0].flags0  = 0x8a;
+	DISPLAY_LIST[0].flags0  = 0x1a;
 	DISPLAY_LIST[0].flags1  = 0x00;
 	DISPLAY_LIST[0].xpos    = 0x0000;
 	DISPLAY_LIST[0].ypos    = 0x0018;
