@@ -32,6 +32,9 @@ void blitter_init_display_list()
 
 void blitter_init_default_blit()
 {
+	/*
+	 * Note: flags and position not set, done in kernel display list
+	 */
 	current_blit = 0;
 	BLIT[current_blit].control_register = 0xc1;	// deactivate cursor
 	BLIT[current_blit].cursor_blink_speed = 0x14;

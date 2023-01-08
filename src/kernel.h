@@ -15,6 +15,23 @@ typedef	int		i16;
 typedef unsigned long	u32;
 typedef	signed long	i32;
 
+#define	C64_BLACK	0xf000
+#define	C64_WHITE	0xffff
+#define	C64_RED		0xf733
+#define	C64_CYAN	0xf8cc
+#define	C64_PURPLE	0xf849
+#define	C64_GREEN	0xf6a5
+#define	C64_BLUE	0xf339
+#define	C64_YELLOW	0xfee8
+#define	C64_ORANGE	0xf853
+#define	C64_BROWN	0xf531
+#define	C64_LIGHTRED	0xfb77
+#define	C64_DARKGREY	0xf444
+#define	C64_GREY	0xf777
+#define	C64_LIGHTGREEN	0xfbfa
+#define	C64_LIGHTBLUE	0xf67d
+#define	C64_LIGHTGREY	0xfaaa
+
 #define	E64_BLUE_01	0xf113
 #define	E64_BLUE_03	0xf339
 #define	E64_BLUE_08	0xfbbf

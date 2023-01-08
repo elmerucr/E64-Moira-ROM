@@ -7,6 +7,7 @@
 
 #include "blitter.h"
 #include "cia.h"
+#include "kernel.h"
 
 extern u8 se_do_prompt;	// part of screeneditor
 extern void *se_command_buffer;
@@ -227,6 +228,58 @@ static void monitor_input_command()
 	se_do_prompt = 0;
 }
 
+static void c64_theme()
+{
+	BLITTER->clear_color = C64_BLUE;
+	BLITTER->hor_border_color = C64_LIGHTBLUE;
+	BLITTER->ver_border_color = C64_LIGHTBLUE;
+	BLITTER->hor_border_size = 24;
+	BLITTER->ver_border_size = 0;
+
+	BLIT[0].cursor_blink_speed = 0x14;
+	BLIT[0].columns = 80;
+	BLIT[0].rows = 44;
+	BLIT[0].tile_width = 1;
+	BLIT[0].tile_height = 1;
+	BLIT[0].foreground_color = C64_LIGHTBLUE;
+	BLIT[0].background_color = 0x0000;
+
+	DISPLAY_LIST[0].flags0 = 0x1a;
+	DISPLAY_LIST[0].flags1 = 0x00;
+	DISPLAY_LIST[0].xpos = 0x0000;
+	DISPLAY_LIST[0].ypos = 0x0018;
+
+	clear_screen();
+
+	puts("\nc64 theme");
+}
+
+static void amiga_theme()
+{
+	BLITTER->clear_color = 0xf25a;
+	BLITTER->hor_border_color = 0xf000;
+	BLITTER->ver_border_color = 0xf000;
+	BLITTER->hor_border_size = 0;
+	BLITTER->ver_border_size = 0;
+
+	BLIT[0].cursor_blink_speed = 0x14;
+	BLIT[0].columns = 80;
+	BLIT[0].rows = 25;
+	BLIT[0].tile_width = 1;
+	BLIT[0].tile_height = 2;
+	BLIT[0].foreground_color = 0xfeee;
+	BLIT[0].background_color = 0x0000;
+
+	DISPLAY_LIST[0].flags0 = 0x2a;
+	DISPLAY_LIST[0].flags1 = 0x00;
+	DISPLAY_LIST[0].xpos = 0x0000;
+	DISPLAY_LIST[0].ypos = 0x0000;
+
+	clear_screen();
+
+	puts("\namiga theme");
+}
+
 void execute()
 {
 	command_buffer = &se_command_buffer;	// reset to start of buffer
@@ -240,8 +293,20 @@ void execute()
 		case ':':
 			monitor_input_command();
 			break;
+		case 'a':
+			if (check_keyword(5, "miga ")) {
+				amiga_theme();
+				break;
+			} else {
+				advance();
+				error();
+				break;
+			}
 		case 'c':
-			if (check_keyword(5, "lear ")) {
+			if (check_keyword(3, "64 ")) {
+				c64_theme();
+				break;
+			} else if (check_keyword(5, "lear ")) {
 				clear_screen();
 				break;
 			} else {
