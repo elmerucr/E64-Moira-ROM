@@ -233,12 +233,14 @@ static void c64_theme()
 	BLITTER->clear_color = C64_BLUE;
 	BLITTER->hor_border_color = C64_LIGHTBLUE;
 	BLITTER->ver_border_color = C64_LIGHTBLUE;
-	BLITTER->hor_border_size = 24;
-	BLITTER->ver_border_size = 0;
+	BLITTER->hor_border_size = 32;
+	BLITTER->ver_border_size = 32;
 
+	BLIT[0].tile_width = 1;
+	BLIT[0].tile_height = 1;
 	BLIT[0].cursor_blink_speed = 0x14;
-	BLIT[0].columns = 80;
-	BLIT[0].rows = 44;
+	BLIT[0].columns = 72;
+	BLIT[0].rows = 42;
 	BLIT[0].tile_width = 1;
 	BLIT[0].tile_height = 1;
 	BLIT[0].foreground_color = C64_LIGHTBLUE;
@@ -246,8 +248,8 @@ static void c64_theme()
 
 	DISPLAY_LIST[0].flags0 = 0x1a;
 	DISPLAY_LIST[0].flags1 = 0x00;
-	DISPLAY_LIST[0].xpos = 0x0000;
-	DISPLAY_LIST[0].ypos = 0x0018;
+	DISPLAY_LIST[0].xpos = 0x0020;
+	DISPLAY_LIST[0].ypos = 0x0020;
 
 	clear_screen();
 
@@ -262,11 +264,11 @@ static void amiga_theme()
 	BLITTER->hor_border_size = 0;
 	BLITTER->ver_border_size = 0;
 
+	BLIT[0].tile_width = 1;
+	BLIT[0].tile_height = 2;
 	BLIT[0].cursor_blink_speed = 0x14;
 	BLIT[0].columns = 80;
 	BLIT[0].rows = 25;
-	BLIT[0].tile_width = 1;
-	BLIT[0].tile_height = 2;
 	BLIT[0].foreground_color = 0xfeee;
 	BLIT[0].background_color = 0x0000;
 
