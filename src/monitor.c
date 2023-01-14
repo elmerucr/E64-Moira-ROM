@@ -228,26 +228,26 @@ static void monitor_input_command()
 	se_do_prompt = 0;
 }
 
-static void e64_theme()
+void e64_theme()
 {
 	BLITTER->clear_color = E64_BLUE_03;
 	BLITTER->hor_border_color = E64_BLUE_01;
 	BLITTER->ver_border_color = E64_BLUE_01;
-	BLITTER->hor_border_size = 24;
+	BLITTER->hor_border_size = 16;
 	BLITTER->ver_border_size = 0;
 
 	BLIT[0].tile_width = 1;
-	BLIT[0].tile_height = 1;
+	BLIT[0].tile_height = 2;
 	BLIT[0].cursor_blink_speed = 0x14;
 	BLIT[0].columns = 80;
-	BLIT[0].rows = 44;
+	BLIT[0].rows = 23;
 	BLIT[0].foreground_color = E64_BLUE_08;
 	BLIT[0].background_color = 0x0000;
 
-	DISPLAY_LIST[0].flags0  = 0x1a;
+	DISPLAY_LIST[0].flags0  = 0x2a;
 	DISPLAY_LIST[0].flags1  = 0x00;
 	DISPLAY_LIST[0].xpos    = 0x0000;
-	DISPLAY_LIST[0].ypos    = 0x0018;
+	DISPLAY_LIST[0].ypos    = 0x0010;
 }
 
 static void c64_theme()

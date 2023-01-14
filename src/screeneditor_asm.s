@@ -79,7 +79,7 @@ se_add_bottom_row::
 	rts
 
 se_add_top_row::
-	movem.l	A2-A3,-(SP)
+	movem.l	D2/A2-A3,-(SP)
 
 	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
 	movea.l	BLITTER_CONTEXT_PTR.w,A0
@@ -87,7 +87,10 @@ se_add_top_row::
 	move.w	(BLIT_NO_OF_TILES,A0),D0
 	subq.w	#1,D0	; D0 = index to last char
 	move.w	D0,D1
-	sub.b	(BLIT_COLUMNS,A0),D1
+
+	clr.l	D2
+	move.b	(BLIT_COLUMNS,A0),D2
+	sub.w	D2,D1
 
 	movea.l	(BLIT_TILE_RAM_PTR,A0),A1
 	movea.l (BLIT_FG_COLOR_RAM_PTR,A0),A2
@@ -120,7 +123,7 @@ se_add_top_row::
 	sub.b	#1,D0
 	bne.s	.3
 
-	movem.l	(SP)+,A2-A3
+	movem.l	(SP)+,D2/A2-A3
 
 	movea.l	top_row_callback,A0
 	jsr	(A0)

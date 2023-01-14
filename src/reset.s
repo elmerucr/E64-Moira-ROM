@@ -22,7 +22,7 @@ reset_exception::
 
 		jsr	_blitter_init_display_list
 		jsr	_blitter_init_default_blit
-		jsr	_blitter_set_bordersize_and_colors
+		;jsr	_blitter_set_bordersize_and_colors
 
 		; turn on interrupt generation by BLITTER (@ screenrefresh)
 		move.b	#$01,BLITTER_CR.w

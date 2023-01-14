@@ -17,16 +17,16 @@
 #define	BLIT_CMD_INCREASE_CURSOR_POS	0x81
 
 struct blitter_ic {
-	u8	status_register;
-	u8	control_register;
-	u8	operation;
-	u8	context_no;
-	u32	context_ptr;
-	u8	hor_border_size;
-	u8	ver_border_size;
-	u16	hor_border_color;
-	u16	ver_border_color;
-	u16	clear_color;
+	u8	status_register;	// 0x00
+	u8	control_register;	// 0x01
+	u8	operation;		// 0x02
+	u8	context_no;		// 0x03
+	u32	context_ptr;		// 0x04
+	u16	hor_border_size;	// 0x08
+	u16	ver_border_size;	// 0x0a
+	u16	hor_border_color;	// 0x0c
+	u16	ver_border_color;	// 0x0e
+	u16	clear_color;		// 0x10
 };
 
 struct blit_ic {
@@ -84,7 +84,7 @@ struct display_list_entry {
 
 void blitter_init_display_list();
 void blitter_init_default_blit();
-void blitter_set_bordersize_and_colors();
+//void blitter_set_bordersize_and_colors();
 
 void clear_screen();
 void putsymbol(u8 symbol);
