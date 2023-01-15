@@ -83,8 +83,7 @@ struct display_list_entry {
 };
 
 void blitter_init_display_list();
-void blitter_init_default_blit();
-//void blitter_set_bordersize_and_colors();
+void blitter_init_default_blit_and_theme();
 
 void clear_screen();
 void putsymbol(u8 symbol);

@@ -228,74 +228,6 @@ static void monitor_input_command()
 	se_do_prompt = 0;
 }
 
-void e64_theme()
-{
-	BLITTER->clear_color = E64_BLUE_03;
-	BLITTER->hor_border_color = E64_BLUE_01;
-	BLITTER->ver_border_color = E64_BLUE_01;
-	BLITTER->hor_border_size = 16;
-	BLITTER->ver_border_size = 0;
-
-	BLIT[0].tile_width = 1;
-	BLIT[0].tile_height = 2;
-	BLIT[0].cursor_blink_speed = 0x14;
-	BLIT[0].columns = 80;
-	BLIT[0].rows = 23;
-	BLIT[0].foreground_color = E64_BLUE_08;
-	BLIT[0].background_color = 0x0000;
-
-	DISPLAY_LIST[0].flags0  = 0x2a;
-	DISPLAY_LIST[0].flags1  = 0x00;
-	DISPLAY_LIST[0].xpos    = 0x0000;
-	DISPLAY_LIST[0].ypos    = 0x0010;
-}
-
-static void c64_theme()
-{
-	BLITTER->clear_color = C64_BLUE;
-	BLITTER->hor_border_color = C64_LIGHTBLUE;
-	BLITTER->ver_border_color = C64_LIGHTBLUE;
-	BLITTER->hor_border_size = 32;
-	BLITTER->ver_border_size = 32;
-
-	BLIT[0].tile_width = 1;
-	BLIT[0].tile_height = 1;
-	BLIT[0].cursor_blink_speed = 0x14;
-	BLIT[0].columns = 72;
-	BLIT[0].rows = 42;
-	BLIT[0].tile_width = 1;
-	BLIT[0].tile_height = 1;
-	BLIT[0].foreground_color = C64_LIGHTBLUE;
-	BLIT[0].background_color = 0x0000;
-
-	DISPLAY_LIST[0].flags0 = 0x1a;
-	DISPLAY_LIST[0].flags1 = 0x00;
-	DISPLAY_LIST[0].xpos = 0x0020;
-	DISPLAY_LIST[0].ypos = 0x0020;
-}
-
-static void amiga_theme()
-{
-	BLITTER->clear_color = 0xf25a;
-	BLITTER->hor_border_color = 0xf000;
-	BLITTER->ver_border_color = 0xf000;
-	BLITTER->hor_border_size = 0;
-	BLITTER->ver_border_size = 0;
-
-	BLIT[0].tile_width = 1;
-	BLIT[0].tile_height = 2;
-	BLIT[0].cursor_blink_speed = 0x14;
-	BLIT[0].columns = 80;
-	BLIT[0].rows = 25;
-	BLIT[0].foreground_color = 0xfeee;
-	BLIT[0].background_color = 0x0000;
-
-	DISPLAY_LIST[0].flags0 = 0x2a;
-	DISPLAY_LIST[0].flags1 = 0x00;
-	DISPLAY_LIST[0].xpos = 0x0000;
-	DISPLAY_LIST[0].ypos = 0x0000;
-}
-
 void execute()
 {
 	command_buffer = &se_command_buffer;	// reset to start of buffer
@@ -311,9 +243,9 @@ void execute()
 			break;
 		case 'a':
 			if (check_keyword(5, "miga ")) {
-				amiga_theme();
+				blitter_amiga_theme();
 				clear_screen();
-				puts("\namiga theme");
+				puts("\nAmiga Theme");
 				break;
 			} else {
 				advance();
@@ -322,9 +254,9 @@ void execute()
 			}
 		case 'c':
 			if (check_keyword(3, "64 ")) {
-				c64_theme();
+				blitter_c64_theme();
 				clear_screen();
-				puts("\nc64 theme");
+				puts("\nC64 Theme");
 				break;
 			} else if (check_keyword(5, "lear ")) {
 				clear_screen();
@@ -336,9 +268,9 @@ void execute()
 			}
 		case 'e':
 			if (check_keyword(3, "64 ")) {
-				e64_theme();
+				blitter_e64_theme();
 				clear_screen();
-				puts("\ne64 theme");
+				puts("\nE64 Theme");
 			} else {
 				advance();
 				error();

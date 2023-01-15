@@ -21,7 +21,7 @@ reset_exception::
 		jsr	_reset_heap_pointers
 
 		jsr	_blitter_init_display_list
-		jsr	_blitter_init_default_blit
+		jsr	_blitter_init_default_blit_and_theme
 		;jsr	_blitter_set_bordersize_and_colors
 
 		; turn on interrupt generation by BLITTER (@ screenrefresh)
