@@ -99,6 +99,8 @@ is_cd	cmpi.b	#ASCII_CURSOR_DOWN,D0
 	beq	.3
 	move.l	A0,-(SP)
 	bsr	se_add_bottom_row
+	movea.l	bottom_row_callback,A0
+	jsr	(A0)
 	move.l	(SP)+,A0
 .3	bra	finish
 is_cu	cmpi.b	#ASCII_CURSOR_UP,D0
@@ -117,6 +119,8 @@ is_cu	cmpi.b	#ASCII_CURSOR_UP,D0
 	beq	.3
 	move.l	A0,-(SP)
 	bsr	se_add_top_row
+	movea.l	top_row_callback,A0
+	jsr	(A0)
 	move.l	(SP)+,A0
 .3	movem.l	(SP)+,A2-A3	; finish
 	;unlk	A6

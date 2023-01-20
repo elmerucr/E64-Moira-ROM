@@ -73,9 +73,6 @@ se_add_bottom_row::
 
 	movem.l	(SP)+,A2-A3
 
-	movea.l	bottom_row_callback,A0
-	jsr	(A0)
-
 	rts
 
 se_add_top_row::
@@ -124,9 +121,6 @@ se_add_top_row::
 	bne.s	.3
 
 	movem.l	(SP)+,D2/A2-A3
-
-	movea.l	top_row_callback,A0
-	jsr	(A0)
 
 	rts
 
