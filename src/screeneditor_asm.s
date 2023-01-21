@@ -37,7 +37,7 @@ no_prompt
 	beq.s	no_prompt
 	bra.s	se_loop
 
-se_add_bottom_row::
+_se_add_bottom_row::
 	movem.l	A2-A3,-(SP)
 
 	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
@@ -66,16 +66,16 @@ se_add_bottom_row::
 	subq	#1,D1
 	bne.s	.2
 
-	move.b	(BLIT_COLUMNS,A0),D0
-.3	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)	; bug??? for some reason cursor is always at zero pos when putchar
-	sub.b	#1,D0
-	bne.s	.3
+;	move.b	(BLIT_COLUMNS,A0),D0
+;.3	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)	; bug??? for some reason cursor is always at zero pos when putchar
+;	sub.b	#1,D0
+;	bne.s	.3
 
 	movem.l	(SP)+,A2-A3
 
 	rts
 
-se_add_top_row::
+_se_add_top_row::
 	movem.l	D2/A2-A3,-(SP)
 
 	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
@@ -115,10 +115,10 @@ se_add_top_row::
 	cmp.w	#-1,D0
 	bne.s	.2
 
-	move.b	(BLIT_COLUMNS,A0),D0
-.3	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
-	sub.b	#1,D0
-	bne.s	.3
+;	move.b	(BLIT_COLUMNS,A0),D0
+;.3	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
+;	sub.b	#1,D0
+;	bne.s	.3
 
 	movem.l	(SP)+,D2/A2-A3
 

@@ -334,45 +334,57 @@ static u8 get_hex_specific_from_screen(u32 *hex_number, u8 bytes)
 void bottom_row()
 {
 	u16 old_cursor_pos = BLIT[current_blit].cursor_pos;
+	u8 rows_to_check = BLIT[current_blit].rows;
 
 	BLIT[current_blit].cursor_column = 1;
+	//BLIT[current_blit].cursor_row = 0;
+	BLIT[current_blit].cursor_row = BLIT[current_blit].rows - 1;
 
-	while (BLIT[current_blit].cursor_row--) {
+	for (u16 i=0; i < rows_to_check; i++) {
 		if (BLIT[current_blit].cursor_char == ':') {
 			BLIT[current_blit].cursor_column = 2;
 			u32 address;
 			if (get_hex_specific_from_screen(&address, 3)) {
 				address = (address + 8) & 0x00ffffff;
 				BLIT[current_blit].cursor_pos = old_cursor_pos;
+				se_add_bottom_row();
 				monitor_line(address);
 				return;
+			} else {
+				BLIT[current_blit].cursor_column = 1;
 			}
-
 		}
+		BLIT[current_blit].cursor_row--;
 	}
 
 	BLIT[current_blit].cursor_pos = old_cursor_pos;
+	se_add_bottom_row();
 }
 
 void top_row()
 {
 	u16 old_cursor_pos = BLIT[current_blit].cursor_pos;
-	u8 rows_to_check = BLIT[current_blit].rows - 1;
+	u8 rows_to_check = BLIT[current_blit].rows;
 
 	BLIT[current_blit].cursor_column = 1;
 
-	while (BLIT[current_blit].cursor_row++ < rows_to_check) {
+	for (u16 i=0; i < rows_to_check; i++) {
 		if (BLIT[current_blit].cursor_char == ':') {
 			BLIT[current_blit].cursor_column = 2;
 			u32 address;
 			if (get_hex_specific_from_screen(&address, 3)) {
 				address = (address - 8) & 0x00ffffff;
 				BLIT[current_blit].cursor_pos = old_cursor_pos;
+				se_add_top_row();
 				monitor_line(address);
 				return;
+			} else {
+				BLIT[current_blit].cursor_column = 1;
 			}
 		}
+		BLIT[current_blit].cursor_row++;
 	}
 
 	BLIT[current_blit].cursor_pos = old_cursor_pos;
+	se_add_top_row();
 }
