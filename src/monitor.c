@@ -228,6 +228,19 @@ static void monitor_input_command()
 	se_do_prompt = 0;
 }
 
+static void t_command()
+{
+	u32 source;
+	u32 target;
+	u32 number_of_bytes;
+
+	if (!get_hex(&source)) {
+		error();
+		return;
+	}
+	puts("\ntransfer memory");
+}
+
 void execute()
 {
 	command_buffer = &se_command_buffer;	// reset to start of buffer
@@ -284,6 +297,15 @@ void execute()
 			}
 			advance();
 			monitor_command();
+			break;
+		case 't':
+			if (check_keyword(1, " ")) {
+				t_command();
+			} else {
+				advance();
+				error();
+				break;
+			}
 			break;
 		case 'v':
 			if (check_keyword(3, "er ")) {

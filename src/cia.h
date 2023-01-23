@@ -10,8 +10,8 @@
 
 #include "kernel.h"
 
-#define	CIA		((struct cia_ic *)0x00000e00)
-#define CIA_KEYSTATES	((u8 *)0x00000e80)
+#define	CIA		((struct cia_ic *)0x00000a00)
+#define CIA_KEYSTATES	((u8 *)0x00000a80)
 
 #define CIA_KEY_EMPTY	0x00
 #define CIA_KEY_ESCAPE	0x01

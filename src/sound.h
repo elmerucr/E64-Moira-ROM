@@ -10,8 +10,8 @@
 
 #include "kernel.h"
 
-#define	SOUND	((struct sound_ic *)0x00000c00)
-#define SOUND_MIXER	((struct sound_mixer_ic *)0x00000d00)
+#define	SOUND_SID	((struct sound_ic *)0x00000c80)
+#define SOUND_MIXER	((struct sound_mixer_ic *)0x00000e00)
 
 struct sound_ic {
 	u16	sid0_voice1_frequency;
@@ -299,6 +299,7 @@ enum notes {
 };
 
 void sound_reset();
+void sound_init_welcome_sound();
 void sound_welcome_sound();
 
 #endif

@@ -36,32 +36,38 @@ void sound_reset()
 {
 	// zero out 4 sids
 	for (u32 i=0; i<128; i++) {
-		pokeb(0x00000c00+i, 0);
+		pokeb(0x00000c80+i, 0);
 	}
 
-	SOUND->sid0_filtermode_volume = 0x0f;
-	SOUND->sid1_filtermode_volume = 0x0f;
-	SOUND->sid2_filtermode_volume = 0x0f;
-	SOUND->sid3_filtermode_volume = 0x0f;
+	SOUND_SID->sid0_filtermode_volume = 0x0f;
+	SOUND_SID->sid1_filtermode_volume = 0x0f;
+	SOUND_SID->sid2_filtermode_volume = 0x0f;
+	SOUND_SID->sid3_filtermode_volume = 0x0f;
 
 	for (u32 i=0; i<16; i++) {
-		pokeb(0x00000d00+i,0x7f);	// 50% volume
+		pokeb(0x00000e00+i,0x7f);	// 50% volume
 	}
+}
+
+void sound_init_welcome_sound()
+{
+	SOUND_SID->sid0_voice1_frequency = music_notes[N_D3_];
+	SOUND_SID->sid0_voice1_attack_decay = 0x09;
+	SOUND_SID->sid0_voice1_pulsewidth = 0xf0f;
+	SOUND_MIXER->sid0_volume_left = 0xff;
+	SOUND_MIXER->sid0_volume_right = 0x10;
+	SOUND_SID->sid0_voice1_control_register = 0x40;
+
+	SOUND_SID->sid1_voice1_frequency = music_notes[N_A3_];
+	SOUND_SID->sid1_voice1_attack_decay = 0x09;
+	SOUND_SID->sid1_voice1_pulsewidth = 0xf0f;
+	SOUND_MIXER->sid1_volume_left = 0x10;
+	SOUND_MIXER->sid1_volume_right = 0xff;
+	SOUND_SID->sid1_voice1_control_register = 0x40;
 }
 
 void sound_welcome_sound()
 {
-	SOUND->sid0_voice1_frequency = music_notes[N_D3_];
-	SOUND->sid0_voice1_attack_decay = 0x09;
-	SOUND->sid0_voice1_pulsewidth = 0xf0f;
-	SOUND_MIXER->sid0_volume_left = 0xff;
-	SOUND_MIXER->sid0_volume_right = 0x10;
-	SOUND->sid0_voice1_control_register = 0x41;
-
-	SOUND->sid1_voice1_frequency = music_notes[N_A3_];
-	SOUND->sid1_voice1_attack_decay = 0x09;
-	SOUND->sid1_voice1_pulsewidth = 0xf0f;
-	SOUND_MIXER->sid1_volume_left = 0x10;
-	SOUND_MIXER->sid1_volume_right = 0xff;
-	SOUND->sid1_voice1_control_register = 0x41;
+	SOUND_SID->sid0_voice1_control_register = 0x41;
+	SOUND_SID->sid1_voice1_control_register = 0x41;
 }

@@ -57,10 +57,8 @@ _putchar::
 	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO
 	movea.l	BLITTER_CONTEXT_PTR.w,A0
 	move.b	($d,SP),D0
-
 is_lf	cmpi.b	#ASCII_LF,D0
 	bne	is_cri
-
 	clr.b	(BLIT_CURSOR_COLUMN,A0)
 	move.b	(BLIT_ROWS,A0),D0
 	subi.b	#1,D0
@@ -70,7 +68,6 @@ is_lf	cmpi.b	#ASCII_LF,D0
 	bra	finish
 .1	addi.b	#1,(BLIT_CURSOR_ROW,A0)
 	bra	finish
-
 is_cri	cmpi.b	#ASCII_CURSOR_RIGHT,D0
 	bne	is_cl
 	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
@@ -85,15 +82,9 @@ is_cl	cmpi.b	#ASCII_CURSOR_LEFT,D0
 	tst.w	(BLIT_CURSOR_POS,A0)
 	beq	finish
 	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
-;	btst	#5,(BLIT_SR,A0) ; did we cross start of the screen?
-;	beq	finish
-;	move.l	A0,-(SP)
-;	bsr	_se_add_top_row
-;	move.l	(SP)+,A0
 	bra	finish
 is_cd	cmpi.b	#ASCII_CURSOR_DOWN,D0
 	bne	is_cu
-
 	move.b	(BLIT_ROWS,A0),D0
 	subi.b	#1,D0
 	cmp.b	(BLIT_CURSOR_ROW,A0),D0	; are we at the last row?
@@ -105,26 +96,8 @@ is_cd	cmpi.b	#ASCII_CURSOR_DOWN,D0
 	bra	finish
 .1	addi.b	#1,(BLIT_CURSOR_ROW,A0)
 	bra	finish
-
-
-;	move.b	(BLIT_COLUMNS,A0),D0
-;.1	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
-;	btst	#5,(BLIT_SR,A0)	; did we reach end screen?
-;	beq.s	.2		; no
-;	move.w	#1,add_row_flag	; yes
-;.2	subq.b	#1,D0
-;	bne.s	.1
-;	tst.w	add_row_flag
-;	beq	.3
-;	move.l	A0,-(SP)
-;	bsr	_se_add_bottom_row
-;	movea.l	bottom_row_callback,A0
-;	jsr	(A0)
-;	move.l	(SP)+,A0
-;.3	bra	finish
 is_cu	cmpi.b	#ASCII_CURSOR_UP,D0
 	bne	is_bksp
-
 	tst.b	(BLIT_CURSOR_ROW,A0)	; are we at row 0?
 	bne	.1	; no goto 1
 	move.l	A0,-(SP)
@@ -135,7 +108,6 @@ is_cu	cmpi.b	#ASCII_CURSOR_UP,D0
 .1	subi.b	#1,(BLIT_CURSOR_ROW,A0)
 .2	movem.l	(SP)+,A2-A3
 	rts
-
 is_bksp	cmpi.b	#ASCII_BACKSPACE,D0
 	bne	is_cr
 	tst.w	(BLIT_CURSOR_POS,A0)

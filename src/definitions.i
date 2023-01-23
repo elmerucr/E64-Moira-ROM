@@ -70,7 +70,7 @@ BLIT_CMD_DEACTIVATE_CURSOR	equ	%11000001
 BLIT_CMD_PROCESS_CURSOR_STATE	equ	%11000010
 
 ; timer
-TIMER		equ	$0b00
+TIMER		equ	$0900
 TIMER_SR	equ	TIMER
 TIMER_CR	equ	TIMER+$01
 TIMER0_BPM	equ	TIMER+$10
@@ -117,10 +117,7 @@ SID3AD	equ	SID3+$05
 SID3SR	equ	SID3+$06
 SID3V	equ	SID3+$1b
 
-;ANA0	equ	SND+$04		; analog0 base
-;ANA0P	equ	ANA0+$02
-
-SNDM	equ	SND+$100	; mixer base
+SNDM	equ	SND+$200	; mixer base
 SNDM0L	equ	SNDM+$00
 SNDM0R	equ	SNDM+$01
 SNDM1L	equ	SNDM+$02
@@ -135,7 +132,7 @@ MXAN3L	equ	SNDM+$0e
 MXAN3R	equ	SNDM+$0f
 
 ; cia
-CIA	equ	$0e00		; CIA base
+CIA	equ	$0a00		; CIA base
 CIA_SR	equ	CIA		; status register
 CIA_CR	equ	CIA+$01		; control register
 CIA_KRD	equ	CIA+$02		; keyboard repeat delay in 10ms
