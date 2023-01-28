@@ -10,10 +10,11 @@
 
 #include "kernel.h"
 
-#define	SOUND_SID	((struct sound_ic *)0x00000c80)
+#define	SOUND_SID	((struct sound_sid_ic *)0x00000c80)
+#define SOUND_ANALOG	((struct sound_analog_ic)0x00000d00)
 #define SOUND_MIXER	((struct sound_mixer_ic *)0x00000e00)
 
-struct sound_ic {
+struct sound_sid_ic {
 	u16	sid0_voice1_frequency;
 	u16	sid0_voice1_pulsewidth;
 	u8	sid0_voice1_control_register;
@@ -121,7 +122,9 @@ struct sound_ic {
 	u8	sid3_poty;
 	u8	sid3_voice3_random;
 	u8	sid3_voice3_envelope;
+};
 
+struct sound_analog_ic {
 	u8	analog0_waveform_gate;
 	u8	analog0_pitch_factor_semitones;
 	u16	analog0_digital_frequency;

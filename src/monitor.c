@@ -231,14 +231,41 @@ static void monitor_input_command()
 static void t_command()
 {
 	u32 source;
-	u32 target;
-	u32 number_of_bytes;
+	u32 destination;
+	u32 bytes;
 
-	if (!get_hex(&source)) {
+	// numbers will be max 0xffffff because getting 3 bytes...
+
+	if (!get_hex_specific(&source, 3)) {
 		error();
 		return;
 	}
-	puts("\ntransfer memory");
+
+	if (!get_hex_specific(&destination, 3)) {
+		error();
+		return;
+	}
+
+	if (!get_hex_specific(&bytes, 3)) {
+		error();
+		return;
+	}
+
+	puts("\ntransferring $");
+	out6x(bytes);
+	puts(" bytes from $");
+	out6x(source);
+	puts(" to $");
+	out6x(destination);
+
+	u8 *src = (u8 *)source;
+	u8 *dst = (u8 *)destination;
+
+	while (bytes--) {
+		*dst++ = *src++;
+		//src &= 0x00ffffff;
+		//dst &= 0x00ffffff;
+	}
 }
 
 void execute()
