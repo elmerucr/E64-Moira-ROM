@@ -158,7 +158,33 @@ static void monitor_line(u32 address)
 	BLIT[current_blit].cursor_column = 9;
 }
 
-static void monitor_command()
+static void monitor_word_line(u32 address)
+{
+	puts("\r.;");
+	out6x(address & 0xffffff);
+
+	for (u32 no = 0; no < 8; no++) {
+		putchar(' ');
+		out4x(peekw((address + (2*no)) & 0xffffff));
+	}
+
+	putchar(' ');
+
+	u16 old_color = BLIT[current_blit].background_color;
+
+	//BLIT[current_blit].background_color = BLIT[current_blit].foreground_color & 0x1fff;
+
+	for (u32 no = 0; no < 8; no++) {
+		BLIT[current_blit].background_color = peekw(address + (2 * no)) | 0xf000;
+		puts("  ");
+	}
+
+	BLIT[current_blit].background_color = old_color;
+
+	BLIT[current_blit].cursor_column = 9;
+}
+
+static void monitor_command(u16 mw_out)
 {
 	u32 start_address;
 	u32 end_address;
@@ -175,9 +201,19 @@ static void monitor_command()
 		}
 	}
 
-	for (u32 i = start_address; i <= end_address; i += 8) {
-		puts("\n.:");
-		monitor_line(i);
+	if (mw_out != 0) {
+		start_address &= 0xfffffffe;
+		end_address   &= 0xfffffffe;
+	}
+
+	for (u32 i = start_address; i <= end_address; i += ((mw_out == 0) ? 8 : 16)) {
+		if (mw_out == 0) {
+			putchar('\n');
+			monitor_line(i);
+		} else {
+			putchar('\n');
+			monitor_word_line(i);
+		}
 		/*
 		 * check for escape key
 		 */
@@ -225,6 +261,34 @@ static void monitor_input_command()
 
 	puts("\n.:");
 	out6x((address + 8) & 0xffffff);
+	putchar(' ');
+	se_do_prompt = 0;
+}
+
+static void monitor_word_input_command()
+{
+	u32 address;
+
+	if (!get_hex_specific(&address, 3)) {
+		error();
+		return;
+	}
+
+	address &= 0xfffffe;
+
+	for (u32 i=0; i < 8; i++) {
+		u32 number;
+		if(!get_hex_specific(&number, 2)) {
+			error();
+			return;
+		}
+		pokew(address + (2 * i), number & 0xffff);
+	}
+
+	monitor_word_line(address);
+
+	puts("\n.;");
+	out6x((address + 16) & 0xffffff);
 	putchar(' ');
 	se_do_prompt = 0;
 }
@@ -282,10 +346,15 @@ static void t_command()
 	}
 }
 
-void ver_command()
+static void ver_command()
 {
 	putchar('\n');
 	puts(&rom_version);
+}
+
+static void monitor_word_command()
+{
+	puts("\nmonitor word command");
 }
 
 void execute()
@@ -300,6 +369,9 @@ void execute()
 	switch (c) {
 		case ':':
 			monitor_input_command();
+			break;
+		case ';':
+			monitor_word_input_command();
 			break;
 		case 'a':
 			if (check_keyword(5, "miga ")) {
@@ -337,14 +409,20 @@ void execute()
 			}
 			break;
 		case 'm':
-			if (peek() != ' ') {
+			if (peek() == ' ') {
+				advance();
+				monitor_command(0);
+				break;
+			} else {
+				if (check_keyword(2, "w ")) {
+					//advance();
+					monitor_command(1);
+					break;
+				}
 				advance();
 				error();
 				break;
 			}
-			advance();
-			monitor_command();
-			break;
 		case 't':
 			if (check_keyword(1, " ")) {
 				t_command();
