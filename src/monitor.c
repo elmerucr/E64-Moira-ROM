@@ -11,8 +11,9 @@
 
 extern u8 se_do_prompt;	// part of screeneditor
 extern void *se_command_buffer;
-void ver_command();	// definition elsewhere
+//void ver_command();	// definition elsewhere
 extern u8 current_blit;
+extern u8 *rom_version;
 
 u8 *command_buffer;
 u8 skips;
@@ -228,6 +229,11 @@ static void monitor_input_command()
 	se_do_prompt = 0;
 }
 
+static u32 min(u32 a, u32 b)
+{
+	return a < b ? a : b;
+}
+
 static void t_command()
 {
 	u32 source;
@@ -251,6 +257,16 @@ static void t_command()
 		return;
 	}
 
+	if (source < destination) {
+		if (min(destination - source, 0x1000000 - destination) < bytes) {
+			bytes = min(destination - source, 0x1000000 - destination);
+		}
+	} else {
+		if (min(source - destination, 0x1000000 - source) < bytes) {
+			bytes = min(source - destination, 0x1000000 - source);
+		}
+	}
+
 	puts("\ntransferring $");
 	out6x(bytes);
 	puts(" bytes from $");
@@ -263,9 +279,13 @@ static void t_command()
 
 	while (bytes--) {
 		*dst++ = *src++;
-		//src &= 0x00ffffff;
-		//dst &= 0x00ffffff;
 	}
+}
+
+void ver_command()
+{
+	putchar('\n');
+	puts(&rom_version);
 }
 
 void execute()

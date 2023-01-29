@@ -5,7 +5,7 @@
 		dc.l	$00010000	; initial ISP
 		dc.l	reset_exception	; initial PC
 
-rom_version::	dc.b	'rom v20230128',0
+_rom_version::	dc.b	'rom v20230129',0
 
 reset_exception::
 		;move.w	#$2700,sr	; supervisor mode, highest IPL (is done by reset)
@@ -36,7 +36,7 @@ reset_exception::
 		; sound
 		jsr	_sound_reset
 		jsr	_sound_init_welcome_sound
-		jsr	_sound_welcome_sound
+		;jsr	_sound_welcome_sound
 
 		; cia stuff
 		jsr	_cia_init_keyboard
