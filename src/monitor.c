@@ -484,22 +484,38 @@ void bottom_row()
 	u8 rows_to_check = BLIT[current_blit].rows;
 
 	BLIT[current_blit].cursor_column = 1;
-	//BLIT[current_blit].cursor_row = 0;
 	BLIT[current_blit].cursor_row = BLIT[current_blit].rows - 1;
 
+	u32 address;
+
 	for (u16 i=0; i < rows_to_check; i++) {
-		if (BLIT[current_blit].cursor_char == ':') {
-			BLIT[current_blit].cursor_column = 2;
-			u32 address;
-			if (get_hex_specific_from_screen(&address, 3)) {
-				address = (address + 8) & 0x00ffffff;
-				BLIT[current_blit].cursor_pos = old_cursor_pos;
-				se_add_bottom_row();
-				monitor_line(address);
-				return;
-			} else {
-				BLIT[current_blit].cursor_column = 1;
-			}
+		switch (BLIT[current_blit].cursor_char) {
+			case ':':
+				BLIT[current_blit].cursor_column = 2;
+				if (get_hex_specific_from_screen(&address, 3)) {
+					address = (address + 8) & 0x00ffffff;
+					BLIT[current_blit].cursor_pos = old_cursor_pos;
+					se_add_bottom_row();
+					monitor_line(address);
+					return;
+				} else {
+					BLIT[current_blit].cursor_column = 1;
+				}
+				break;
+			case ';':
+				BLIT[current_blit].cursor_column = 2;
+				if (get_hex_specific_from_screen(&address, 3)) {
+					address = (address + 16) & 0x00fffffe;
+					BLIT[current_blit].cursor_pos = old_cursor_pos;
+					se_add_bottom_row();
+					monitor_word_line(address);
+					return;
+				} else {
+					BLIT[current_blit].cursor_column = 1;
+				}
+				break;
+			default:
+				break;
 		}
 		BLIT[current_blit].cursor_row--;
 	}
@@ -515,19 +531,36 @@ void top_row()
 
 	BLIT[current_blit].cursor_column = 1;
 
+	u32 address;
+
 	for (u16 i=0; i < rows_to_check; i++) {
-		if (BLIT[current_blit].cursor_char == ':') {
-			BLIT[current_blit].cursor_column = 2;
-			u32 address;
-			if (get_hex_specific_from_screen(&address, 3)) {
-				address = (address - 8) & 0x00ffffff;
-				BLIT[current_blit].cursor_pos = old_cursor_pos;
-				se_add_top_row();
-				monitor_line(address);
-				return;
-			} else {
-				BLIT[current_blit].cursor_column = 1;
-			}
+		switch (BLIT[current_blit].cursor_char) {
+			case ':':
+				BLIT[current_blit].cursor_column = 2;
+				if (get_hex_specific_from_screen(&address, 3)) {
+					address = (address - 8) & 0x00ffffff;
+					BLIT[current_blit].cursor_pos = old_cursor_pos;
+					se_add_top_row();
+					monitor_line(address);
+					return;
+				} else {
+					BLIT[current_blit].cursor_column = 1;
+				}
+				break;
+			case ';':
+				BLIT[current_blit].cursor_column = 2;
+				if (get_hex_specific_from_screen(&address, 3)) {
+					address = (address - 16) & 0x00fffffe;
+					BLIT[current_blit].cursor_pos = old_cursor_pos;
+					se_add_top_row();
+					monitor_word_line(address);
+					return;
+				} else {
+					BLIT[current_blit].cursor_column = 1;
+				}
+				break;
+			default:
+				break;
 		}
 		BLIT[current_blit].cursor_row++;
 	}
