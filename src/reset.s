@@ -33,6 +33,9 @@ reset_exception::
 		move.w	#3600,TIMER0_BPM.w
 		or.b	#%00000001,TIMER_CR.w	; turn on timer 0
 
+		; forth
+		jsr	_forth_init
+
 		; sound
 		jsr	_sound_reset
 		jsr	_sound_init_welcome_sound

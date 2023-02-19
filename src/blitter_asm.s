@@ -7,10 +7,10 @@
 
 	include	"definitions.i"
 
-	section	BSS
-
-add_row_flag
-	ds.w	1
+;	section	BSS
+;
+;add_row_flag
+;	ds.w	1
 
 	section	TEXT
 
@@ -53,7 +53,7 @@ _putsymbol::
 _putchar::
 	;link	A6,#0
 	movem.l	A2-A3,-(SP)
-	clr.w	add_row_flag
+	;clr.w	add_row_flag
 	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO
 	movea.l	BLITTER_CONTEXT_PTR.w,A0
 	move.b	($d,SP),D0

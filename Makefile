@@ -10,6 +10,7 @@ OBJECTS =	obj/reset.o
 OBJECTS +=	obj/blitter_asm.o \
 		obj/blitter.o \
 		obj/cia.o \
+		obj/forth.o \
 		obj/kernel.o \
 		obj/kernel_asm.o \
 		obj/monitor_asm.o \
