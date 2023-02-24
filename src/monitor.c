@@ -357,6 +357,19 @@ static void monitor_word_command()
 	puts("\nmonitor word command");
 }
 
+static void lua_command()
+{
+	u8 c;
+	while (c = advance()) {
+		// hack
+		pokeb(0x00000f02, c);
+		pokeb(0x00000f01, 0x01)
+	}
+	pokeb(0x00000f02, 0x42);
+	pokeb(0x00000f01, 0x01);
+	pokeb(0x00000f01, 0x02);
+}
+
 void execute()
 {
 	command_buffer = &se_command_buffer;	// reset to start of buffer
@@ -403,6 +416,15 @@ void execute()
 				blitter_e64_theme();
 				clear_screen();
 				puts("\nE64 Theme");
+			} else {
+				advance();
+				error();
+			}
+			break;
+		case 'l':
+			if (check_keyword(3, "ua ") {
+				//advance();
+				lua_command();
 			} else {
 				advance();
 				error();

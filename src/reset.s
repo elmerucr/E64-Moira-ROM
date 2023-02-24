@@ -5,7 +5,7 @@
 		dc.l	$00010000	; initial ISP
 		dc.l	reset_exception	; initial PC
 
-_rom_version::	dc.b	'rom v20230201',0
+_rom_version::	dc.b	'rom v20230222',0
 
 reset_exception::
 		;move.w	#$2700,sr	; supervisor mode, highest IPL (is done by reset)
