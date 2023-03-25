@@ -8,6 +8,8 @@
 #include "blitter.h"
 #include "cia.h"
 #include "kernel.h"
+#include "lox.h"
+#include "screeneditor.h"
 
 extern u8 se_do_prompt;	// part of screeneditor
 extern void *se_command_buffer;
@@ -349,12 +351,17 @@ static void t_command()
 static void ver_command()
 {
 	putchar('\n');
-	puts(&rom_version);
+	puts((u8 *)&rom_version);
 }
 
 static void monitor_word_command()
 {
 	puts("\nmonitor word command");
+}
+
+static void lox_command()
+{
+	lox_main();
 }
 
 static void lua_command()
@@ -363,16 +370,17 @@ static void lua_command()
 	while (c = advance()) {
 		// hack
 		pokeb(0x00000f02, c);
-		pokeb(0x00000f01, 0x01)
+		pokeb(0x00000f01, 0x01);
 	}
-	pokeb(0x00000f02, 0x42);
-	pokeb(0x00000f01, 0x01);
-	pokeb(0x00000f01, 0x02);
+
+	pokeb(0x00000f02, 0x42); // char in = 'B'
+	pokeb(0x00000f01, 0x01); // add char to command
+	pokeb(0x00000f01, 0x02); // push command to queue
 }
 
 void execute()
 {
-	command_buffer = &se_command_buffer;	// reset to start of buffer
+	command_buffer = (u8 *)&se_command_buffer;	// reset to start of buffer
 	skips = 0;
 
 	skip_dots_and_spaces();
@@ -422,7 +430,9 @@ void execute()
 			}
 			break;
 		case 'l':
-			if (check_keyword(3, "ua ") {
+			if (check_keyword(3, "ox ")) {
+				lox_command();
+			} else if (check_keyword(3, "ua ")) {
 				//advance();
 				lua_command();
 			} else {

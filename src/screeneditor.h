@@ -10,6 +10,7 @@
 
 #include "kernel.h"
 
-//void se_add_bottom_row();
+void se_add_top_row();
+void se_add_bottom_row();
 
 #endif

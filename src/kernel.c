@@ -13,5 +13,5 @@ void *heap_end;
 void reset_heap_pointers()
 {
 	heap_start = (void *)0x00060000;
-	heap_end   = (void *)0x00060000;
+	heap_end   = (void *)0x00100000;
 }

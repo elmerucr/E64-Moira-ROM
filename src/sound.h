@@ -201,7 +201,7 @@ struct sound_mixer_ic {
 	u8	analog3_volume_right;
 };
 
-extern u16 *music_notes;
+extern u16 music_notes[];
 
 enum notes {
 	N_C0_,

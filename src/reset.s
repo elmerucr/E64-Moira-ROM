@@ -5,7 +5,7 @@
 		dc.l	$00010000	; initial ISP
 		dc.l	reset_exception	; initial PC
 
-_rom_version::	dc.b	'rom v20230222',0
+_rom_version::	dc.b	'rom v20230325',0
 
 reset_exception::
 		;move.w	#$2700,sr	; supervisor mode, highest IPL (is done by reset)
@@ -13,7 +13,7 @@ reset_exception::
 		;clr.l	D0		; Not needed, reset exception
 		;movec	D0,VBR		; sets VBR to $00000000.
 
-		move.l	#$00100000,D0	; set USP
+		move.l	#$00200000,D0	; set USP (occupies end of user memory)
 		movec	D0,USP
 
 		jsr	_reset_vector_table

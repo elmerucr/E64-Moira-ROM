@@ -85,8 +85,13 @@ struct display_list_entry {
 void blitter_init_display_list();
 void blitter_init_default_blit_and_theme();
 
+void blitter_e64_theme();
+void blitter_amiga_theme();
+void blitter_c64_theme();
+
 void clear_screen();
 void putsymbol(u8 symbol);
 void putchar(u8 character);
+void puts(u8 *buffer);
 
 #endif

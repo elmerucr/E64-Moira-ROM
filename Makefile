@@ -13,6 +13,8 @@ OBJECTS +=	obj/blitter_asm.o \
 		obj/forth.o \
 		obj/kernel.o \
 		obj/kernel_asm.o \
+		obj/lox.o \
+		obj/lox_chunk.o \
 		obj/monitor_asm.o \
 		obj/monitor.o \
 		obj/screeneditor.o \
@@ -21,14 +23,18 @@ OBJECTS +=	obj/blitter_asm.o \
 		obj/tables.o \
 		obj/timer.o \
 		obj/vectors.o
+		#obj/libc_allocation.o
 
 ASMTARGETS =	obj/blitter.s \
 		obj/cia.s \
 		obj/kernel.s \
+		obj/lox.s \
+		obj/lox_chunk.s \
 		obj/monitor.s \
 		obj/screeneditor.s \
 		obj/sound.s \
 		obj/test.s
+		#obj/libc_allocation.s
 
 # Sometimes there seems be strange behaviour related to the -align option. Now
 # it seems ok. Another way would be to use the -devpac option?
