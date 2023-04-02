@@ -12,7 +12,7 @@
 #include "screeneditor.h"
 
 extern u8 se_do_prompt;	// part of screeneditor
-extern void *se_command_buffer;
+extern u8 *se_command_buffer;
 //void ver_command();	// definition elsewhere
 extern u8 current_blit;
 extern u8 *rom_version;
@@ -42,6 +42,7 @@ static void out6x(u32 longword)
 
 static u8 advance()
 {
+	old_cursor_position--;
 	command_buffer++;
 	skips++;
 	return command_buffer[-1];
@@ -364,8 +365,10 @@ static void lox_command()
 	lox_main();
 }
 
-static void lua_command()
+void lua_command()
 {
+	//se_command_buffer[old_cursor_position] = '\0';
+	pokeb(((u32)command_buffer) + old_cursor_position, 0);	// trick for null termination at right spot
 	u8 c;
 	while (c = advance()) {
 		// hack
@@ -373,8 +376,8 @@ static void lua_command()
 		pokeb(0x00000f01, 0x01);
 	}
 
-	pokeb(0x00000f02, 0x42); // char in = 'B'
-	pokeb(0x00000f01, 0x01); // add char to command
+	//pokeb(0x00000f02, 0x42); // char in = 'B'
+	//pokeb(0x00000f01, 0x01); // add char to command
 	pokeb(0x00000f01, 0x02); // push command to queue
 }
 
@@ -434,6 +437,7 @@ void execute()
 				lox_command();
 			} else if (check_keyword(3, "ua ")) {
 				//advance();
+				// place a '\0' in command buffer at old cursor position
 				lua_command();
 			} else {
 				advance();

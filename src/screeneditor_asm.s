@@ -7,7 +7,7 @@ execute_vector::	ds.l	1	; callback pointer (event)
 bottom_row_callback::	ds.l	1	; callback pointer (event)
 top_row_callback::	ds.l	1	; callback pointer (event)
 _se_command_buffer::	ds.b	80	; enough space (79 chars + '\0')
-se_command_buffer_ptr	ds.l	1	; points to a character in command buffer
+;se_command_buffer_ptr	ds.l	1	; points to a character in command buffer
 _se_do_prompt::		ds.b	1
 
 		section	TEXT
@@ -66,11 +66,6 @@ _se_add_bottom_row::
 	subq	#1,D1
 	bne.s	.2
 
-;	move.b	(BLIT_COLUMNS,A0),D0
-;.3	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)	; bug??? for some reason cursor is always at zero pos when putchar
-;	sub.b	#1,D0
-;	bne.s	.3
-
 	movem.l	(SP)+,A2-A3
 
 	rts
@@ -115,29 +110,26 @@ _se_add_top_row::
 	cmp.w	#-1,D0
 	bne.s	.2
 
-;	move.b	(BLIT_COLUMNS,A0),D0
-;.3	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
-;	sub.b	#1,D0
-;	bne.s	.3
-
 	movem.l	(SP)+,D2/A2-A3
 
 	rts
 
 se_fill_command_buffer:
 	move.b	_current_blit,BLITTER_CONTEXT_PTR_NO.w
-	movea.l	BLITTER_CONTEXT_PTR.w,A0
+	movea.l	BLITTER_CONTEXT_PTR.w,A0	; get a pointer to current blitter context in A0
+	;move.b	(BLIT_CURSOR_COLUMN,A0),_old_cursor_position
 	move.b	(BLIT_CURSOR_COLUMN,A0),-(SP)	; save current cursor pos
-	move.w	#ASCII_CR,-(SP)			; move cursor to first position
+	move.b	(SP),_old_cursor_position
+	move.w	#ASCII_CR,-(SP)			; carriage return: move cursor to position 0
 	bsr	_putchar
 	lea	(2,SP),SP
 	movea.l	#_se_command_buffer,A1
-.1	move.b	(BLIT_CURSOR_CHAR,A0),(A1)+
+.1	move.b	(BLIT_CURSOR_CHAR,A0),(A1)+	; move a character from current cursor pos to buffer
 	move.b	#BLIT_CMD_INCREASE_CURSOR_POS,(BLIT_CR,A0)
-	btst.b	#6,(BLIT_SR,A0)
-	beq.s	.1
-	clr.b	-(A1)	; place 0 at end of string
+	btst.b	#6,(BLIT_SR,A0)			; did we reach the first column (xpos 0)
+	beq.s	.1				; no, back to .1
+	clr.b	-(A1)	; place 0 at end of string	; yes, go back 1 position, @ end of line before and put '\0'
 	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)
 	move.b	(SP)+,(BLIT_CURSOR_COLUMN,A0)
-	move.l	#_se_command_buffer,se_command_buffer_ptr
+;	move.l	#_se_command_buffer,se_command_buffer_ptr
 	rts

@@ -13,4 +13,6 @@
 void se_add_top_row();
 void se_add_bottom_row();
 
+extern u8 old_cursor_position;
+
 #endif
