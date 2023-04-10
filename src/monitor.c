@@ -365,22 +365,6 @@ static void lox_command()
 	lox_main();
 }
 
-void lua_command()
-{
-	//se_command_buffer[old_cursor_position] = '\0';
-	pokeb(((u32)command_buffer) + old_cursor_position, 0);	// trick for null termination at right spot
-	u8 c;
-	while (c = advance()) {
-		// hack
-		pokeb(0x00000f02, c);
-		pokeb(0x00000f01, 0x01);
-	}
-
-	//pokeb(0x00000f02, 0x42); // char in = 'B'
-	//pokeb(0x00000f01, 0x01); // add char to command
-	pokeb(0x00000f01, 0x02); // push command to queue
-}
-
 void execute()
 {
 	command_buffer = (u8 *)&se_command_buffer;	// reset to start of buffer
@@ -435,10 +419,6 @@ void execute()
 		case 'l':
 			if (check_keyword(3, "ox ")) {
 				lox_command();
-			} else if (check_keyword(3, "ua ")) {
-				//advance();
-				// place a '\0' in command buffer at old cursor position
-				lua_command();
 			} else {
 				advance();
 				error();
