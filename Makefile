@@ -13,6 +13,7 @@ OBJECTS +=	obj/blitter_asm.o \
 		obj/forth.o \
 		obj/kernel.o \
 		obj/kernel_asm.o \
+		obj/libc_allocation.o \
 		obj/lox.o \
 		obj/lox_chunk.o \
 		obj/monitor_asm.o \
@@ -28,6 +29,7 @@ OBJECTS +=	obj/blitter_asm.o \
 ASMTARGETS =	obj/blitter.s \
 		obj/cia.s \
 		obj/kernel.s \
+		obj/libc_allocation.s \
 		obj/lox.s \
 		obj/lox_chunk.s \
 		obj/monitor.s \

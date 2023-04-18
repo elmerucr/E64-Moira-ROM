@@ -28,11 +28,11 @@ void allocation_split(struct block *fitting_slot, size_t size)
 	struct block *new = (void *)((size_t)fitting_slot + size + sizeof(struct block));
 
 	new->size = (fitting_slot->size) - size - sizeof(struct block);
-	new->free = 1;
+	new->free = true;
 	new->next = fitting_slot->next;
 
 	fitting_slot->size = size;
-	fitting_slot->free = 0;
+	fitting_slot->free = false;
 	fitting_slot->next = new;
 }
 
@@ -46,13 +46,13 @@ void *malloc(size_t bytes)
 
 	curr = block_list;
 
-	while (((curr->size) < bytes) || ((curr->free) == 0) && ((curr->next) != 0x00000000)) {
+	while (((curr->size) < bytes) || ((curr->free) == false) && ((curr->next) != 0x00000000)) {
 		prev = curr;
 		curr = curr->next;
 	}
 
 	if ((curr->size) == bytes) {
-		curr->free = 0;
+		curr->free = false;
 		result = (void *)++curr; // points to memory straight after struct
 		// exact fitting of required memory
 		return result;
@@ -87,10 +87,10 @@ void free(void *ptr)
 	// NEEDS WORK
 	// this is a very minimal implementation
 	// doesn't iterate through the blocks to check if the given pointer is valid
-	if ( (((void *)block_list) <= ptr) && (ptr <= ((void *)END_OF_HEAP))) {
+	if ( (((void *)block_list) <= ptr) && (ptr <= ((void *)heap_end))) {
 		struct block *curr = ptr;
 		--curr;
-		curr->free = 1;
+		curr->free = true;
 		allocation_merge();
 	}
 }

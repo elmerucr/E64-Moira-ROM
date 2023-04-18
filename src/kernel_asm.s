@@ -30,7 +30,7 @@ malloc::	move.l	($4,SP),D1	; load chunk size parameter from stack
 ;		dest[i] = src[i];
 ;	return dest;
 ;}
-memcpy::	movea.l	($4,SP),A1	; dest
+_memcpy::	movea.l	($4,SP),A1	; dest
 		movea.l	($8,SP),A0	; src
 		move.l	($c,SP),D0	; no of bytes
 		beq.s	.2		; if no of bytes=0 then return

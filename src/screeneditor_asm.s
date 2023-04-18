@@ -7,7 +7,6 @@ execute_vector::	ds.l	1	; callback pointer (event)
 bottom_row_callback::	ds.l	1	; callback pointer (event)
 top_row_callback::	ds.l	1	; callback pointer (event)
 _se_command_buffer::	ds.b	80	; enough space (79 chars + '\0')
-;se_command_buffer_ptr	ds.l	1	; points to a character in command buffer
 _se_do_prompt::		ds.b	1
 
 		section	TEXT

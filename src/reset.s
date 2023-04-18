@@ -19,6 +19,7 @@ reset_exception::
 		jsr	_reset_vector_table
 		jsr	_reset_relocate_sections
 		jsr	_reset_heap_pointers
+		jsr	_allocation_init
 
 		jsr	_blitter_init_display_list
 		jsr	_blitter_init_default_blit_and_theme
@@ -69,7 +70,7 @@ _reset_relocate_sections::
 		move.l	D0,-(SP)	; push number of bytes
 		pea	_DATA_START	; push source address
 		pea	_RAM_START	; push destination address
-		bsr	memcpy
+		bsr	_memcpy
 		lea	($c,SP),SP	; clean up stack
 
 		; zero bss section
