@@ -27,6 +27,8 @@ struct blitter_ic {
 	u16	hor_border_color;	// 0x0c
 	u16	ver_border_color;	// 0x0e
 	u16	clear_color;		// 0x10
+	u8	screen_width;		// 0x12
+	u8	screen_height;		// 0x13
 };
 
 struct blit_ic {

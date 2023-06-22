@@ -179,7 +179,7 @@ static void monitor_word_line(u32 address)
 
 	for (u32 no = 0; no < 8; no++) {
 		BLIT[current_blit].background_color = peekw(address + (2 * no)) | 0xf000;
-		puts("  ");
+		puts(" ");
 	}
 
 	BLIT[current_blit].background_color = old_color;
@@ -409,6 +409,16 @@ void execute()
 		case 'e':
 			if (check_keyword(3, "64 ")) {
 				blitter_e64_theme();
+				clear_screen();
+				puts("\nE64 Theme Small");
+			} else {
+				advance();
+				error();
+			}
+			break;
+		case 'E':
+			if (check_keyword(3, "64 ")) {
+				blitter_E64_theme();
 				clear_screen();
 				puts("\nE64 Theme");
 			} else {

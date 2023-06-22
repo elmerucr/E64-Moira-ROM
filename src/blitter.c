@@ -55,6 +55,32 @@ void blitter_e64_theme()
 	BLITTER->ver_border_color = E64_BLUE_01;
 	BLITTER->hor_border_size = 16;
 	BLITTER->ver_border_size = 0;
+	BLITTER->screen_width = 64;
+	BLITTER->screen_height = 40;
+
+	BLIT[0].tile_width = 1;
+	BLIT[0].tile_height = 1;
+	BLIT[0].cursor_blink_speed = 0x14;
+	BLIT[0].columns = 80;
+	BLIT[0].rows = 46;
+	BLIT[0].foreground_color = E64_BLUE_08;
+	BLIT[0].background_color = 0x0000;
+
+	DISPLAY_LIST[0].flags0  = 0x1a;
+	DISPLAY_LIST[0].flags1  = 0x00;
+	DISPLAY_LIST[0].xpos    = 0x0000;
+	DISPLAY_LIST[0].ypos    = 0x0010;
+}
+
+void blitter_E64_theme()
+{
+	BLITTER->clear_color = E64_BLUE_03;
+	BLITTER->hor_border_color = E64_BLUE_01;
+	BLITTER->ver_border_color = E64_BLUE_01;
+	BLITTER->hor_border_size = 16;
+	BLITTER->ver_border_size = 0;
+	BLITTER->screen_width = 80;
+	BLITTER->screen_height = 60;
 
 	BLIT[0].tile_width = 1;
 	BLIT[0].tile_height = 2;
@@ -77,6 +103,8 @@ void blitter_c64_theme()
 	BLITTER->ver_border_color = C64_LIGHTBLUE;
 	BLITTER->hor_border_size = 32;
 	BLITTER->ver_border_size = 32;
+	BLITTER->screen_width = 48;
+	BLITTER->screen_height = 30;
 
 	BLIT[0].tile_width = 1;
 	BLIT[0].tile_height = 1;
