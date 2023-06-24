@@ -61,8 +61,8 @@ void blitter_e64_theme()
 	BLIT[0].tile_width = 1;
 	BLIT[0].tile_height = 1;
 	BLIT[0].cursor_blink_speed = 0x14;
-	BLIT[0].columns = 80;
-	BLIT[0].rows = 46;
+	BLIT[0].columns = 64;
+	BLIT[0].rows = 36;
 	BLIT[0].foreground_color = E64_BLUE_08;
 	BLIT[0].background_color = 0x0000;
 
@@ -101,7 +101,7 @@ void blitter_c64_theme()
 	BLITTER->clear_color = C64_BLUE;
 	BLITTER->hor_border_color = C64_LIGHTBLUE;
 	BLITTER->ver_border_color = C64_LIGHTBLUE;
-	BLITTER->hor_border_size = 32;
+	BLITTER->hor_border_size = 20;
 	BLITTER->ver_border_size = 32;
 	BLITTER->screen_width = 48;
 	BLITTER->screen_height = 30;
@@ -109,8 +109,8 @@ void blitter_c64_theme()
 	BLIT[0].tile_width = 1;
 	BLIT[0].tile_height = 1;
 	BLIT[0].cursor_blink_speed = 0x14;
-	BLIT[0].columns = 72;
-	BLIT[0].rows = 42;
+	BLIT[0].columns = 40;
+	BLIT[0].rows = 25;
 	BLIT[0].tile_width = 1;
 	BLIT[0].tile_height = 1;
 	BLIT[0].foreground_color = C64_LIGHTBLUE;
@@ -119,7 +119,7 @@ void blitter_c64_theme()
 	DISPLAY_LIST[0].flags0 = 0x1a;
 	DISPLAY_LIST[0].flags1 = 0x00;
 	DISPLAY_LIST[0].xpos = 0x0020;
-	DISPLAY_LIST[0].ypos = 0x0020;
+	DISPLAY_LIST[0].ypos = 0x0014;
 }
 
 void blitter_amiga_theme()
@@ -129,6 +129,8 @@ void blitter_amiga_theme()
 	BLITTER->ver_border_color = 0xf000;
 	BLITTER->hor_border_size = 0;
 	BLITTER->ver_border_size = 0;
+	BLITTER->screen_width = 80;
+	BLITTER->screen_height = 60;
 
 	BLIT[0].tile_width = 1;
 	BLIT[0].tile_height = 2;

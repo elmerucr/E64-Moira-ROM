@@ -76,6 +76,8 @@ is_cri	cmpi.b	#ASCII_CURSOR_RIGHT,D0
 	move.l	A0,-(SP)
 	bsr	_se_add_bottom_row
 	move.l	(SP)+,A0
+	move.b	#BLIT_CMD_DECREASE_CURSOR_POS,(BLIT_CR,A0)	; move back to bottom right
+	clr.b	(BLIT_CURSOR_COLUMN,A0)				; move cursor to begin of row
 	bra	finish
 is_cl	cmpi.b	#ASCII_CURSOR_LEFT,D0
 	bne	is_cd
