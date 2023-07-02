@@ -385,7 +385,7 @@ void execute()
 			if (check_keyword(5, "miga ")) {
 				blitter_amiga_theme();
 				clear_screen();
-				puts("\nAmiga Theme");
+				//puts("\nAmiga Theme");
 				break;
 			} else {
 				advance();
@@ -396,7 +396,7 @@ void execute()
 			if (check_keyword(3, "64 ")) {
 				blitter_c64_theme();
 				clear_screen();
-				puts("\nC64 Theme");
+				//puts("\nC64 Theme");
 				break;
 			} else if (check_keyword(5, "lear ")) {
 				clear_screen();
@@ -410,7 +410,7 @@ void execute()
 			if (check_keyword(3, "64 ")) {
 				blitter_e64_theme();
 				clear_screen();
-				puts("\nE64 Theme Small");
+				//puts("\nE64 Theme Small");
 			} else {
 				advance();
 				error();
@@ -420,7 +420,7 @@ void execute()
 			if (check_keyword(3, "64 ")) {
 				blitter_E64_theme();
 				clear_screen();
-				puts("\nE64 Theme");
+				//puts("\nE64 Theme");
 			} else {
 				advance();
 				error();
