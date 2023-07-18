@@ -46,8 +46,10 @@ u16	peekw(u32 address);
 void	pokel(u32 address, u32 longword);
 u32	peekl(u32 address);
 
-void	init_kernel();
 u16	get_interrupt_mask();
 void	set_interrupt_mask(u16 value);
+
+extern void *heap_start;
+extern void *heap_end;
 
 #endif

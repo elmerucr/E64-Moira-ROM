@@ -7,23 +7,6 @@
 
 		section	TEXT
 
-;void *malloc(size_t chunk)
-;{
-;	if (chunk & 0b1) {
-;		chunk++;	// make sure it's even
-;	}
-;	void *old_heap_end = heap_end;
-;	heap_end += chunk;
-;	return old_heap_end;
-;}
-malloc::	move.l	($4,SP),D1	; load chunk size parameter from stack
-		btst.l	#$0,D1		; test bit zero
-		beq.s	.1
-		addq	#$1,D1		; add one for word alignment
-.1		move.l	_heap_end,D0	; return value in D0
-		add.l	D1,_heap_end	; update heap pointer
-		rts
-
 ;u8 *memcpy(u8 *dest, const u8 *src, size_t count)
 ;{
 ;	for (u32 i=0; i<count; i++)

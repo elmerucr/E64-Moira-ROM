@@ -33,7 +33,7 @@ static void out4x(u16 word)
 	out2x(word & 0x00ff);
 }
 
-static void out6x(u32 longword)
+void out6x(u32 longword)
 {
 	out2x(longword >> 16);
 	out2x((longword >> 8) & 0xff);
@@ -421,6 +421,17 @@ void execute()
 				blitter_E64_theme();
 				clear_screen();
 				//puts("\nE64 Theme");
+			} else {
+				advance();
+				error();
+			}
+			break;
+		case 'h':
+			if (check_keyword(4, "eap ")) {
+				puts("\nstart $");
+				out6x((u32)heap_start);
+				puts(", end $");
+				out6x((u32)heap_end);
 			} else {
 				advance();
 				error();

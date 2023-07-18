@@ -61,14 +61,14 @@ void blitter_e64_theme()
 	BLIT[0].tile_width = 1;
 	BLIT[0].tile_height = 1;
 	BLIT[0].cursor_blink_speed = 0x14;
-	BLIT[0].columns = 62;
+	BLIT[0].columns = 64;
 	BLIT[0].rows = 36;
 	BLIT[0].foreground_color = E64_BLUE_08;
 	BLIT[0].background_color = 0x0000;
 
 	DISPLAY_LIST[0].flags0  = 0x1a;
 	DISPLAY_LIST[0].flags1  = 0x00;
-	DISPLAY_LIST[0].xpos    = 0x0008;
+	DISPLAY_LIST[0].xpos    = 0x0000;
 	DISPLAY_LIST[0].ypos    = 0x0010;
 }
 

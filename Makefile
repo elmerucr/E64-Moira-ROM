@@ -16,6 +16,8 @@ OBJECTS +=	obj/blitter_asm.o \
 		obj/libc_allocation.o \
 		obj/lox.o \
 		obj/lox_chunk.o \
+		obj/lox_debug.o \
+		obj/lox_memory.o \
 		obj/monitor_asm.o \
 		obj/monitor.o \
 		obj/screeneditor.o \
@@ -32,6 +34,8 @@ ASMTARGETS =	obj/blitter.s \
 		obj/libc_allocation.s \
 		obj/lox.s \
 		obj/lox_chunk.s \
+		obj/lox_debug.s \
+		obj/lox_memory.s \
 		obj/monitor.s \
 		obj/screeneditor.s \
 		obj/sound.s \

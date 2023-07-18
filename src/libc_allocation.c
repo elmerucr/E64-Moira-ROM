@@ -23,7 +23,7 @@ void allocation_init()
 	block_list->next = 0x00000000;
 }
 
-void allocation_split(struct block *fitting_slot, size_t size)
+inline void allocation_split(struct block *fitting_slot, size_t size)
 {
 	struct block *new = (void *)((size_t)fitting_slot + size + sizeof(struct block));
 
@@ -46,15 +46,19 @@ void *malloc(size_t bytes)
 
 	curr = block_list;
 
-	while (((curr->size) < bytes) || ((curr->free) == false) && ((curr->next) != 0x00000000)) {
+	/*
+	 * While (curr size is less than we need OR the curr is not
+	 * available) AND curr not the last one, move to the next block.
+	 */
+	while ((((curr->size) < bytes) || ((curr->free) == false)) && ((curr->next) != 0x00000000)) {
 		prev = curr;
 		curr = curr->next;
 	}
 
 	if ((curr->size) == bytes) {
+		// exact fit of required memory
 		curr->free = false;
 		result = (void *)++curr; // points to memory straight after struct
-		// exact fitting of required memory
 		return result;
 	} else if ((curr->size) > (bytes + sizeof(struct block))) {
 		allocation_split(curr, bytes);
@@ -62,8 +66,8 @@ void *malloc(size_t bytes)
 		// allocation with a split
 		return result;
 	} else {
-		result = 0x00000000;
 		// no memory available from heap
+		result = 0x00000000;
 		return result;
 	}
 }
