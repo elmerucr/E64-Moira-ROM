@@ -6,8 +6,7 @@
 void disassembleChunk(Chunk* chunk, const char* name) {
 	puts("\n== ");
 	puts(name);
-	puts(" ==\n");
-  //printf("== %s ==\n", name);
+	puts(" ==");
 
 	for (int offset = 0; offset < chunk->count;) {
 		offset = disassembleInstruction(chunk, offset);
@@ -16,15 +15,13 @@ void disassembleChunk(Chunk* chunk, const char* name) {
 
 static int simpleInstruction(const char* name, int offset) {
 	puts(name);
-	putchar('\n');
-//  printf("%s\n", name);
 	return offset + 1;
 }
 
 int disassembleInstruction(Chunk* chunk, int offset) {
+	putchar('\n');
 	out6x(offset);
 	putchar(' ');
-  //printf("%04d ", offset);
 
 	uint8_t instruction = chunk->code[offset];
 	switch (instruction) {
@@ -33,8 +30,6 @@ int disassembleInstruction(Chunk* chunk, int offset) {
 		default:
 			puts("Unknown opcode ");
 			out6x(instruction);
-			putchar('\n');
-      //printf("Unknown opcode %d\n", instruction);
 			return offset + 1;
 	}
 }
