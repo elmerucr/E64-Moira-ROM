@@ -49,6 +49,8 @@ u32	peekl(u32 address);
 u16	get_interrupt_mask();
 void	set_interrupt_mask(u16 value);
 
+void	kernel_panic();
+
 extern void *heap_start;
 extern void *heap_end;
 

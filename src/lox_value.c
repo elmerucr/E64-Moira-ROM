@@ -1,5 +1,6 @@
 #include "lox_memory.h"
 #include "lox_value.h"
+#include "monitor.h"
 
 void initValueArray(ValueArray* array)
 {
@@ -10,7 +11,7 @@ void initValueArray(ValueArray* array)
 
 void writeValueArray(ValueArray* array, Value value)
 {
-	if (array->capacity < array->count + 1) {
+	if (array->capacity < (array->count + 1)) {
 		int oldCapacity = array->capacity;
 		array->capacity = GROW_CAPACITY(oldCapacity);
 		array->values = GROW_ARRAY(Value, array->values, oldCapacity, array->capacity);
@@ -24,4 +25,9 @@ void freeValueArray(ValueArray* array)
 {
 	FREE_ARRAY(Value, array->values, array->capacity);
 	initValueArray(array);
+}
+
+void printValue(Value value)
+{
+	out6x(value);
 }

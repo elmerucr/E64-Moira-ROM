@@ -1,19 +1,23 @@
 #include "lox_chunk.h"
 #include "lox_memory.h"
 #include "libc_stdint.h"
+#include "monitor.h"
 
 void initChunk(Chunk* chunk) {
 	chunk->count = 0;
 	chunk->capacity = 0;
 	chunk->code = (void *)0x00000000;	// in stead of NULL
+	initValueArray(&chunk->constants);
 }
 
 void freeChunk(Chunk* chunk) {
 	FREE_ARRAY(uint8_t, chunk->code, chunk->capacity);
+	freeValueArray(&chunk->constants);
 	initChunk(chunk);
 }
 
-void writeChunk(Chunk* chunk, uint8_t byte) {
+void writeChunk(Chunk* chunk, uint8_t byte)
+{
 	if (chunk->capacity < chunk->count + 1) {
 		int oldCapacity = chunk->capacity;
 		chunk->capacity = GROW_CAPACITY(oldCapacity);
@@ -23,4 +27,10 @@ void writeChunk(Chunk* chunk, uint8_t byte) {
 
 	chunk->code[chunk->count] = byte;
 	chunk->count++;
+}
+
+int addConstant(Chunk *chunk, Value value)
+{
+	writeValueArray(&chunk->constants, value);
+	return chunk->constants.count - 1;
 }

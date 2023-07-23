@@ -1,4 +1,6 @@
 #include "libc_stdlib.h"
+#include "kernel.h"
+#include "libc_stdint.h"
 
 #include "lox_memory.h"
 
@@ -10,7 +12,12 @@ void* reallocate(void* pointer, size_t oldSize, size_t newSize) {
 
 	void* result = realloc(pointer, newSize);
 	if (result == 0x00000000) {
-		// PANIC!!!
+		puts("\nrealloc panic");
+		//kernel_panic();
 	}
+
+	out6x((uint32_t)result);
+	putchar('\n');
+
 	return result;
 }
