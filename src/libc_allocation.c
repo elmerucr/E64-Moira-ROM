@@ -2,6 +2,7 @@
 //#include <string.h>
 #include "libc_allocation.h"
 //#include "kernel.h"
+#include "monitor.h"
 
 /*
  * Some ideas have been inspired by:
@@ -39,7 +40,8 @@ inline void allocation_split(struct block *fitting_slot, size_t size)
 void *malloc(size_t bytes)
 {
 	// ensure even amount of bytes
-	if (bytes & 0x1) bytes++;
+	if ((bytes & 1) == 1) bytes++;
+	out6x(bytes);
 
 	struct block *curr, *prev;
 	void *result;
@@ -50,7 +52,7 @@ void *malloc(size_t bytes)
 	 * While (curr size is less than we need OR the curr is not
 	 * available) AND curr not the last one, move to the next block.
 	 */
-	while ((((curr->size) < bytes) || ((curr->free) == false)) && ((curr->next) != 0x00000000)) {
+	while ((((curr->size) < bytes) || ((curr->free) == false)) && (curr->next != 0x00000000)) {
 		prev = curr;
 		curr = curr->next;
 	}
@@ -58,12 +60,12 @@ void *malloc(size_t bytes)
 	if ((curr->size) == bytes) {
 		// exact fit of required memory
 		curr->free = false;
-		result = (void *)++curr; // points to memory straight after struct
+		result = (void *)(++curr); // points to memory straight after struct
 		return result;
 	} else if ((curr->size) > (bytes + sizeof(struct block))) {
-		allocation_split(curr, bytes);
-		result = (void *)++curr;
 		// allocation with a split
+		allocation_split(curr, bytes);
+		result = (void *)(++curr);
 		return result;
 	} else {
 		// no memory available from heap

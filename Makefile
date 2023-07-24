@@ -39,8 +39,7 @@ ASMTARGETS =	obj/blitter.s \
 		obj/lox_value.s \
 		obj/monitor.s \
 		obj/screeneditor.s \
-		obj/sound.s \
-		obj/test.s
+		obj/sound.s
 
 # Sometimes there seems be strange behaviour related to the -align option. Now
 # it seems ok. Another way would be to use the -devpac option?
@@ -69,5 +68,5 @@ obj/%.o : %.s
 
 .PHONY: clean
 clean:
-	rm mk_rom rom.bin rom_unpatched.bin rom.map rom.cpp $(OBJECTS)
-	cd obj && rm *.list && rm *.s && cd ..
+	rm mk_ro* *.bin *.map ro*.cpp $(ASMTARGETS) $(OBJECTS)
+	cd obj && rm *.list && cd ..
