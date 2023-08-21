@@ -19,6 +19,7 @@ OBJECTS +=	obj/blitter_asm.o \
 		obj/lox_debug.o \
 		obj/lox_memory.o \
 		obj/lox_value.o \
+		obj/lox_vm.o \
 		obj/monitor_asm.o \
 		obj/monitor.o \
 		obj/screeneditor.o \
@@ -37,6 +38,7 @@ ASMTARGETS =	obj/blitter.s \
 		obj/lox_debug.s \
 		obj/lox_memory.s \
 		obj/lox_value.s \
+		obj/lox_vm.s \
 		obj/monitor.s \
 		obj/screeneditor.s \
 		obj/sound.s

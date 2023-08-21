@@ -2,6 +2,7 @@
 #include "lox_chunk.h"
 #include "lox_common.h"
 #include "lox_debug.h"
+#include "lox_vm.h"
 #include "monitor.h"
 #include "blitter.h"
 #include "libc_stdlib.h"
@@ -20,6 +21,8 @@ void lox_main()
 	//putchar('\n');
 	//out6x((u32)malloc(0x20));
 	putchar('\n');
+
+	initVM();
 	Chunk chunk;
 	initChunk(&chunk);
 	int8_t constant = addConstant(&chunk, 34);
@@ -33,5 +36,6 @@ void lox_main()
 	writeChunk(&chunk, constant2, 223);
 	writeChunk(&chunk, OP_RETURN, 223);
 	disassembleChunk(&chunk, "test chunk");
+	freeVM();
 	freeChunk(&chunk);
 }
