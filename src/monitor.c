@@ -27,7 +27,7 @@ static void out2x(u8 byte)
 	putchar(hex_values[byte & 0x0f]);
 }
 
-static void out4x(u16 word)
+void out4x(u16 word)
 {
 	out2x(word >> 8);
 	out2x(word & 0x00ff);
